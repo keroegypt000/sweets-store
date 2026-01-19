@@ -198,3 +198,91 @@ export async function createOrder(userId: number, totalAmount: string, shippingA
   const result = await db.select().from(orders).where(eq(orders.orderNumber, orderNumber)).limit(1);
   return result.length > 0 ? result[0] : null;
 }
+
+
+// Product CRUD operations
+export async function createProduct(data: {
+  categoryId: number;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  price: string;
+  originalPrice?: string;
+  stock?: number;
+  image?: string;
+  sku?: string;
+  slug: string;
+  isFeatured?: boolean;
+  isPromotion?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(products).values({
+    ...data,
+    price: data.price as any,
+    originalPrice: data.originalPrice as any,
+    isActive: true,
+  });
+  
+  // Fetch and return the created product
+  const created = await db.select().from(products).where(eq(products.slug, data.slug)).limit(1);
+  return created.length > 0 ? created[0] : null;
+}
+
+export async function updateProduct(id: number, data: {
+  categoryId?: number;
+  nameAr?: string;
+  nameEn?: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  price?: string;
+  originalPrice?: string;
+  stock?: number;
+  image?: string;
+  sku?: string;
+  slug?: string;
+  isFeatured?: boolean;
+  isPromotion?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const updateData: any = {};
+  Object.keys(data).forEach(key => {
+    if (data[key as keyof typeof data] !== undefined) {
+      updateData[key] = data[key as keyof typeof data];
+    }
+  });
+  
+  if (Object.keys(updateData).length === 0) return null;
+  
+  await db.update(products).set(updateData).where(eq(products.id, id));
+  
+  // Fetch and return the updated product
+  const updated = await db.select().from(products).where(eq(products.id, id)).limit(1);
+  return updated.length > 0 ? updated[0] : null;
+}
+
+export async function deleteProduct(id: number) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  // Soft delete by setting isActive to false
+  await db.update(products).set({ isActive: false }).where(eq(products.id, id));
+  return true;
+}
+
+export async function getProductById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(products).where(eq(products.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getAllProducts(limit: number = 100, offset: number = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(products).limit(limit).offset(offset);
+}

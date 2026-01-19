@@ -48,10 +48,12 @@ export default function AdminDashboard() {
   const renderProductsTab = () => (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">{language === 'ar' ? 'المنتجات' : 'Products'} ({products.length})</h2>
+        <h2 className="text-2xl font-bold cursor-pointer hover:text-primary-yellow transition" onClick={() => setLocation('/admin/products')}>
+          {language === 'ar' ? 'المنتجات' : 'Products'} ({products.length})
+        </h2>
         <Button onClick={() => setLocation('/admin/products')} className="bg-primary-yellow text-dark-text hover:bg-accent-yellow">
           <Plus className="w-4 h-4 mr-2" />
-          {language === 'ar' ? 'إضافة منتج' : 'Add Product'}
+          {language === 'ar' ? 'إدارة المنتجات' : 'Manage Products'}
         </Button>
       </div>
 
