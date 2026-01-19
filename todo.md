@@ -158,3 +158,10 @@
 - [x] Improve category card design (rounded corners, better layout)
 - [x] Better product card styling (elegant cards, better spacing)
 - [x] Overall elegance and professionalism (refined UI)
+
+## Desktop Category Display Fix
+- [x] Show all categories on desktop (removed 6-category limit)
+- [x] Remaining categories appear on scroll (not hidden)
+- [x] Better category card organization and spacing
+- [x] Improve category card sizing and layout (h-24 sm:h-28 md:h-32 lg:h-40)
+- [x] Ensure smooth scrolling behavior

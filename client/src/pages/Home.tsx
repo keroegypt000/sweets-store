@@ -96,15 +96,13 @@ export default function Home() {
           {/* Categories Container */}
           <div className="flex-1 flex flex-col md:h-screen md:overflow-y-auto">
             {filteredCategories && filteredCategories.length > 0 && filteredCategories.map((category, index) => {
-              if (window.innerWidth >= 768 && index >= 6) return null;
-              
               const categoryProductCount = allProducts.filter(p => p.categoryId === category.id).length;
               
               return (
                 <div
                   key={category.id}
                   onClick={() => setSelectedCategoryId(category.id)}
-                  className={`flex-1 relative cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 overflow-hidden group ${
+                  className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 overflow-hidden group h-24 sm:h-28 md:h-32 lg:h-40 ${
                     selectedCategoryId === category.id
                       ? 'ring-2 ring-yellow-500 shadow-xl'
                       : 'hover:shadow-md'
