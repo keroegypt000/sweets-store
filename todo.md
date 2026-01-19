@@ -165,3 +165,9 @@
 - [x] Better category card organization and spacing
 - [x] Improve category card sizing and layout (h-24 sm:h-28 md:h-32 lg:h-40)
 - [x] Ensure smooth scrolling behavior
+
+## Desktop Banner & Unified Category Design
+- [x] Add banner to desktop (same as mobile)
+- [x] Apply same category design to desktop as mobile
+- [x] Remove separate desktop/mobile category styling
+- [x] Ensure consistent look across all devices

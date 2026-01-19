@@ -54,8 +54,8 @@ export default function Home() {
           selectedCategoryId && window.innerWidth < 768 ? 'hidden' : ''
         } w-full md:w-1/2 md:h-screen bg-gradient-to-br from-yellow-300 via-yellow-100 to-yellow-50 overflow-y-auto flex flex-col md:block`}>
           
-          {/* Mobile Banner - Larger size */}
-          <div className="md:hidden w-full h-48 sm:h-56 bg-gradient-to-r from-yellow-400 via-yellow-300 to-orange-300 flex items-center justify-center overflow-hidden shadow-lg relative">
+          {/* Banner - Visible on both mobile and desktop */}
+          <div className="w-full h-40 md:h-32 bg-gradient-to-r from-yellow-400 via-yellow-300 to-orange-300 flex items-center justify-center overflow-hidden shadow-lg relative">
             <div className="absolute inset-0 bg-black/10"></div>
             <img
               src="https://images.unsplash.com/photo-1599599810694-b5ac4dd64e90?w=600&h=250&fit=crop"
@@ -69,8 +69,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Mobile Search Bar */}
-          <div className="md:hidden p-3 sm:p-4 bg-yellow-100 border-b-2 border-yellow-300 shadow-sm">
+          {/* Search Bar - Visible on both mobile and desktop */}
+          <div className="p-3 sm:p-4 md:p-3 bg-yellow-100 border-b-2 border-yellow-300 shadow-sm">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
               <input
