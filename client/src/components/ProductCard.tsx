@@ -12,7 +12,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
@@ -26,78 +26,77 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
       {/* Product Image */}
       <div className="relative block overflow-hidden bg-light-bg aspect-square cursor-pointer" onClick={() => window.location.href = `/product/${product.slug}`}>
-          {product.image && (
-            <img
-              src={product.image}
-              alt={name}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-            />
-          )}
-          
-          {/* Discount Badge */}
-          {discountPercent && (
-            <div className="absolute top-2 right-2 bg-primary-yellow text-dark-text px-2 py-1 rounded-full text-sm font-bold">
-              -{discountPercent}%
-            </div>
-          )}
+        {product.image && (
+          <img
+            src={product.image}
+            alt={name}
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          />
+        )}
+        
+        {/* Discount Badge */}
+        {discountPercent && (
+          <div className="absolute top-2 right-2 bg-primary-yellow text-dark-text px-2 py-1 rounded-full text-xs md:text-sm font-bold">
+            -{discountPercent}%
+          </div>
+        )}
 
-          {/* Wishlist Button */}
+        {/* Wishlist Button */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             setIsWishlisted(!isWishlisted);
           }}
-            className="absolute top-2 left-2 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow"
-          >
-            <Heart
-              className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
-            />
-          </button>
+          className="absolute top-2 left-2 bg-white rounded-full p-1.5 md:p-2 shadow-md hover:shadow-lg transition-shadow"
+        >
+          <Heart
+            className={`w-4 h-4 md:w-5 md:h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
+          />
+        </button>
       </div>
 
-      <CardContent className="flex-1 p-4">
-        {/* Product Name */}
+      {/* Product Info */}
+      <CardContent className="flex-1 p-2 md:p-3 lg:p-4">
         <Link href={`/product/${product.slug}`}>
-          <h3 className="font-bold text-dark-text hover:text-primary-yellow transition-colors line-clamp-2 cursor-pointer">
+          <h3 className="font-bold text-dark-text hover:text-primary-yellow transition-colors cursor-pointer line-clamp-2 text-xs md:text-sm lg:text-base">
             {name}
           </h3>
         </Link>
-
-        {/* Product Description */}
+        
         {description && (
-          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+          <p className="text-xs text-muted-foreground mt-1 line-clamp-2 hidden sm:block">
             {description}
           </p>
         )}
 
         {/* Price */}
-        <div className="flex items-center gap-2 mt-3">
-          <span className="text-lg font-bold text-primary-yellow">
+        <div className="flex items-center gap-2 mt-2 md:mt-3">
+          <span className="font-bold text-primary-yellow text-xs md:text-sm lg:text-base">
             {price.toFixed(2)} KWD
           </span>
           {originalPrice && (
-            <span className="text-sm text-muted-foreground line-through">
-              {originalPrice.toFixed(2)} KWD
+            <span className="text-xs text-muted-foreground line-through hidden md:inline">
+              {originalPrice.toFixed(2)}
             </span>
           )}
         </div>
 
         {/* Stock Status */}
-        <div className="mt-2">
+        <p className="text-xs mt-1 md:mt-2">
           {(product.stock ?? 0) > 0 ? (
-            <span className="text-xs text-green-600 font-medium">
+            <span className="text-green-600 font-medium">
               {language === 'ar' ? 'متوفر' : 'In Stock'}
             </span>
           ) : (
-            <span className="text-xs text-red-600 font-medium">
+            <span className="text-red-600 font-medium">
               {language === 'ar' ? 'غير متوفر' : 'Out of Stock'}
             </span>
           )}
-        </div>
+        </p>
       </CardContent>
 
       {/* Add to Cart */}
-      <CardFooter className="p-4 pt-0 gap-2">
+      <CardFooter className="p-2 md:p-3 lg:p-4 border-t border-border flex gap-2">
         <input
           type="number"
           min="1"
@@ -105,7 +104,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           value={quantity}
           onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
           disabled={(product.stock ?? 0) === 0}
-          className="w-16 px-2 py-2 border border-border rounded text-center text-sm"
+          className="w-12 px-2 py-1 border border-border rounded text-center text-xs md:text-sm"
         />
         <Button
           onClick={() => {
@@ -113,10 +112,11 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             setQuantity(1);
           }}
           disabled={(product.stock ?? 0) === 0}
-          className="flex-1 bg-primary-yellow text-dark-text hover:bg-accent-yellow"
+          size="sm"
+          className="flex-1 bg-primary-yellow text-dark-text hover:bg-accent-yellow text-xs md:text-sm"
         >
-          <ShoppingCart className="w-4 h-4 mr-2" />
-          {t('add_to_cart')}
+          <ShoppingCart className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+          {language === 'ar' ? 'أضف' : 'Add'}
         </Button>
       </CardFooter>
     </Card>

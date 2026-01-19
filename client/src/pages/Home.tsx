@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
-import ProductListItem from '@/components/ProductListItem';
+import ProductCard from '@/components/ProductCard';
 import { ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -12,14 +12,13 @@ export default function Home() {
   // Fetch categories
   const { data: categories = [] } = trpc.categories.list.useQuery();
 
-  // Always call useQuery - just with enabled: false when no category is selected
-  const { data: categoryProducts = [] } = trpc.products.byCategory.useQuery(
-    { categoryId: selectedCategoryId || 0 },
-    { enabled: selectedCategoryId !== null }
-  );
+  // Always fetch all products
+  const { data: allProducts = [] } = trpc.products.list.useQuery();
 
-  // Use categoryProducts when category is selected, otherwise empty array
-  const products = selectedCategoryId ? categoryProducts : [];
+  // Filter products based on selected category
+  const products = selectedCategoryId
+    ? allProducts.filter(p => p.categoryId === selectedCategoryId)
+    : allProducts;
 
   // Add to cart mutation
   const addToCartMutation = trpc.cart.add.useMutation({
@@ -78,7 +77,7 @@ export default function Home() {
                     {language === 'ar' ? category.nameAr : category.nameEn}
                   </h3>
                   <p className="text-xs text-dark-text opacity-75 hidden sm:block">
-                    {products.filter(p => p.categoryId === category.id).length} {language === 'ar' ? 'منتج' : 'items'}
+                    {allProducts.filter(p => p.categoryId === category.id).length} {language === 'ar' ? 'منتج' : 'items'}
                   </p>
                 </div>
 
@@ -91,7 +90,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Left Column - Products */}
+        {/* Left Column - Products Grid */}
         <div className="w-2/3 md:w-2/3 lg:w-2/3 overflow-y-auto pl-2 md:pl-4">
           {/* Selected Category Header */}
           {selectedCategory && (
@@ -100,34 +99,27 @@ export default function Home() {
                 {language === 'ar' ? selectedCategory.nameAr : selectedCategory.nameEn}
               </h2>
               <p className="text-xs md:text-sm lg:text-base text-muted-foreground mt-1">
-                {language === 'ar' ? 'اختر المنتجات التي تريدها' : 'Select the products you want'}
+                {products.length} {language === 'ar' ? 'منتج' : 'products'}
               </p>
             </div>
           )}
 
-          {/* Products Vertical List */}
+          {/* Products Grid */}
           {products && products.length > 0 ? (
-            <div className="space-y-2 md:space-y-3 lg:space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-3 lg:gap-4">
               {products.map((product) => (
-                <ProductListItem
+                <ProductCard
                   key={product.id}
                   product={product}
                   onAddToCart={handleAddToCart}
                 />
               ))}
             </div>
-          ) : selectedCategoryId ? (
-            <div className="flex flex-col items-center justify-center py-8 md:py-12 text-center">
-              <ShoppingCart className="w-10 h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 text-muted-foreground mb-2 md:mb-4 opacity-50" />
-              <p className="text-xs md:text-sm lg:text-lg text-muted-foreground">
-                {language === 'ar' ? 'لا توجد منتجات في هذه الفئة' : 'No products in this category'}
-              </p>
-            </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-8 md:py-12 text-center">
               <ShoppingCart className="w-10 h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 text-muted-foreground mb-2 md:mb-4 opacity-50" />
               <p className="text-xs md:text-sm lg:text-lg text-muted-foreground">
-                {language === 'ar' ? 'اختر فئة لعرض المنتجات' : 'Select a category to view products'}
+                {language === 'ar' ? 'لا توجد منتجات' : 'No products found'}
               </p>
             </div>
           )}
