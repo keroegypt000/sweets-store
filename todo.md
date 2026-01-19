@@ -119,3 +119,10 @@
 - [x] Add scroll indicator for more categories
 - [x] Adjust product grid columns for mobile
 - [x] Responsive spacing and padding adjustments
+
+## Mobile Horizontal Layout
+- [x] Change mobile layout from vertical to horizontal (50/50 split)
+- [x] Keep 6 categories visible on mobile with scroll
+- [x] Adjust spacing for smaller screens (xs, sm, md breakpoints)
+- [x] Maintain same layout on mobile and desktop
+- [x] Responsive text sizes and padding
