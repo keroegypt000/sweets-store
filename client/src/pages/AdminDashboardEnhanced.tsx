@@ -61,11 +61,11 @@ export default function AdminDashboardEnhanced() {
     order: '0',
   });
 
-  // Fetch data
+  // Fetch data - use public procedures to avoid Manus OAuth
   const { data: products = [], isLoading: productsLoading, refetch: refetchProducts } = trpc.products.list.useQuery();
   const { data: categories = [], isLoading: categoriesLoading, refetch: refetchCategories } = trpc.categories.list.useQuery();
-  const { data: banners = [], isLoading: bannersLoading, refetch: refetchBanners } = trpc.banners.allBanners.useQuery();
-  const { data: orders = [], isLoading: ordersLoading, refetch: refetchOrders } = trpc.orders.allOrders.useQuery();
+  const { data: banners = [], isLoading: bannersLoading, refetch: refetchBanners } = trpc.banners.list.useQuery();
+  const { data: orders = [], isLoading: ordersLoading, refetch: refetchOrders } = trpc.orders.list.useQuery();
 
   // Mutations
   const createProductMutation = trpc.products.create.useMutation({

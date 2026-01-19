@@ -311,3 +311,10 @@
 - [x] Ensure categories are properly fetched in admin panel
 - [x] Test product creation with category selection
 - [x] Test category management in admin dashboard
+
+
+## Bug Fix - Remove Manus OAuth from Admin Dashboard
+- [x] Changed admin dashboard to use public tRPC procedures (products.list, categories.list, banners.list, orders.list)
+- [x] Admin authentication now uses standalone localStorage-based system
+- [x] Verified admin dashboard works without Manus login
+- [x] Banners and orders now accessible without Manus OAuth
