@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, categories, products, cartItems, orders, orderItems } from "../drizzle/schema";
+import { InsertUser, users, categories, products, cartItems, orders, orderItems, banners } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -359,4 +359,107 @@ export async function getAllCategories(limit: number = 100, offset: number = 0) 
   const db = await getDb();
   if (!db) return [];
   return db.select().from(categories).limit(limit).offset(offset);
+}
+
+
+// Banner CRUD operations
+export async function createBanner(data: {
+  titleAr: string;
+  titleEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  image: string;
+  link?: string;
+  order?: number;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  await db.insert(banners).values({
+    ...data,
+    isActive: true,
+  });
+  
+  const created = await db.select().from(banners).orderBy(banners.id).limit(1);
+  return created.length > 0 ? created[0] : null;
+}
+
+export async function updateBanner(id: number, data: {
+  titleAr?: string;
+  titleEn?: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  image?: string;
+  link?: string;
+  order?: number;
+  isActive?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const updateData: any = {};
+  Object.keys(data).forEach(key => {
+    if (data[key as keyof typeof data] !== undefined) {
+      updateData[key] = data[key as keyof typeof data];
+    }
+  });
+  
+  if (Object.keys(updateData).length === 0) return null;
+  
+  await db.update(banners).set(updateData).where(eq(banners.id, id));
+  
+  const updated = await db.select().from(banners).where(eq(banners.id, id)).limit(1);
+  return updated.length > 0 ? updated[0] : null;
+}
+
+export async function deleteBanner(id: number) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  await db.update(banners).set({ isActive: false }).where(eq(banners.id, id));
+  return true;
+}
+
+export async function getBanners() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(banners).where(eq(banners.isActive, true)).orderBy(banners.order);
+}
+
+export async function getAllBanners(limit: number = 100, offset: number = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(banners).limit(limit).offset(offset);
+}
+
+// Order queries
+export async function getAllOrders(limit: number = 100, offset: number = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(orders).limit(limit).offset(offset);
+}
+
+export async function updateOrderStatus(id: number, status: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  await db.update(orders).set({ status: status as any }).where(eq(orders.id, id));
+  
+  const updated = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
+  return updated.length > 0 ? updated[0] : null;
+}
+
+export async function getOrderWithItems(orderId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const order = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+  if (order.length === 0) return null;
+  
+  const items = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+  
+  return {
+    ...order[0],
+    items: items,
+  };
 }

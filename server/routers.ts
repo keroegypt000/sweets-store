@@ -3,7 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
-import { getCategories, getProducts, getProductsByCategory, getProductBySlug, getFeaturedProducts, getPromotionalProducts, getCartItems, addToCart, getUserOrders, createOrder, createProduct, updateProduct, deleteProduct, getProductById, getAllProducts, createCategory, updateCategory, deleteCategory, getCategoryById, getAllCategories } from "./db";
+import { getCategories, getProducts, getProductsByCategory, getProductBySlug, getFeaturedProducts, getPromotionalProducts, getCartItems, addToCart, getUserOrders, createOrder, createProduct, updateProduct, deleteProduct, getProductById, getAllProducts, createCategory, updateCategory, deleteCategory, getCategoryById, getAllCategories, createBanner, updateBanner, deleteBanner, getBanners, getAllBanners, getAllOrders, updateOrderStatus, getOrderWithItems } from "./db";
 import { notifyOwner } from "./_core/notification";
 import { TRPCError } from "@trpc/server";
 
@@ -185,12 +185,82 @@ export const appRouter = router({
       .input(z.object({ totalAmount: z.string(), shippingAddress: z.string() }))
       .mutation(async ({ ctx, input }) => {
         const result = await createOrder(ctx.user.id, input.totalAmount, input.shippingAddress);
-        // Notify owner about new order
         await notifyOwner({
           title: 'New Order Received',
           content: `New order from ${ctx.user.name || 'Customer'} for ${input.totalAmount} KWD. Shipping address: ${input.shippingAddress}`,
         });
         return result;
+      }),
+    allOrders: protectedProcedure
+      .input(z.object({ limit: z.number().default(100), offset: z.number().default(0) }).optional())
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return getAllOrders(input?.limit || 100, input?.offset || 0);
+      }),
+    byId: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return getOrderWithItems(input.id);
+      }),
+    updateStatus: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        status: z.enum(['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return updateOrderStatus(input.id, input.status);
+      }),
+  }),
+
+  banners: router({
+    list: publicProcedure
+      .query(async () => {
+        return getBanners();
+      }),
+    allBanners: protectedProcedure
+      .input(z.object({ limit: z.number().default(100), offset: z.number().default(0) }).optional())
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return getAllBanners(input?.limit || 100, input?.offset || 0);
+      }),
+    create: protectedProcedure
+      .input(z.object({
+        titleAr: z.string().min(1),
+        titleEn: z.string().min(1),
+        descriptionAr: z.string().optional(),
+        descriptionEn: z.string().optional(),
+        image: z.string().min(1),
+        link: z.string().optional(),
+        order: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return createBanner(input);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        titleAr: z.string().optional(),
+        titleEn: z.string().optional(),
+        descriptionAr: z.string().optional(),
+        descriptionEn: z.string().optional(),
+        image: z.string().optional(),
+        link: z.string().optional(),
+        order: z.number().optional(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { id, ...data } = input;
+        return updateBanner(id, data);
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return deleteBanner(input.id);
       }),
   }),
 
@@ -235,3 +305,6 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+
+
+
