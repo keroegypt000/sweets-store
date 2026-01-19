@@ -11,6 +11,8 @@ import Cart from "./pages/Cart";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProducts from "./pages/AdminProducts";
 import AdminCategories from "./pages/AdminCategories";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboardNew from "./pages/AdminDashboardNew";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -19,6 +21,8 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/product/:slug"} component={ProductDetail} />
       <Route path={"/cart"} component={Cart} />
+      <Route path={"/admin-login"} component={AdminLogin} />
+      <Route path={"/admin-dashboard"} component={AdminDashboardNew} />
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/dashboard"} component={AdminDashboard} />
       <Route path={"/admin/products"} component={AdminProducts} />

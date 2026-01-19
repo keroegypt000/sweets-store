@@ -193,6 +193,45 @@ export const appRouter = router({
         return result;
       }),
   }),
+
+  admin: router({
+    login: publicProcedure
+      .input(z.object({
+        username: z.string().min(1),
+        password: z.string().min(1),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Simple admin credentials (in production, use proper hashing and database)
+        const ADMIN_USERNAME = 'admin';
+        const ADMIN_PASSWORD = 'admin123'; // Change this in production!
+
+        if (input.username === ADMIN_USERNAME && input.password === ADMIN_PASSWORD) {
+          // Create admin session
+          const sessionToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+          
+          // Store session in a simple way (in production, use database)
+          // For now, we'll return the token to the client
+          return {
+            success: true,
+            token: sessionToken,
+            admin: {
+              id: 1,
+              username: ADMIN_USERNAME,
+              role: 'admin',
+            },
+          };
+        }
+
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Invalid credentials',
+        });
+      }),
+    logout: publicProcedure
+      .mutation(async ({ ctx }) => {
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

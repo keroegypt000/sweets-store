@@ -59,6 +59,13 @@ export default function Header({ cartItemsCount = 0, onSearchChange }: HeaderPro
                 </Button>
               </a>
             )}
+            
+            {/* Admin Login Link */}
+            <a href="/admin-login">
+              <Button variant="outline" size="icon" title={language === 'ar' ? 'لوحة تحكم منفصلة' : 'Admin Panel'}>
+                <Settings className="w-5 h-5" />
+              </Button>
+            </a>
 
             {/* Language Toggle */}
             <Button
