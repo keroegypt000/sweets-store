@@ -215,3 +215,11 @@
 - [x] Add form validation for required fields
 - [x] Implement success/error notifications
 - [x] Add role-based access control (admin only)
+
+
+## Bug Fixes - Error Handling & HTML Validation
+- [x] Fix nested anchor tag error in ProductCard component
+- [x] Fix nested anchor tags in Header component (Logo, Admin link, Cart button)
+- [x] Fix "Please login" error handling on Home page
+- [x] Add retry: false to public queries to prevent infinite auth loops
+- [x] Remove unused Link imports from components

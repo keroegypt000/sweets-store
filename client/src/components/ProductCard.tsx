@@ -1,6 +1,5 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ShoppingCart, Heart } from 'lucide-react';
-import { Link } from 'wouter';
 import { Product } from '@/types';
 import { useState } from 'react';
 
@@ -55,11 +54,9 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
 
       {/* Product Info */}
       <div className="flex-1 p-3 sm:p-4 flex flex-col">
-        <Link href={`/product/${product.slug}`}>
-          <h3 className="font-bold text-gray-800 hover:text-yellow-600 transition-colors cursor-pointer line-clamp-2 text-sm sm:text-base">
-            {name}
-          </h3>
-        </Link>
+        <h3 onClick={() => window.location.href = `/product/${product.slug}`} className="font-bold text-gray-800 hover:text-yellow-600 transition-colors cursor-pointer line-clamp-2 text-sm sm:text-base">
+          {name}
+        </h3>
         
         {description && (
           <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">

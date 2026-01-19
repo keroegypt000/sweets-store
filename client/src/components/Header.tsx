@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ShoppingCart, Menu, X, Search, Settings } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'wouter';
 
 interface HeaderProps {
   cartItemsCount?: number;
@@ -31,12 +30,10 @@ export default function Header({ cartItemsCount = 0, onSearchChange }: HeaderPro
       <div className="container">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo */}
-          <Link href="/">
-            <a className="flex-shrink-0 font-bold text-2xl text-primary hover:opacity-80 transition-opacity">
-              <span className="text-primary-yellow">Sweets</span>
-              <span className="text-dark-text ml-1">Store</span>
-            </a>
-          </Link>
+          <a href="/" className="flex-shrink-0 font-bold text-2xl text-primary hover:opacity-80 transition-opacity">
+            <span className="text-primary-yellow">Sweets</span>
+            <span className="text-dark-text ml-1">Store</span>
+          </a>
 
           {/* Search Bar - Desktop */}
           <div className="hidden md:flex flex-1 max-w-md mx-4">
@@ -56,13 +53,11 @@ export default function Header({ cartItemsCount = 0, onSearchChange }: HeaderPro
           <div className="flex items-center gap-2 md:gap-4">
             {/* Admin Dashboard Link */}
             {user?.role === 'admin' && (
-              <Link href="/admin">
-                <a>
-                  <Button variant="outline" size="icon" title={language === 'ar' ? 'لوحة التحكم' : 'Admin Dashboard'}>
-                    <Settings className="w-5 h-5" />
-                  </Button>
-                </a>
-              </Link>
+              <a href="/admin">
+                <Button variant="outline" size="icon" title={language === 'ar' ? 'لوحة التحكم' : 'Admin Dashboard'}>
+                  <Settings className="w-5 h-5" />
+                </Button>
+              </a>
             )}
 
             {/* Language Toggle */}
@@ -76,18 +71,16 @@ export default function Header({ cartItemsCount = 0, onSearchChange }: HeaderPro
             </Button>
 
             {/* Cart Button */}
-            <Link href="/cart">
-              <a className="relative">
-                <Button variant="outline" size="icon">
-                  <ShoppingCart className="w-5 h-5" />
-                  {cartItemsCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {cartItemsCount}
-                    </span>
-                  )}
-                </Button>
-              </a>
-            </Link>
+            <a href="/cart" className="relative">
+              <Button variant="outline" size="icon">
+                <ShoppingCart className="w-5 h-5" />
+                {cartItemsCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </Button>
+            </a>
 
             {/* Mobile Menu Toggle */}
             <Button

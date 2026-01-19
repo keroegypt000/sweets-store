@@ -13,10 +13,14 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch categories
-  const { data: categories = [] } = trpc.categories.list.useQuery();
+  const { data: categories = [] } = trpc.categories.list.useQuery(undefined, {
+    retry: false,
+  });
 
   // Always fetch all products
-  const { data: allProducts = [] } = trpc.products.list.useQuery();
+  const { data: allProducts = [] } = trpc.products.list.useQuery(undefined, {
+    retry: false,
+  });
 
   // Filter products based on selected category
   const products = selectedCategoryId
