@@ -73,3 +73,11 @@
 - [x] Maintain two-column layout (categories on right, products on left)
 - [x] Update responsive design for mobile
 - [x] Create ProductListItem component for vertical product display
+
+## Mobile Responsive Improvements
+- [x] Maintain two-column layout on mobile (not stacking)
+- [x] Adjust column widths for mobile screens
+- [x] Optimize spacing and padding for mobile
+- [x] Ensure category filtering works on mobile
+- [x] Responsive text sizes (sm, md, lg breakpoints)
+- [x] Responsive image sizes and spacing
