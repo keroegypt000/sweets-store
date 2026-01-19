@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
-import { Product } from '@/types';
-import ProductCard from '@/components/ProductCard';
+import ProductListItem from '@/components/ProductListItem';
 import { ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -46,8 +45,8 @@ export default function Home() {
             {language === 'ar' ? 'الفئات' : 'Categories'}
           </h2>
 
-          {/* Categories Grid */}
-          <div className="space-y-3 max-h-[600px] overflow-y-auto">
+          {/* Categories Vertical List */}
+          <div className="space-y-3">
             {categories.map((category) => (
               <div
                 key={category.id}
@@ -70,8 +69,8 @@ export default function Home() {
                 )}
 
                 {/* Category Name */}
-                <div className="flex-1">
-                  <h3 className="font-bold text-dark-text text-sm">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-dark-text text-sm truncate">
                     {language === 'ar' ? category.nameAr : category.nameEn}
                   </h3>
                   <p className="text-xs text-dark-text opacity-75">
@@ -80,7 +79,7 @@ export default function Home() {
                 </div>
 
                 {/* Arrow Icon */}
-                <div className="text-dark-text text-xl group-hover:translate-x-1 transition-transform">
+                <div className="text-dark-text text-xl flex-shrink-0 group-hover:translate-x-1 transition-transform">
                   {language === 'ar' ? '←' : '→'}
                 </div>
               </div>
@@ -102,11 +101,11 @@ export default function Home() {
             </div>
           )}
 
-          {/* Products Grid */}
+          {/* Products Vertical List */}
           {products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="space-y-3">
               {products.map((product) => (
-                <ProductCard
+                <ProductListItem
                   key={product.id}
                   product={product}
                   onAddToCart={handleAddToCart}

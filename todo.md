@@ -66,3 +66,10 @@
 - [x] Implement category selection and product filtering
 - [x] Update responsive design for mobile (stack columns vertically)
 - [x] Add category image backgrounds to cards
+
+## Layout Update - Vertical Display
+- [x] Change category display to vertical list (not grid)
+- [x] Change product display to vertical list (not grid)
+- [x] Maintain two-column layout (categories on right, products on left)
+- [x] Update responsive design for mobile
+- [x] Create ProductListItem component for vertical product display
