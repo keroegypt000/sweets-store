@@ -155,6 +155,16 @@ export default function ProductDetail() {
               </p>
             </div>
 
+            {/* Barcode */}
+            {product.barcode && (
+              <div className="border-t border-b border-border py-4">
+                <p className="text-sm text-muted-foreground mb-2">
+                  {language === 'ar' ? 'الباركود' : 'Barcode'}
+                </p>
+                <p className="text-lg font-mono font-bold text-dark-text">{product.barcode}</p>
+              </div>
+            )}
+
             {/* Quantity & Add to Cart */}
             <div className="space-y-4">
               <div className="flex items-center gap-4">

@@ -17,7 +17,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const description = language === 'ar' ? product.descriptionAr : product.descriptionEn;
   const price = parseFloat(product.price.toString());
   const originalPrice = product.originalPrice ? parseFloat(product.originalPrice.toString()) : null;
-  const discountPercent = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
+  const discountPercent = product.discount || (originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null);
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-full group border border-gray-100">
@@ -33,7 +33,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         
         {/* Discount Badge */}
         {discountPercent && (
-          <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+          <div className="absolute top-3 right-3 bg-primary-yellow text-dark-text px-3 py-1 rounded-full text-xs font-bold shadow-lg">
             -{discountPercent}%
           </div>
         )}

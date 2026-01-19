@@ -378,3 +378,15 @@
 - [x] Handle image updates during edit
 - [x] Test product edit functionality
 - [x] Test category edit functionality
+
+
+## Barcode and Discount Features
+- [ ] Add barcode field to products table in database schema
+- [ ] Add discount field to products table in database schema
+- [ ] Update API endpoints to handle barcode and discount
+- [ ] Add barcode input field in admin dashboard product form
+- [ ] Add discount input field in admin dashboard product form
+- [ ] Generate/display barcode in product detail page (internal only)
+- [ ] Display discount badge on product cards in home page
+- [ ] Update ProductCard component to show discount
+- [ ] Update ProductDetail component to show barcode

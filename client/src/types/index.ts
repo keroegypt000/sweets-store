@@ -12,6 +12,8 @@ export interface Product {
   images?: string | null;
   sku?: string | null;
   slug: string;
+  barcode?: string | null;
+  discount?: number | null;
   isActive: boolean | null;
   isFeatured: boolean | null;
   isPromotion: boolean | null;

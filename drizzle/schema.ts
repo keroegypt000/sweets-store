@@ -62,6 +62,8 @@ export const products = mysqlTable("products", {
   images: text("images"), // JSON array of image URLs
   sku: varchar("sku", { length: 100 }).unique(),
   slug: varchar("slug", { length: 255 }).notNull(),
+  barcode: varchar("barcode", { length: 255 }),
+  discount: int("discount").default(0),
   isActive: boolean("isActive").default(true),
   isFeatured: boolean("isFeatured").default(false),
   isPromotion: boolean("isPromotion").default(false),

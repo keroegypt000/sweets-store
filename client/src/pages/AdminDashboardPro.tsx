@@ -21,6 +21,8 @@ interface Product {
   image?: string;
   slug: string;
   categoryId?: number;
+  barcode?: string;
+  discount?: number;
 }
 
 interface Category {
@@ -164,6 +166,8 @@ export default function AdminDashboardPro() {
     image: '',
     slug: '',
     categoryId: '',
+    barcode: '',
+    discount: '',
   });
 
   const [categoryForm, setCategoryForm] = useState<any>({
@@ -245,6 +249,8 @@ export default function AdminDashboardPro() {
           image: '',
           slug: '',
           categoryId: '',
+          barcode: '',
+          discount: '',
         });
         setImagePreview('');
         fetchAllData();
@@ -421,6 +427,8 @@ export default function AdminDashboardPro() {
           image: '',
           slug: '',
           categoryId: '',
+          barcode: '',
+          discount: '',
         });
         setImagePreview('');
         fetchAllData();
@@ -620,6 +628,22 @@ export default function AdminDashboardPro() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Input
+                      placeholder={language === 'ar' ? 'الباركود' : 'Barcode'}
+                      value={productForm.barcode || ''}
+                      onChange={(e) => setProductForm({ ...productForm, barcode: e.target.value })}
+                    />
+                    <Input
+                      type="number"
+                      placeholder={language === 'ar' ? 'نسبة الخصم (%)' : 'Discount (%)'}
+                      value={productForm.discount || ''}
+                      onChange={(e) => setProductForm({ ...productForm, discount: e.target.value })}
+                      min="0"
+                      max="100"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <select
                       value={productForm.categoryId}
                       onChange={(e) => setProductForm({ ...productForm, categoryId: e.target.value })}
@@ -679,6 +703,8 @@ export default function AdminDashboardPro() {
                         image: '',
                         slug: '',
                         categoryId: '',
+                        barcode: '',
+                        discount: '',
                       });
                       setImagePreview('');
                     }}>
