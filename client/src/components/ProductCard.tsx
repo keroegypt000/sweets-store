@@ -25,8 +25,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
       {/* Product Image */}
-      <Link href={`/product/${product.slug}`}>
-        <a className="relative block overflow-hidden bg-light-bg aspect-square">
+      <div className="relative block overflow-hidden bg-light-bg aspect-square cursor-pointer" onClick={() => window.location.href = `/product/${product.slug}`}>
           {product.image && (
             <img
               src={product.image}
@@ -43,28 +42,25 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           )}
 
           {/* Wishlist Button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setIsWishlisted(!isWishlisted);
-            }}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsWishlisted(!isWishlisted);
+          }}
             className="absolute top-2 left-2 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow"
           >
             <Heart
               className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
             />
           </button>
-        </a>
-      </Link>
+      </div>
 
       <CardContent className="flex-1 p-4">
         {/* Product Name */}
         <Link href={`/product/${product.slug}`}>
-          <a className="block">
-            <h3 className="font-bold text-dark-text hover:text-primary-yellow transition-colors line-clamp-2">
-              {name}
-            </h3>
-          </a>
+          <h3 className="font-bold text-dark-text hover:text-primary-yellow transition-colors line-clamp-2 cursor-pointer">
+            {name}
+          </h3>
         </Link>
 
         {/* Product Description */}

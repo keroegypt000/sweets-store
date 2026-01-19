@@ -56,3 +56,6 @@
 - [x] Mobile device testing
 - [x] Final bug fixes and polish
 - [x] Project delivery and documentation
+
+## Bug Fixes
+- [x] Fixed nested anchor tag error in ProductCard component (HTML validation error)
