@@ -12,10 +12,14 @@ export default function Home() {
   // Fetch categories
   const { data: categories = [] } = trpc.categories.list.useQuery();
 
-  // Fetch products - only show when category is selected
-  const { data: products = [] } = selectedCategoryId
-    ? trpc.products.byCategory.useQuery({ categoryId: selectedCategoryId })
-    : { data: [] }; // Don't fetch products until a category is selected
+  // Always call useQuery - just with enabled: false when no category is selected
+  const { data: categoryProducts = [] } = trpc.products.byCategory.useQuery(
+    { categoryId: selectedCategoryId || 0 },
+    { enabled: selectedCategoryId !== null }
+  );
+
+  // Use categoryProducts when category is selected, otherwise empty array
+  const products = selectedCategoryId ? categoryProducts : [];
 
   // Add to cart mutation
   const addToCartMutation = trpc.cart.add.useMutation({
@@ -47,7 +51,7 @@ export default function Home() {
 
           {/* Categories Vertical List */}
           <div className="space-y-2 md:space-y-3">
-            {categories.map((category) => (
+            {categories && categories.length > 0 && categories.map((category) => (
               <div
                 key={category.id}
                 onClick={() => setSelectedCategoryId(category.id)}
@@ -102,7 +106,7 @@ export default function Home() {
           )}
 
           {/* Products Vertical List */}
-          {products.length > 0 ? (
+          {products && products.length > 0 ? (
             <div className="space-y-2 md:space-y-3 lg:space-y-4">
               {products.map((product) => (
                 <ProductListItem

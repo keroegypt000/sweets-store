@@ -86,3 +86,8 @@
 - [x] Fix: Show only category products when category is selected
 - [x] Fix: Don't show all products on page load
 - [x] Fix: Empty state when no category is selected
+
+## Bug Fixes - React Hooks Error
+- [x] Fix: React hooks order error in Home component
+- [x] Fix: Cannot read properties of undefined (reading 'length')
+- [x] Fix: useQuery conditional call breaking hooks rules
