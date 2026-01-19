@@ -318,3 +318,10 @@
 - [x] Admin authentication now uses standalone localStorage-based system
 - [x] Verified admin dashboard works without Manus login
 - [x] Banners and orders now accessible without Manus OAuth
+
+
+## Critical Fix - Remove All Manus OAuth from Admin Dashboard
+- [x] Create standalone admin dashboard without any tRPC calls (AdminDashboardStandalone.tsx)
+- [x] Use localStorage for all admin data (products, categories, banners, orders)
+- [x] Remove all tRPC imports and calls from admin dashboard
+- [x] Test dashboard without Manus login appearing
