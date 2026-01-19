@@ -2,11 +2,12 @@ import { useParams } from 'wouter';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Loader2, ShoppingCart, Heart, ArrowLeft } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useLocation } from 'wouter';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
+import ProductCard from '@/components/ProductCard';
 
 export default function ProductDetail() {
   const { language, t: useLanguageT } = useLanguage();
@@ -17,6 +18,20 @@ export default function ProductDetail() {
 
   // Fetch product
   const { data: product, isLoading } = trpc.products.bySlug.useQuery({ slug: slug || '' });
+
+  // Fetch all categories to get category name
+  const { data: categories = [] } = trpc.categories.list.useQuery();
+  const categoryName = useMemo(() => {
+    if (!product || !categories) return null;
+    const category = categories.find((c: any) => c.id === product.categoryId);
+    return category ? (language === 'ar' ? category.nameAr : category.nameEn) : null;
+  }, [product, categories, language]);
+
+  // Fetch related products (same category)
+  const { data: relatedProducts = [] } = trpc.products.byCategory.useQuery(
+    product ? { categoryId: product.categoryId, limit: 4, offset: 0 } : { categoryId: 0, limit: 4, offset: 0 },
+    { enabled: !!product }
+  );
 
   // Add to cart mutation
   const addToCartMutation = trpc.cart.add.useMutation({
@@ -193,11 +208,28 @@ export default function ProductDetail() {
                 <span className="font-medium text-dark-text">
                   {language === 'ar' ? 'الفئة:' : 'Category:'}
                 </span>{' '}
-                {product.categoryId}
+                {categoryName || 'N/A'}
               </p>
             </div>
           </div>
         </div>
+
+        {/* Related Products */}
+        {relatedProducts.length > 1 && (
+          <div className="mt-16">
+            <h2 className="text-2xl font-bold text-dark-text mb-8">
+              {language === 'ar' ? 'منتجات ذات صلة' : 'Related Products'}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {relatedProducts
+                .filter((p: any) => p.id !== product.id)
+                .slice(0, 4)
+                .map((relatedProduct: any) => (
+                  <ProductCard key={relatedProduct.id} product={relatedProduct} />
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

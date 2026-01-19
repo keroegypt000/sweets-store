@@ -287,3 +287,14 @@
 - [x] Persist admin login credentials in localStorage
 - [x] Auto-fill username and password on login page
 - [x] Add "Remember me" functionality
+
+
+## Product Detail Page Connection
+- [x] Review ProductDetail.tsx current implementation
+- [x] Update ProductDetail to fetch product data from database using slug
+- [x] Display real product information (name, price, description, image, stock)
+- [x] Add related products section (shows products from same category)
+- [x] Add add-to-cart functionality with real product data
+- [x] Handle product not found scenarios
+- [x] Display category name instead of category ID
+- [x] Add bilingual support for related products section
