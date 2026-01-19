@@ -177,3 +177,10 @@
 - [x] Remaining categories appear on scroll (like mobile)
 - [x] Fixed height for category container (max-h-96)
 - [x] Smooth scrolling behavior
+
+## Layout Revision - Mobile & Desktop
+- [x] Mobile: Revert to original layout (categories and products together)
+- [x] Mobile: Maintain container space properly
+- [x] Desktop: Show 6 categories in horizontal row (3 columns, 2 rows)
+- [x] Desktop: Categories scroll vertically as rows
+- [x] Desktop: Proportional sizing for all categories
