@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import ProductCard from '@/components/ProductCard';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Home() {
@@ -39,16 +39,28 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      {/* Main Content - Horizontal 50/50 Layout */}
-      <div className="flex flex-row gap-0 max-w-full mx-auto min-h-screen">
+      {/* Main Content - Responsive Layout */}
+      {/* Mobile: Toggle between categories and products | Desktop: Side by side */}
+      <div className="flex flex-col md:flex-row gap-0 max-w-full mx-auto min-h-screen">
         
-        {/* Left Column - Categories (50% width) */}
-        <div className="w-1/2 bg-gradient-to-br from-primary-yellow via-accent-yellow to-yellow-200 overflow-y-auto flex flex-col">
-          {/* Categories Container - 6 categories filling full height */}
-          <div className="flex flex-col h-full">
+        {/* Left/Top Column - Categories (Mobile: Full screen when no category selected) */}
+        {/* Desktop: 50% width, full height | Mobile: Full width when showing categories */}
+        <div className={`${
+          selectedCategoryId && window.innerWidth < 768 ? 'hidden' : ''
+        } w-full md:w-1/2 md:h-screen bg-gradient-to-br from-primary-yellow via-accent-yellow to-yellow-200 overflow-y-auto flex flex-col md:block`}>
+          {/* Categories Header */}
+          <div className="p-2 sm:p-3 md:p-6 border-b border-yellow-300 bg-yellow-100 sticky top-0 z-20">
+            <h2 className="text-sm sm:text-base md:text-2xl font-bold text-dark-text">
+              {language === 'ar' ? 'الفئات' : 'Categories'}
+            </h2>
+          </div>
+
+          {/* Categories Container */}
+          <div className="flex-1 flex flex-col md:h-screen md:overflow-y-auto">
             {categories && categories.length > 0 && categories.map((category, index) => {
-              // Show only first 6 categories, distribute them evenly to fill height
-              if (index >= 6) return null;
+              // On mobile: show all categories
+              // On desktop: show only first 6 categories
+              if (window.innerWidth >= 768 && index >= 6) return null;
               
               const categoryProductCount = allProducts.filter(p => p.categoryId === category.id).length;
               
@@ -64,7 +76,7 @@ export default function Home() {
                 >
                   {/* Category Image */}
                   {category.image && (
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-20 md:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border-2 border-primary-yellow">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-20 md:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border-2 border-primary-yellow">
                       <img
                         src={category.image}
                         alt={language === 'ar' ? category.nameAr : category.nameEn}
@@ -93,24 +105,37 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right Column - Products (50% width) */}
-        <div className="w-1/2 bg-gray-50 overflow-hidden flex flex-col">
-          {/* Products Header */}
-          {selectedCategory && (
-            <div className="p-2 sm:p-3 md:p-6 border-b border-gray-200 bg-white sticky top-0 z-20">
+        {/* Right/Bottom Column - Products */}
+        {/* Desktop: 50% width, full height | Mobile: Full width when category selected */}
+        <div className={`${
+          !selectedCategoryId && window.innerWidth < 768 ? 'hidden' : ''
+        } w-full md:w-1/2 md:h-screen bg-gray-50 overflow-hidden flex flex-col md:block`}>
+          {/* Products Header with Back Button (Mobile only) */}
+          <div className="p-2 sm:p-3 md:p-6 border-b border-gray-200 bg-white sticky top-0 z-20 flex items-center justify-between md:block">
+            <div className="flex-1">
               <h2 className="text-sm sm:text-base md:text-2xl font-bold text-dark-text">
-                {language === 'ar' ? selectedCategory.nameAr : selectedCategory.nameEn}
+                {selectedCategory ? (language === 'ar' ? selectedCategory.nameAr : selectedCategory.nameEn) : (language === 'ar' ? 'المنتجات' : 'Products')}
               </h2>
               <p className="text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">
                 {products.length} {language === 'ar' ? 'منتج' : 'products'}
               </p>
             </div>
-          )}
+            
+            {/* Back Button - Mobile only */}
+            {selectedCategoryId && window.innerWidth < 768 && (
+              <button
+                onClick={() => setSelectedCategoryId(null)}
+                className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                {language === 'ar' ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
+              </button>
+            )}
+          </div>
 
           {/* Products Grid - Scrollable */}
-          <div className="flex-1 overflow-y-auto p-1 sm:p-2 md:p-4">
+          <div className="flex-1 overflow-y-auto p-1 sm:p-2 md:p-4 md:h-screen md:overflow-y-auto">
             {products && products.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-1 sm:gap-2 md:gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-1 sm:gap-2 md:gap-3">
                 {products.map((product) => (
                   <ProductCard
                     key={product.id}

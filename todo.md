@@ -133,3 +133,11 @@
 - [x] Each category takes 1/6 of the screen height
 - [x] Remaining categories appear on scroll
 - [x] Categories centered vertically with responsive sizing
+
+## Mobile Vertical Layout (Responsive)
+- [x] Mobile: Show only categories initially (no products)
+- [x] Mobile: On category click, show products for that category
+- [x] Mobile: Products replace categories view (toggle behavior)
+- [x] Mobile: Add back button to return to categories
+- [x] Desktop: Keep horizontal 50/50 layout (unchanged)
+- [x] Breakpoint: Use md breakpoint for layout switch
