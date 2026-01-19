@@ -298,3 +298,8 @@
 - [x] Handle product not found scenarios
 - [x] Display category name instead of category ID
 - [x] Add bilingual support for related products section
+
+
+## Bug Fix - Categories Connection
+- [x] Fixed categories not displaying - set isActive = true for all categories in database
+- [x] Verified categories are now properly fetched and displayed on home page

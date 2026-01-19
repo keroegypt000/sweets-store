@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, nameAr, nameEn, isActive FROM categories LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user dBnEF2pw3cN7fdc.root --database TBvBXeooTqFpEvP3g5fESC --execute SELECT id, nameAr, nameEn, isActive FROM categories LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "nameAr": "تم إضافته مؤخراً",
+      "nameEn": "Recently Added",
+      "isActive": "1"
+    },
+    {
+      "id": "2",
+      "nameAr": "الأكثر مبيعاً",
+      "nameEn": "Most Selling",
+      "isActive": "1"
+    },
+    {
+      "id": "3",
+      "nameAr": "العروض الترويجية",
+      "nameEn": "Promotions",
+      "isActive": "1"
+    },
+    {
+      "id": "4",
+      "nameAr": "الجملة",
+      "nameEn": "Wholesale",
+      "isActive": "1"
+    },
+    {
+      "id": "5",
+      "nameAr": "الشوكولاتة",
+      "nameEn": "Chocolates",
+      "isActive": "1"
+    },
+    {
+      "id": "6",
+      "nameAr": "الاتجاهات",
+      "nameEn": "Trending",
+      "isActive": "1"
+    },
+    {
+      "id": "7",
+      "nameAr": "المنتجات التركية",
+      "nameEn": "Turkish Products",
+      "isActive": "1"
+    },
+    {
+      "id": "8",
+      "nameAr": "المعكرونة",
+      "nameEn": "Noodles",
+      "isActive": "1"
+    },
+    {
+      "id": "9",
+      "nameAr": "الألعاب",
+      "nameEn": "Toys",
+      "isActive": "1"
+    },
+    {
+      "id": "10",
+      "nameAr": "الهدايا",
+      "nameEn": "Gifts",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnameAr\tnameEn\tisActive\n1\tتم إضافته مؤخراً\tRecently Added\t1\n2\tالأكثر مبيعاً\tMost Selling\t1\n3\tالعروض الترويجية\tPromotions\t1\n4\tالجملة\tWholesale\t1\n5\tالشوكولاتة\tChocolates\t1\n6\tالاتجاهات\tTrending\t1\n7\tالمنتجات التركية\tTurkish Products\t1\n8\tالمعكرونة\tNoodles\t1\n9\tالألعاب\tToys\t1\n10\tالهدايا\tGifts\t1\n",
+  "stderr": "",
+  "execution_time_ms": 1704
+}

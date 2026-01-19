@@ -1,0 +1,208 @@
+{
+  "query": "SELECT id, nameAr, nameEn, isActive FROM categories;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user dBnEF2pw3cN7fdc.root --database TBvBXeooTqFpEvP3g5fESC --execute SELECT id, nameAr, nameEn, isActive FROM categories;",
+  "rows": [
+    {
+      "id": "1",
+      "nameAr": "تم إضافته مؤخراً",
+      "nameEn": "Recently Added",
+      "isActive": "1"
+    },
+    {
+      "id": "2",
+      "nameAr": "الأكثر مبيعاً",
+      "nameEn": "Most Selling",
+      "isActive": "1"
+    },
+    {
+      "id": "3",
+      "nameAr": "العروض الترويجية",
+      "nameEn": "Promotions",
+      "isActive": "1"
+    },
+    {
+      "id": "4",
+      "nameAr": "الجملة",
+      "nameEn": "Wholesale",
+      "isActive": "1"
+    },
+    {
+      "id": "5",
+      "nameAr": "الشوكولاتة",
+      "nameEn": "Chocolates",
+      "isActive": "1"
+    },
+    {
+      "id": "6",
+      "nameAr": "الاتجاهات",
+      "nameEn": "Trending",
+      "isActive": "1"
+    },
+    {
+      "id": "7",
+      "nameAr": "المنتجات التركية",
+      "nameEn": "Turkish Products",
+      "isActive": "1"
+    },
+    {
+      "id": "8",
+      "nameAr": "المعكرونة",
+      "nameEn": "Noodles",
+      "isActive": "1"
+    },
+    {
+      "id": "9",
+      "nameAr": "الألعاب",
+      "nameEn": "Toys",
+      "isActive": "1"
+    },
+    {
+      "id": "10",
+      "nameAr": "الهدايا",
+      "nameEn": "Gifts",
+      "isActive": "1"
+    },
+    {
+      "id": "11",
+      "nameAr": "المستوردة",
+      "nameEn": "Imported",
+      "isActive": "1"
+    },
+    {
+      "id": "12",
+      "nameAr": "صنع في الكويت",
+      "nameEn": "Made in Kuwait",
+      "isActive": "1"
+    },
+    {
+      "id": "13",
+      "nameAr": "الفواكه الجافة",
+      "nameEn": "Dry Fruit",
+      "isActive": "1"
+    },
+    {
+      "id": "14",
+      "nameAr": "الآيس كريم",
+      "nameEn": "Ice Cream",
+      "isActive": "1"
+    },
+    {
+      "id": "15",
+      "nameAr": "الرقائق والوجبات الخفيفة",
+      "nameEn": "Chips & Snacks",
+      "isActive": "1"
+    },
+    {
+      "id": "16",
+      "nameAr": "الويفر",
+      "nameEn": "Wafer",
+      "isActive": "1"
+    },
+    {
+      "id": "17",
+      "nameAr": "البسكويت والكوكيز",
+      "nameEn": "Biscuit & Cookies",
+      "isActive": "1"
+    },
+    {
+      "id": "18",
+      "nameAr": "الكعك",
+      "nameEn": "Cake",
+      "isActive": "1"
+    },
+    {
+      "id": "19",
+      "nameAr": "الحلويات والتوفي",
+      "nameEn": "Candy & Toffee",
+      "isActive": "1"
+    },
+    {
+      "id": "20",
+      "nameAr": "الهلام",
+      "nameEn": "Jelly",
+      "isActive": "1"
+    },
+    {
+      "id": "21",
+      "nameAr": "المصاصات",
+      "nameEn": "Lollipop",
+      "isActive": "1"
+    },
+    {
+      "id": "22",
+      "nameAr": "الذرة والقطن",
+      "nameEn": "Corn & Cotton",
+      "isActive": "1"
+    },
+    {
+      "id": "23",
+      "nameAr": "المارشميلو",
+      "nameEn": "Marshmallow",
+      "isActive": "1"
+    },
+    {
+      "id": "24",
+      "nameAr": "العلكة",
+      "nameEn": "Gum",
+      "isActive": "1"
+    },
+    {
+      "id": "25",
+      "nameAr": "الفرش",
+      "nameEn": "Spread",
+      "isActive": "1"
+    },
+    {
+      "id": "26",
+      "nameAr": "القهوة والشاي",
+      "nameEn": "Coffee & Tea",
+      "isActive": "1"
+    },
+    {
+      "id": "27",
+      "nameAr": "البروتين",
+      "nameEn": "Protein",
+      "isActive": "1"
+    },
+    {
+      "id": "28",
+      "nameAr": "المكسرات",
+      "nameEn": "Nuts",
+      "isActive": "1"
+    },
+    {
+      "id": "29",
+      "nameAr": "الحبوب",
+      "nameEn": "Cereal",
+      "isActive": "1"
+    },
+    {
+      "id": "30",
+      "nameAr": "المشروبات الغازية",
+      "nameEn": "Soft Drinks",
+      "isActive": "1"
+    },
+    {
+      "id": "31",
+      "nameAr": "الماء",
+      "nameEn": "Water",
+      "isActive": "1"
+    },
+    {
+      "id": "32",
+      "nameAr": "العصير والحليب",
+      "nameEn": "Juice & Milk",
+      "isActive": "1"
+    },
+    {
+      "id": "33",
+      "nameAr": "مشروبات الطاقة",
+      "nameEn": "Energy Drinks",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnameAr\tnameEn\tisActive\n1\tتم إضافته مؤخراً\tRecently Added\t1\n2\tالأكثر مبيعاً\tMost Selling\t1\n3\tالعروض الترويجية\tPromotions\t1\n4\tالجملة\tWholesale\t1\n5\tالشوكولاتة\tChocolates\t1\n6\tالاتجاهات\tTrending\t1\n7\tالمنتجات التركية\tTurkish Products\t1\n8\tالمعكرونة\tNoodles\t1\n9\tالألعاب\tToys\t1\n10\tالهدايا\tGifts\t1\n11\tالمستوردة\tImported\t1\n12\tصنع في الكويت\tMade in Kuwait\t1\n13\tالفواكه الجافة\tDry Fruit\t1\n14\tالآيس كريم\tIce Cream\t1\n15\tالرقائق والوجبات الخفيفة\tChips & Snacks\t1\n16\tالويفر\tWafer\t1\n17\tالبسكويت والكوكيز\tBiscuit & Cookies\t1\n18\tالكعك\tCake\t1\n19\tالحلويات والتوفي\tCandy & Toffee\t1\n20\tالهلام\tJelly\t1\n21\tالمصاصات\tLollipop\t1\n22\tالذرة والقطن\tCorn & Cotton\t1\n23\tالمارشميلو\tMarshmallow\t1\n24\tالعلكة\tGum\t1\n25\tالفرش\tSpread\t1\n26\tالقهوة والشاي\tCoffee & Tea\t1\n27\tالبروتين\tProtein\t1\n28\tالمكسرات\tNuts\t1\n29\tالحبوب\tCereal\t1\n30\tالمشروبات الغازية\tSoft Drinks\t1\n31\tالماء\tWater\t1\n32\tالعصير والحليب\tJuice & Milk\t1\n33\tمشروبات الطاقة\tEnergy Drinks\t1\n",
+  "stderr": "",
+  "execution_time_ms": 1536
+}
