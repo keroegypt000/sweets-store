@@ -39,11 +39,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      {/* Main Content - 50/50 Layout */}
-      <div className="flex flex-col lg:flex-row gap-0 max-w-full mx-auto min-h-screen">
+      {/* Main Content - Vertical Layout (Top: Categories, Bottom: Products) */}
+      <div className="flex flex-col max-w-full mx-auto min-h-screen">
         
-        {/* Left Column - Categories (50% width) */}
-        <div className="w-full lg:w-1/2 bg-gradient-to-br from-primary-yellow via-accent-yellow to-yellow-200 overflow-hidden flex flex-col">
+        {/* Top Section - Categories (50% height) */}
+        <div className="w-full h-1/2 bg-gradient-to-br from-primary-yellow via-accent-yellow to-yellow-200 overflow-hidden flex flex-col">
           {/* Categories Header */}
           <div className="p-4 md:p-6 border-b border-yellow-300 bg-yellow-100 sticky top-0 z-20">
             <h2 className="text-lg md:text-2xl font-bold text-dark-text">
@@ -51,57 +51,47 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* Categories Scrollable List - Show 6 items */}
-          <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-2 md:space-y-3">
-            {categories && categories.length > 0 && categories.map((category, index) => (
-              <div
-                key={category.id}
-                onClick={() => setSelectedCategoryId(category.id)}
-                className={`p-3 md:p-4 rounded-lg cursor-pointer transition-all transform hover:scale-105 ${
-                  selectedCategoryId === category.id
-                    ? 'bg-white ring-2 ring-dark-text shadow-lg'
-                    : 'bg-white hover:shadow-md'
-                } flex items-center gap-3 group ${index >= 6 ? 'hidden' : ''}`}
-              >
-                {/* Category Image */}
-                {category.image && (
-                  <div className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-lg overflow-hidden bg-light-bg border-2 border-primary-yellow">
-                    <img
-                      src={category.image}
-                      alt={language === 'ar' ? category.nameAr : category.nameEn}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                    />
+          {/* Categories Horizontal Scroll */}
+          <div className="flex-1 overflow-x-auto overflow-y-hidden p-3 md:p-4">
+            <div className="flex gap-2 md:gap-3 min-w-min pb-2">
+              {categories && categories.length > 0 && categories.map((category) => (
+                <div
+                  key={category.id}
+                  onClick={() => setSelectedCategoryId(category.id)}
+                  className={`flex-shrink-0 p-3 md:p-4 rounded-lg cursor-pointer transition-all transform hover:scale-105 ${
+                    selectedCategoryId === category.id
+                      ? 'bg-white ring-2 ring-dark-text shadow-lg'
+                      : 'bg-white hover:shadow-md'
+                  } flex flex-col items-center gap-2 group w-24 md:w-28 lg:w-32`}
+                >
+                  {/* Category Image */}
+                  {category.image && (
+                    <div className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-light-bg border-2 border-primary-yellow">
+                      <img
+                        src={category.image}
+                        alt={language === 'ar' ? category.nameAr : category.nameEn}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                      />
+                    </div>
+                  )}
+
+                  {/* Category Name */}
+                  <div className="text-center min-w-0">
+                    <h3 className="font-bold text-dark-text text-xs md:text-sm truncate">
+                      {language === 'ar' ? category.nameAr : category.nameEn}
+                    </h3>
+                    <p className="text-xs text-dark-text opacity-70">
+                      {allProducts.filter(p => p.categoryId === category.id).length}
+                    </p>
                   </div>
-                )}
-
-                {/* Category Name */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-dark-text text-sm md:text-base truncate">
-                    {language === 'ar' ? category.nameAr : category.nameEn}
-                  </h3>
-                  <p className="text-xs text-dark-text opacity-70">
-                    {allProducts.filter(p => p.categoryId === category.id).length} {language === 'ar' ? 'منتج' : 'items'}
-                  </p>
                 </div>
-
-                {/* Arrow Icon */}
-                <div className="text-dark-text text-lg md:text-xl flex-shrink-0 group-hover:translate-x-1 transition-transform">
-                  {language === 'ar' ? '←' : '→'}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Show remaining categories indicator */}
-          {categories.length > 6 && (
-            <div className="p-3 md:p-4 border-t border-yellow-300 bg-yellow-100 text-center text-xs md:text-sm text-dark-text font-medium">
-              {language === 'ar' ? `و ${categories.length - 6} فئات أخرى` : `and ${categories.length - 6} more categories`}
+              ))}
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Right Column - Products (50% width) */}
-        <div className="w-full lg:w-1/2 bg-gray-50 overflow-hidden flex flex-col">
+        {/* Bottom Section - Products (50% height) */}
+        <div className="w-full h-1/2 bg-gray-50 overflow-hidden flex flex-col">
           {/* Products Header */}
           {selectedCategory && (
             <div className="p-4 md:p-6 border-b border-gray-200 bg-white sticky top-0 z-20">
@@ -117,7 +107,7 @@ export default function Home() {
           {/* Products Grid - Scrollable */}
           <div className="flex-1 overflow-y-auto p-3 md:p-4">
             {products && products.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 md:gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
                 {products.map((product) => (
                   <ProductCard
                     key={product.id}

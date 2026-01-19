@@ -106,3 +106,9 @@
 - [x] Add light background color to products section (gray-50)
 - [x] Reduce product card sizes to show more items
 - [x] Improve spacing and proportions
+
+## Layout Orientation Change
+- [x] Change from horizontal (left/right) to vertical (top/bottom) layout
+- [x] Categories section at the top with horizontal scroll
+- [x] Products section below with grid layout
+- [x] Maintain 50/50 height split
