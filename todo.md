@@ -126,3 +126,10 @@
 - [x] Adjust spacing for smaller screens (xs, sm, md breakpoints)
 - [x] Maintain same layout on mobile and desktop
 - [x] Responsive text sizes and padding
+
+## Category Display Height Fix
+- [x] Make 6 categories fill full screen height (distributed evenly)
+- [x] Remove "اسحب للأسفل" scroll indicator text
+- [x] Each category takes 1/6 of the screen height
+- [x] Remaining categories appear on scroll
+- [x] Categories centered vertically with responsive sizing

@@ -39,38 +39,32 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      {/* Main Content - Horizontal 50/50 Layout (Left: Categories, Right: Products) */}
-      {/* Same layout on mobile and desktop */}
+      {/* Main Content - Horizontal 50/50 Layout */}
       <div className="flex flex-row gap-0 max-w-full mx-auto min-h-screen">
         
         {/* Left Column - Categories (50% width) */}
-        <div className="w-1/2 bg-gradient-to-br from-primary-yellow via-accent-yellow to-yellow-200 overflow-hidden flex flex-col">
-          {/* Categories Header */}
-          <div className="p-2 sm:p-3 md:p-6 border-b border-yellow-300 bg-yellow-100 sticky top-0 z-20">
-            <h2 className="text-sm sm:text-base md:text-2xl font-bold text-dark-text">
-              {language === 'ar' ? 'الفئات' : 'Categories'}
-            </h2>
-          </div>
-
-          {/* Categories Vertical Scroll - Limited to 6 on mobile */}
-          <div className="flex-1 overflow-y-auto p-1 sm:p-2 md:p-4 space-y-0.5 sm:space-y-1 md:space-y-3">
-            {categories && categories.length > 0 && categories.map((category, index) => (
-              // Show only first 6 categories on mobile, all on desktop
-              <div
-                key={category.id}
-                className={`${index >= 6 ? 'hidden' : ''}`}
-              >
+        <div className="w-1/2 bg-gradient-to-br from-primary-yellow via-accent-yellow to-yellow-200 overflow-y-auto flex flex-col">
+          {/* Categories Container - 6 categories filling full height */}
+          <div className="flex flex-col h-full">
+            {categories && categories.length > 0 && categories.map((category, index) => {
+              // Show only first 6 categories, distribute them evenly to fill height
+              if (index >= 6) return null;
+              
+              const categoryProductCount = allProducts.filter(p => p.categoryId === category.id).length;
+              
+              return (
                 <div
+                  key={category.id}
                   onClick={() => setSelectedCategoryId(category.id)}
-                  className={`p-1.5 sm:p-2 md:p-4 rounded-lg cursor-pointer transition-all transform hover:scale-105 ${
+                  className={`flex-1 p-2 sm:p-3 md:p-4 cursor-pointer transition-all transform hover:scale-105 border-b border-yellow-300 last:border-b-0 ${
                     selectedCategoryId === category.id
                       ? 'bg-white ring-2 ring-dark-text shadow-lg'
-                      : 'bg-white hover:shadow-md'
-                  } flex items-center gap-1 sm:gap-2 md:gap-3 group`}
+                      : 'bg-yellow-100 hover:bg-yellow-50'
+                  } flex flex-col items-center justify-center gap-1 sm:gap-2 md:gap-3 group`}
                 >
                   {/* Category Image */}
                   {category.image && (
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 flex-shrink-0 rounded-lg overflow-hidden bg-light-bg border-2 border-primary-yellow">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-20 md:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border-2 border-primary-yellow">
                       <img
                         src={category.image}
                         alt={language === 'ar' ? category.nameAr : category.nameEn}
@@ -80,29 +74,22 @@ export default function Home() {
                   )}
 
                   {/* Category Name */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-dark-text text-xs sm:text-sm md:text-base truncate">
+                  <div className="text-center">
+                    <h3 className="font-bold text-dark-text text-xs sm:text-sm md:text-base line-clamp-2">
                       {language === 'ar' ? category.nameAr : category.nameEn}
                     </h3>
-                    <p className="text-xs text-dark-text opacity-70 hidden sm:block">
-                      {allProducts.filter(p => p.categoryId === category.id).length} {language === 'ar' ? 'منتج' : 'items'}
+                    <p className="text-xs text-dark-text opacity-70 mt-0.5">
+                      {categoryProductCount} {language === 'ar' ? 'منتج' : 'items'}
                     </p>
                   </div>
 
                   {/* Arrow Icon */}
-                  <div className="text-dark-text text-sm sm:text-base md:text-xl flex-shrink-0 group-hover:translate-x-1 transition-transform">
+                  <div className="text-dark-text text-sm sm:text-base md:text-lg group-hover:translate-x-1 transition-transform">
                     {language === 'ar' ? '←' : '→'}
                   </div>
                 </div>
-              </div>
-            ))}
-            
-            {/* Scroll indicator for mobile */}
-            {categories && categories.length > 6 && (
-              <div className="text-center text-xs text-dark-text opacity-50 py-1 sm:py-2">
-                {language === 'ar' ? '↓ اسحب للأسفل' : '↓ Scroll'}
-              </div>
-            )}
+              );
+            })}
           </div>
         </div>
 
