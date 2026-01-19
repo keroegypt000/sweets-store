@@ -112,3 +112,10 @@
 - [x] Categories section at the top with horizontal scroll
 - [x] Products section below with grid layout
 - [x] Maintain 50/50 height split
+
+## Mobile Layout Fixes
+- [x] Fix product container height on mobile (too tall)
+- [x] Show only 6 categories on mobile initially
+- [x] Add scroll indicator for more categories
+- [x] Adjust product grid columns for mobile
+- [x] Responsive spacing and padding adjustments
