@@ -98,3 +98,11 @@
 - [x] Mobile: 1-2 products per row
 - [x] Desktop: 3-4 products per row
 - [x] Keep category filtering functionality
+
+## Layout & Styling Improvements
+- [x] Make categories and products columns equal width (50/50)
+- [x] Show only 6 categories with scroll for more
+- [x] Add attractive background color to categories section (yellow gradient)
+- [x] Add light background color to products section (gray-50)
+- [x] Reduce product card sizes to show more items
+- [x] Improve spacing and proportions
