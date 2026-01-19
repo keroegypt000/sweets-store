@@ -341,3 +341,14 @@
 - [x] Reverted to AdminDashboardStandalone (localStorage-based)
 - [x] Avoided tRPC calls that trigger Manus OAuth
 - [x] Admin dashboard now works without Manus login appearing
+
+
+## Connect Dashboard to Real Database via Public API
+- [x] Created public REST API endpoints for products (GET, POST, PUT, DELETE) in server/api.ts
+- [x] Created public REST API endpoints for categories (GET, POST, PUT, DELETE)
+- [x] Created public REST API endpoints for banners (GET, POST, PUT, DELETE)
+- [x] Created public REST API endpoints for orders (GET, PUT for status update)
+- [x] Created AdminDashboardAPI.tsx using fetch() instead of localStorage
+- [x] Registered API routes at /api/admin in server/_core/index.ts
+- [x] All CRUD operations working with real database
+- [x] No Manus OAuth interference - pure REST API communication
