@@ -104,36 +104,35 @@ export default function Home() {
                 <div
                   key={category.id}
                   onClick={() => setSelectedCategoryId(category.id)}
-                  className={`flex-1 p-3 sm:p-4 md:p-5 cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 ${
+                  className={`flex-1 relative cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 overflow-hidden group ${
                     selectedCategoryId === category.id
-                      ? 'bg-white ring-2 ring-yellow-500 shadow-xl'
-                      : 'bg-yellow-50 hover:bg-white hover:shadow-md'
-                  } flex flex-col items-center justify-center gap-2 sm:gap-3 md:gap-4 group`}
+                      ? 'ring-2 ring-yellow-500 shadow-xl'
+                      : 'hover:shadow-md'
+                  }`}
                 >
-                  {/* Category Image - Larger and better styled */}
+                  {/* Category Image - Full container background */}
                   {category.image && (
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-24 md:h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-white border-3 border-yellow-300 shadow-md group-hover:shadow-lg transition-shadow">
-                      <img
-                        src={category.image}
-                        alt={language === 'ar' ? category.nameAr : category.nameEn}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    </div>
+                    <img
+                      src={category.image}
+                      alt={language === 'ar' ? category.nameAr : category.nameEn}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
                   )}
 
-                  {/* Category Name - Better typography */}
-                  <div className="text-center">
-                    <h3 className="font-bold text-gray-800 text-sm sm:text-base md:text-lg line-clamp-2">
+                  {/* Dark overlay for text readability */}
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-300"></div>
+
+                  {/* Category Name and Info - Text overlay */}
+                  <div className="relative h-full flex flex-col items-center justify-center gap-1 sm:gap-2 md:gap-3 p-3 sm:p-4 md:p-5 text-center z-10">
+                    <h3 className="font-bold text-white text-sm sm:text-base md:text-lg line-clamp-2 drop-shadow-lg">
                       {language === 'ar' ? category.nameAr : category.nameEn}
                     </h3>
-                    <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">
+                    <p className="text-xs sm:text-sm text-white/90 font-medium drop-shadow-md">
                       {categoryProductCount} {language === 'ar' ? 'منتج' : 'items'}
                     </p>
-                  </div>
-
-                  {/* Arrow Icon */}
-                  <div className="text-yellow-600 text-lg sm:text-xl md:text-2xl group-hover:translate-x-1 transition-transform duration-300 font-bold">
-                    {language === 'ar' ? '←' : '→'}
+                    <div className="text-white text-lg sm:text-xl md:text-2xl group-hover:translate-x-1 transition-transform duration-300 font-bold drop-shadow-lg">
+                      {language === 'ar' ? '←' : '→'}
+                    </div>
                   </div>
                 </div>
               );
