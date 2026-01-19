@@ -286,3 +286,77 @@ export async function getAllProducts(limit: number = 100, offset: number = 0) {
   if (!db) return [];
   return db.select().from(products).limit(limit).offset(offset);
 }
+
+
+// Category CRUD operations
+export async function createCategory(data: {
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  image?: string;
+  slug: string;
+  order?: number;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(categories).values({
+    ...data,
+    isActive: true,
+  });
+  
+  // Fetch and return the created category
+  const created = await db.select().from(categories).where(eq(categories.slug, data.slug)).limit(1);
+  return created.length > 0 ? created[0] : null;
+}
+
+export async function updateCategory(id: number, data: {
+  nameAr?: string;
+  nameEn?: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  image?: string;
+  slug?: string;
+  order?: number;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const updateData: any = {};
+  Object.keys(data).forEach(key => {
+    if (data[key as keyof typeof data] !== undefined) {
+      updateData[key] = data[key as keyof typeof data];
+    }
+  });
+  
+  if (Object.keys(updateData).length === 0) return null;
+  
+  await db.update(categories).set(updateData).where(eq(categories.id, id));
+  
+  // Fetch and return the updated category
+  const updated = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+  return updated.length > 0 ? updated[0] : null;
+}
+
+export async function deleteCategory(id: number) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  // Soft delete by setting isActive to false
+  await db.update(categories).set({ isActive: false }).where(eq(categories.id, id));
+  return true;
+}
+
+export async function getCategoryById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getAllCategories(limit: number = 100, offset: number = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(categories).limit(limit).offset(offset);
+}

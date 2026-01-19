@@ -102,10 +102,10 @@ export default function AdminDashboard() {
   const renderCategoriesTab = () => (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">{language === 'ar' ? 'الفئات' : 'Categories'} ({categories.length})</h2>
+        <h2 className="text-2xl font-bold cursor-pointer hover:text-primary-yellow transition" onClick={() => setLocation('/admin/categories')}>{language === 'ar' ? 'الفئات' : 'Categories'} ({categories.length})</h2>
         <Button onClick={() => setLocation('/admin/categories')} className="bg-primary-yellow text-dark-text hover:bg-accent-yellow">
           <Plus className="w-4 h-4 mr-2" />
-          {language === 'ar' ? 'إضافة فئة' : 'Add Category'}
+          {language === 'ar' ? 'إدارة الفئات' : 'Manage Categories'}
         </Button>
       </div>
 

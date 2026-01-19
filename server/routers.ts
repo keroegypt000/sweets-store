@@ -3,7 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
-import { getCategories, getProducts, getProductsByCategory, getProductBySlug, getFeaturedProducts, getPromotionalProducts, getCartItems, addToCart, getUserOrders, createOrder, createProduct, updateProduct, deleteProduct, getProductById, getAllProducts } from "./db";
+import { getCategories, getProducts, getProductsByCategory, getProductBySlug, getFeaturedProducts, getPromotionalProducts, getCartItems, addToCart, getUserOrders, createOrder, createProduct, updateProduct, deleteProduct, getProductById, getAllProducts, createCategory, updateCategory, deleteCategory, getCategoryById, getAllCategories } from "./db";
 import { notifyOwner } from "./_core/notification";
 import { TRPCError } from "@trpc/server";
 
@@ -113,6 +113,54 @@ export const appRouter = router({
     list: publicProcedure
       .query(async () => {
         return getCategories();
+      }),
+    allCategories: protectedProcedure
+      .input(z.object({ limit: z.number().default(100), offset: z.number().default(0) }).optional())
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return getAllCategories(input?.limit || 100, input?.offset || 0);
+      }),
+    byId: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return getCategoryById(input.id);
+      }),
+    create: protectedProcedure
+      .input(z.object({
+        nameAr: z.string().min(1),
+        nameEn: z.string().min(1),
+        descriptionAr: z.string().optional(),
+        descriptionEn: z.string().optional(),
+        image: z.string().optional(),
+        slug: z.string().min(1),
+        order: z.number().default(0),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return createCategory(input);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        nameAr: z.string().optional(),
+        nameEn: z.string().optional(),
+        descriptionAr: z.string().optional(),
+        descriptionEn: z.string().optional(),
+        image: z.string().optional(),
+        slug: z.string().optional(),
+        order: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { id, ...data } = input;
+        return updateCategory(id, data);
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return deleteCategory(input.id);
       }),
   }),
 
