@@ -94,8 +94,11 @@ export default function Home() {
           </div>
 
           {/* Categories Container */}
-          <div className="flex-1 flex flex-col md:h-screen md:overflow-y-auto">
+          <div className="flex-1 flex flex-col md:h-auto md:max-h-96 md:overflow-y-auto">
             {filteredCategories && filteredCategories.length > 0 && filteredCategories.map((category, index) => {
+              // Show only 6 categories on desktop initially
+              if (window.innerWidth >= 768 && index >= 6) return null;
+              
               const categoryProductCount = allProducts.filter(p => p.categoryId === category.id).length;
               
               return (

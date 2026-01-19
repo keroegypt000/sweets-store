@@ -171,3 +171,9 @@
 - [x] Apply same category design to desktop as mobile
 - [x] Remove separate desktop/mobile category styling
 - [x] Ensure consistent look across all devices
+
+## Desktop Category Limit with Scroll
+- [x] Show only 6 categories initially on desktop
+- [x] Remaining categories appear on scroll (like mobile)
+- [x] Fixed height for category container (max-h-96)
+- [x] Smooth scrolling behavior
