@@ -10,8 +10,15 @@ import { toast } from 'sonner';
 export default function AdminLogin() {
   const { language, setLanguage } = useLanguage();
   const [, setLocation] = useLocation();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState(() => {
+    return localStorage.getItem('adminUsername') || '';
+  });
+  const [password, setPassword] = useState(() => {
+    return localStorage.getItem('adminPassword') || '';
+  });
+  const [rememberMe, setRememberMe] = useState(() => {
+    return localStorage.getItem('adminRememberMe') === 'true';
+  });
 
   const loginMutation = trpc.admin.login.useMutation({
     onSuccess: (data) => {
@@ -19,6 +26,17 @@ export default function AdminLogin() {
         // Store admin token in localStorage
         localStorage.setItem('adminToken', data.token);
         localStorage.setItem('adminUser', JSON.stringify(data.admin));
+        
+        // Save credentials if "Remember me" is checked
+        if (rememberMe) {
+          localStorage.setItem('adminUsername', username);
+          localStorage.setItem('adminPassword', password);
+          localStorage.setItem('adminRememberMe', 'true');
+        } else {
+          localStorage.removeItem('adminUsername');
+          localStorage.removeItem('adminPassword');
+          localStorage.removeItem('adminRememberMe');
+        }
         
         toast.success(language === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Login successful');
         setLocation('/admin-dashboard');
@@ -89,6 +107,20 @@ export default function AdminLogin() {
                 disabled={loginMutation.isPending}
                 className="w-full"
               />
+            </div>
+
+            {/* Remember Me */}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 text-primary-yellow"
+              />
+              <label htmlFor="rememberMe" className="ml-2 text-sm text-dark-text">
+                {language === 'ar' ? 'تذكرني' : 'Remember me'}
+              </label>
             </div>
 
             {/* Login Button */}

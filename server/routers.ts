@@ -275,6 +275,10 @@ export const appRouter = router({
         const ADMIN_USERNAME = 'admin';
         const ADMIN_PASSWORD = 'admin123'; // Change this in production!
 
+        // Debug: Log the input
+        console.log('Login attempt:', { username: input.username, password: input.password });
+        console.log('Expected:', { username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
+        
         if (input.username === ADMIN_USERNAME && input.password === ADMIN_PASSWORD) {
           // Create admin session
           const sessionToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -294,7 +298,7 @@ export const appRouter = router({
 
         throw new TRPCError({
           code: 'UNAUTHORIZED',
-          message: 'Invalid credentials',
+          message: 'Invalid credentials (username: admin, password: admin123)',
         });
       }),
     logout: publicProcedure

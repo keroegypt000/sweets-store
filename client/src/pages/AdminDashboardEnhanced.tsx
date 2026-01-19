@@ -513,12 +513,27 @@ export default function AdminDashboardEnhanced() {
                     />
                   </div>
 
-                  <Input
-                    placeholder="Slug"
-                    value={productForm.slug}
-                    onChange={(e) => setProductForm({ ...productForm, slug: e.target.value })}
-                    required
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Input
+                      placeholder="Slug"
+                      value={productForm.slug}
+                      onChange={(e) => setProductForm({ ...productForm, slug: e.target.value })}
+                      required
+                    />
+                    <select
+                      value={productForm.categoryId}
+                      onChange={(e) => setProductForm({ ...productForm, categoryId: e.target.value })}
+                      className="px-4 py-2 border border-border rounded-lg"
+                      required
+                    >
+                      <option value="">{language === 'ar' ? 'اختر الفئة' : 'Select Category'}</option>
+                      {categories.map((cat: any) => (
+                        <option key={cat.id} value={cat.id}>
+                          {language === 'ar' ? cat.nameAr : cat.nameEn}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
                   {/* Image Upload */}
                   <div className="border-2 border-dashed border-border rounded-lg p-4">

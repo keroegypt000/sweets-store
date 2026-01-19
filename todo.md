@@ -278,3 +278,12 @@
 - [x] Add form validation and error handling
 - [x] Implement responsive design for mobile and desktop
 - [x] Add bilingual support (Arabic/English) throughout
+
+
+## Bug Fixes - Admin Dashboard Issues
+- [x] Remove AdminDashboardNew.tsx (unnecessary page)
+- [x] Fix category-product relationship in AdminDashboardEnhanced
+- [x] Fix image display for categories and products
+- [x] Persist admin login credentials in localStorage
+- [x] Auto-fill username and password on login page
+- [x] Add "Remember me" functionality
