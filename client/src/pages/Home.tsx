@@ -47,50 +47,55 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Main Content - Responsive Layout */}
-      {/* Mobile: Toggle between categories and products | Desktop: Side by side */}
       <div className="flex flex-col md:flex-row gap-0 max-w-full mx-auto min-h-screen">
         
-        {/* Left/Top Column - Categories (Mobile: Full screen when no category selected) */}
-        {/* Desktop: 50% width, full height | Mobile: Full width when showing categories */}
+        {/* Left/Top Column - Categories */}
         <div className={`${
           selectedCategoryId && window.innerWidth < 768 ? 'hidden' : ''
-        } w-full md:w-1/2 md:h-screen bg-gradient-to-br from-primary-yellow via-accent-yellow to-yellow-200 overflow-y-auto flex flex-col md:block`}>
+        } w-full md:w-1/2 md:h-screen bg-gradient-to-br from-yellow-300 via-yellow-100 to-yellow-50 overflow-y-auto flex flex-col md:block`}>
           
-          {/* Mobile Banner - Only on mobile */}
-          <div className="md:hidden w-full h-32 sm:h-40 bg-gradient-to-r from-yellow-400 to-yellow-500 flex items-center justify-center overflow-hidden">
+          {/* Mobile Banner - Larger size */}
+          <div className="md:hidden w-full h-48 sm:h-56 bg-gradient-to-r from-yellow-400 via-yellow-300 to-orange-300 flex items-center justify-center overflow-hidden shadow-lg relative">
+            <div className="absolute inset-0 bg-black/10"></div>
             <img
-              src="https://images.unsplash.com/photo-1599599810694-b5ac4dd64e90?w=500&h=200&fit=crop"
+              src="https://images.unsplash.com/photo-1599599810694-b5ac4dd64e90?w=600&h=250&fit=crop"
               alt="Banner"
               className="w-full h-full object-cover"
             />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">
+                {language === 'ar' ? 'متجر الحلويات' : 'Sweets Store'}
+              </h1>
+            </div>
           </div>
 
-          {/* Mobile Search Bar - Only on mobile */}
-          <div className="md:hidden p-2 sm:p-3 bg-yellow-100 border-b border-yellow-300">
+          {/* Mobile Search Bar */}
+          <div className="md:hidden p-3 sm:p-4 bg-yellow-100 border-b-2 border-yellow-300 shadow-sm">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
               <input
                 type="text"
                 placeholder={language === 'ar' ? 'ابحث عن فئة...' : 'Search categories...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-yellow text-sm"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm font-medium bg-white transition-all"
               />
             </div>
           </div>
 
           {/* Categories Header */}
-          <div className="p-2 sm:p-3 md:p-6 border-b border-yellow-300 bg-yellow-100 sticky top-0 z-20 md:sticky md:top-0">
-            <h2 className="text-sm sm:text-base md:text-2xl font-bold text-dark-text">
+          <div className="p-4 sm:p-6 md:p-8 border-b-2 border-yellow-300 bg-gradient-to-r from-yellow-100 to-yellow-50 sticky top-0 z-20 md:sticky md:top-0 shadow-sm">
+            <h2 className="text-lg sm:text-xl md:text-3xl font-bold text-gray-800">
               {language === 'ar' ? 'الفئات' : 'Categories'}
             </h2>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
+              {language === 'ar' ? 'اختر من بين أفضل الفئات' : 'Choose from our best categories'}
+            </p>
           </div>
 
           {/* Categories Container */}
           <div className="flex-1 flex flex-col md:h-screen md:overflow-y-auto">
             {filteredCategories && filteredCategories.length > 0 && filteredCategories.map((category, index) => {
-              // On mobile: show all filtered categories
-              // On desktop: show only first 6 categories
               if (window.innerWidth >= 768 && index >= 6) return null;
               
               const categoryProductCount = allProducts.filter(p => p.categoryId === category.id).length;
@@ -99,35 +104,35 @@ export default function Home() {
                 <div
                   key={category.id}
                   onClick={() => setSelectedCategoryId(category.id)}
-                  className={`flex-1 p-2 sm:p-3 md:p-4 cursor-pointer transition-all transform hover:scale-105 border-b border-yellow-300 last:border-b-0 ${
+                  className={`flex-1 p-3 sm:p-4 md:p-5 cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 ${
                     selectedCategoryId === category.id
-                      ? 'bg-white ring-2 ring-dark-text shadow-lg'
-                      : 'bg-yellow-100 hover:bg-yellow-50'
-                  } flex flex-col items-center justify-center gap-1 sm:gap-2 md:gap-3 group`}
+                      ? 'bg-white ring-2 ring-yellow-500 shadow-xl'
+                      : 'bg-yellow-50 hover:bg-white hover:shadow-md'
+                  } flex flex-col items-center justify-center gap-2 sm:gap-3 md:gap-4 group`}
                 >
-                  {/* Category Image */}
+                  {/* Category Image - Larger and better styled */}
                   {category.image && (
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-20 md:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border-2 border-primary-yellow">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-24 md:h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-white border-3 border-yellow-300 shadow-md group-hover:shadow-lg transition-shadow">
                       <img
                         src={category.image}
                         alt={language === 'ar' ? category.nameAr : category.nameEn}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
                   )}
 
-                  {/* Category Name */}
+                  {/* Category Name - Better typography */}
                   <div className="text-center">
-                    <h3 className="font-bold text-dark-text text-xs sm:text-sm md:text-base line-clamp-2">
+                    <h3 className="font-bold text-gray-800 text-sm sm:text-base md:text-lg line-clamp-2">
                       {language === 'ar' ? category.nameAr : category.nameEn}
                     </h3>
-                    <p className="text-xs text-dark-text opacity-70 mt-0.5">
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">
                       {categoryProductCount} {language === 'ar' ? 'منتج' : 'items'}
                     </p>
                   </div>
 
                   {/* Arrow Icon */}
-                  <div className="text-dark-text text-sm sm:text-base md:text-lg group-hover:translate-x-1 transition-transform">
+                  <div className="text-yellow-600 text-lg sm:text-xl md:text-2xl group-hover:translate-x-1 transition-transform duration-300 font-bold">
                     {language === 'ar' ? '←' : '→'}
                   </div>
                 </div>
@@ -137,7 +142,7 @@ export default function Home() {
             {/* No results message */}
             {filteredCategories.length === 0 && (
               <div className="flex-1 flex items-center justify-center">
-                <p className="text-sm text-dark-text opacity-50">
+                <p className="text-sm text-gray-500 font-medium">
                   {language === 'ar' ? 'لا توجد فئات' : 'No categories found'}
                 </p>
               </div>
@@ -146,18 +151,17 @@ export default function Home() {
         </div>
 
         {/* Right/Bottom Column - Products */}
-        {/* Desktop: 50% width, full height | Mobile: Full width when category selected */}
         <div className={`${
           !selectedCategoryId && window.innerWidth < 768 ? 'hidden' : ''
         } w-full md:w-1/2 md:h-screen bg-gray-50 overflow-hidden flex flex-col md:block`}>
-          {/* Products Header with Back Button (Mobile only) */}
-          <div className="p-2 sm:p-3 md:p-6 border-b border-gray-200 bg-white sticky top-0 z-20 flex items-center justify-between md:block">
+          {/* Products Header with Back Button */}
+          <div className="p-3 sm:p-4 md:p-8 border-b-2 border-gray-200 bg-white sticky top-0 z-20 flex items-center justify-between md:block shadow-sm">
             <div className="flex-1">
-              <h2 className="text-sm sm:text-base md:text-2xl font-bold text-dark-text">
+              <h2 className="text-lg sm:text-xl md:text-3xl font-bold text-gray-800">
                 {selectedCategory ? (language === 'ar' ? selectedCategory.nameAr : selectedCategory.nameEn) : (language === 'ar' ? 'المنتجات' : 'Products')}
               </h2>
-              <p className="text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">
-                {products.length} {language === 'ar' ? 'منتج' : 'products'}
+              <p className="text-xs sm:text-sm text-gray-600 mt-1 font-medium">
+                {products.length} {language === 'ar' ? 'منتج متاح' : 'products available'}
               </p>
             </div>
             
@@ -165,17 +169,17 @@ export default function Home() {
             {selectedCategoryId && window.innerWidth < 768 && (
               <button
                 onClick={() => setSelectedCategoryId(null)}
-                className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="md:hidden p-2 hover:bg-yellow-100 rounded-lg transition-colors duration-300"
               >
-                {language === 'ar' ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
+                {language === 'ar' ? <ArrowRight className="w-6 h-6 text-yellow-600" /> : <ArrowLeft className="w-6 h-6 text-yellow-600" />}
               </button>
             )}
           </div>
 
           {/* Products Grid - Scrollable */}
-          <div className="flex-1 overflow-y-auto p-1 sm:p-2 md:p-4 md:h-screen md:overflow-y-auto">
+          <div className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-6 md:h-screen md:overflow-y-auto">
             {products && products.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-1 sm:gap-2 md:gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                 {products.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -186,16 +190,16 @@ export default function Home() {
               </div>
             ) : selectedCategoryId ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <ShoppingCart className="w-6 sm:w-8 md:w-12 h-6 sm:h-8 md:h-12 text-muted-foreground mb-1 sm:mb-2 md:mb-4 opacity-30" />
-                <p className="text-xs sm:text-sm md:text-sm text-muted-foreground">
+                <ShoppingCart className="w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 text-gray-300 mb-3 sm:mb-4 md:mb-6" />
+                <p className="text-sm sm:text-base md:text-lg text-gray-500 font-medium">
                   {language === 'ar' ? 'لا توجد منتجات' : 'No products found'}
                 </p>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <ShoppingCart className="w-6 sm:w-8 md:w-12 h-6 sm:h-8 md:h-12 text-muted-foreground mb-1 sm:mb-2 md:mb-4 opacity-30" />
-                <p className="text-xs sm:text-sm md:text-sm text-muted-foreground">
-                  {language === 'ar' ? 'اختر فئة' : 'Select category'}
+                <ShoppingCart className="w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 text-gray-300 mb-3 sm:mb-4 md:mb-6" />
+                <p className="text-sm sm:text-base md:text-lg text-gray-500 font-medium">
+                  {language === 'ar' ? 'اختر فئة لعرض المنتجات' : 'Select a category to view products'}
                 </p>
               </div>
             )}
