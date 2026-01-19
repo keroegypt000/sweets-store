@@ -582,14 +582,14 @@ export default function AdminDashboardPro() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <textarea
                       placeholder={t.descriptionAr}
-                      value={productForm.descriptionAr}
+                      value={productForm.descriptionAr || ''}
                       onChange={(e) => setProductForm({ ...productForm, descriptionAr: e.target.value })}
                       className="border rounded px-3 py-2 w-full"
                       rows={3}
                     />
                     <textarea
                       placeholder={t.descriptionEn}
-                      value={productForm.descriptionEn}
+                      value={productForm.descriptionEn || ''}
                       onChange={(e) => setProductForm({ ...productForm, descriptionEn: e.target.value })}
                       className="border rounded px-3 py-2 w-full"
                       rows={3}
@@ -756,14 +756,14 @@ export default function AdminDashboardPro() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <textarea
                       placeholder={t.descriptionAr}
-                      value={categoryForm.descriptionAr}
+                      value={categoryForm.descriptionAr || ''}
                       onChange={(e) => setCategoryForm({ ...categoryForm, descriptionAr: e.target.value })}
                       className="border rounded px-3 py-2 w-full"
                       rows={3}
                     />
                     <textarea
                       placeholder={t.descriptionEn}
-                      value={categoryForm.descriptionEn}
+                      value={categoryForm.descriptionEn || ''}
                       onChange={(e) => setCategoryForm({ ...categoryForm, descriptionEn: e.target.value })}
                       className="border rounded px-3 py-2 w-full"
                       rows={3}
