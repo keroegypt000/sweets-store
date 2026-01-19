@@ -303,3 +303,11 @@
 ## Bug Fix - Categories Connection
 - [x] Fixed categories not displaying - set isActive = true for all categories in database
 - [x] Verified categories are now properly fetched and displayed on home page
+
+
+## Bug Fix - Admin Dashboard Routing and Categories
+- [x] Fix routing errors in admin dashboard (added leading slashes to routes)
+- [x] Fix category dropdown not loading in product form (changed to categories.list)
+- [x] Ensure categories are properly fetched in admin panel
+- [x] Test product creation with category selection
+- [x] Test category management in admin dashboard

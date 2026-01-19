@@ -63,7 +63,7 @@ export default function AdminDashboardEnhanced() {
 
   // Fetch data
   const { data: products = [], isLoading: productsLoading, refetch: refetchProducts } = trpc.products.list.useQuery();
-  const { data: categories = [], isLoading: categoriesLoading, refetch: refetchCategories } = trpc.categories.allCategories.useQuery();
+  const { data: categories = [], isLoading: categoriesLoading, refetch: refetchCategories } = trpc.categories.list.useQuery();
   const { data: banners = [], isLoading: bannersLoading, refetch: refetchBanners } = trpc.banners.allBanners.useQuery();
   const { data: orders = [], isLoading: ordersLoading, refetch: refetchOrders } = trpc.orders.allOrders.useQuery();
 
