@@ -144,6 +144,7 @@ export default function AdminDashboardPro() {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingType, setEditingType] = useState<'product' | 'category' | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
 
@@ -380,6 +381,85 @@ export default function AdminDashboardPro() {
     printWindow.print();
   };
 
+  // Edit handlers
+  const handleEditProduct = (product: Product) => {
+    setEditingId(product.id);
+    setEditingType('product');
+    setProductForm(product);
+    setImagePreview(product.image || '');
+    setShowForm(true);
+  };
+
+  const handleEditCategory = (category: Category) => {
+    setEditingId(category.id);
+    setEditingType('category');
+    setCategoryForm(category);
+    setImagePreview(category.image || '');
+    setShowForm(true);
+  };
+
+  const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${API_BASE}/products/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productForm),
+      });
+      if (response.ok) {
+        toast.success(t.success);
+        setShowForm(false);
+        setEditingId(null);
+        setEditingType(null);
+        setProductForm({
+          nameAr: '',
+          nameEn: '',
+          descriptionAr: '',
+          descriptionEn: '',
+          price: '',
+          stock: '',
+          image: '',
+          slug: '',
+          categoryId: '',
+        });
+        setImagePreview('');
+        fetchAllData();
+      }
+    } catch (error) {
+      toast.error(t.error);
+    }
+  };
+
+  const handleUpdateCategory = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${API_BASE}/categories/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(categoryForm),
+      });
+      if (response.ok) {
+        toast.success(t.success);
+        setShowForm(false);
+        setEditingId(null);
+        setEditingType(null);
+        setCategoryForm({
+          nameAr: '',
+          nameEn: '',
+          descriptionAr: '',
+          descriptionEn: '',
+          image: '',
+          slug: '',
+          order: '0',
+        });
+        setImagePreview('');
+        fetchAllData();
+      }
+    } catch (error) {
+      toast.error(t.error);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     setLocation('/admin-login');
@@ -481,9 +561,9 @@ export default function AdminDashboardPro() {
               </Button>
             </div>
 
-            {showForm && (
+            {showForm && editingType === 'product' && (
               <div className="bg-white p-6 rounded-lg mb-6 shadow">
-                <form onSubmit={handleAddProduct} className="space-y-4">
+                <form onSubmit={editingId ? handleUpdateProduct : handleAddProduct} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
                       placeholder={t.nameAr}
@@ -584,8 +664,24 @@ export default function AdminDashboardPro() {
                   )}
 
                   <div className="flex gap-2 pt-4">
-                    <Button type="submit">{t.save}</Button>
-                    <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                    <Button type="submit">{editingId ? t.save : t.add}</Button>
+                    <Button type="button" variant="outline" onClick={() => {
+                      setShowForm(false);
+                      setEditingId(null);
+                      setEditingType(null);
+                      setProductForm({
+                        nameAr: '',
+                        nameEn: '',
+                        descriptionAr: '',
+                        descriptionEn: '',
+                        price: '',
+                        stock: '',
+                        image: '',
+                        slug: '',
+                        categoryId: '',
+                      });
+                      setImagePreview('');
+                    }}>
                       {t.cancel}
                     </Button>
                   </div>
@@ -609,7 +705,7 @@ export default function AdminDashboardPro() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setEditingId(product.id)}
+                        onClick={() => handleEditProduct(product)}
                       >
                         <Edit2 size={16} />
                       </Button>
@@ -639,9 +735,9 @@ export default function AdminDashboardPro() {
               </Button>
             </div>
 
-            {showForm && (
+            {showForm && editingType === 'category' && (
               <div className="bg-white p-6 rounded-lg mb-6 shadow">
-                <form onSubmit={handleAddCategory} className="space-y-4">
+                <form onSubmit={editingId ? handleUpdateCategory : handleAddCategory} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
                       placeholder={t.nameAr}
@@ -719,8 +815,22 @@ export default function AdminDashboardPro() {
                   )}
 
                   <div className="flex gap-2 pt-4">
-                    <Button type="submit">{t.save}</Button>
-                    <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                    <Button type="submit">{editingId ? t.save : t.add}</Button>
+                    <Button type="button" variant="outline" onClick={() => {
+                      setShowForm(false);
+                      setEditingId(null);
+                      setEditingType(null);
+                      setCategoryForm({
+                        nameAr: '',
+                        nameEn: '',
+                        descriptionAr: '',
+                        descriptionEn: '',
+                        image: '',
+                        slug: '',
+                        order: '0',
+                      });
+                      setImagePreview('');
+                    }}>
                       {t.cancel}
                     </Button>
                   </div>
@@ -743,7 +853,7 @@ export default function AdminDashboardPro() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setEditingId(category.id)}
+                        onClick={() => handleEditCategory(category)}
                       >
                         <Edit2 size={16} />
                       </Button>

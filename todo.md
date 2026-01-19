@@ -367,3 +367,14 @@
 - [x] Add order filtering and search
 - [x] Improve overall UI/UX of admin dashboard (AdminDashboardPro.tsx)
 - [x] Add loading states and error handling for image uploads
+
+
+## Edit Functionality - Products and Categories
+- [x] PUT endpoint for editing products in server/api.ts (already exists)
+- [x] PUT endpoint for editing categories in server/api.ts (already exists)
+- [x] Implement edit form modal/panel in AdminDashboardPro for products
+- [x] Implement edit form modal/panel in AdminDashboardPro for categories
+- [x] Load existing data into edit forms
+- [x] Handle image updates during edit
+- [x] Test product edit functionality
+- [x] Test category edit functionality
