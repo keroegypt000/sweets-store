@@ -51,18 +51,9 @@ export default function Header({ cartItemsCount = 0, onSearchChange }: HeaderPro
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 md:gap-4">
-            {/* Admin Dashboard Link */}
-            {user?.role === 'admin' && (
-              <a href="/admin">
-                <Button variant="outline" size="icon" title={language === 'ar' ? 'لوحة التحكم' : 'Admin Dashboard'}>
-                  <Settings className="w-5 h-5" />
-                </Button>
-              </a>
-            )}
-            
             {/* Admin Login Link */}
             <a href="/admin-login">
-              <Button variant="outline" size="icon" title={language === 'ar' ? 'لوحة تحكم منفصلة' : 'Admin Panel'}>
+              <Button variant="outline" size="icon" title={language === 'ar' ? 'لوحة التحكم' : 'Admin Panel'}>
                 <Settings className="w-5 h-5" />
               </Button>
             </a>

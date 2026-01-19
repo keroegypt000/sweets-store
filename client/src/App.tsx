@@ -8,9 +8,6 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminProducts from "./pages/AdminProducts";
-import AdminCategories from "./pages/AdminCategories";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboardNew from "./pages/AdminDashboardNew";
 
@@ -23,10 +20,6 @@ function Router() {
       <Route path={"/cart"} component={Cart} />
       <Route path={"/admin-login"} component={AdminLogin} />
       <Route path={"/admin-dashboard"} component={AdminDashboardNew} />
-      <Route path={"/admin"} component={AdminDashboard} />
-      <Route path={"/dashboard"} component={AdminDashboard} />
-      <Route path={"/admin/products"} component={AdminProducts} />
-      <Route path={"/admin/categories"} component={AdminCategories} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

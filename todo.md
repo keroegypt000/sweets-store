@@ -250,3 +250,13 @@
 - [x] Implement responsive design for mobile and desktop
 - [x] Add form validation and error handling
 - [x] Add success/error notifications
+
+## Cleanup - Remove Unused Admin Pages
+- [x] Delete AdminDashboard.tsx (old page)
+- [x] Delete AdminProducts.tsx (old page)
+- [x] Delete AdminCategories.tsx (old page)
+- [x] Remove old admin routes from App.tsx
+- [x] Remove old admin imports from App.tsx
+- [x] Clean up Header component (remove old admin link)
+- [x] Keep only AdminLogin and AdminDashboardNew pages
+- [x] Keep website pages intact (Home, ProductDetail, Cart)
