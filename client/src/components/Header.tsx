@@ -1,7 +1,8 @@
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/_core/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ShoppingCart, Menu, X, Search } from 'lucide-react';
+import { ShoppingCart, Menu, X, Search, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'wouter';
 
@@ -12,6 +13,7 @@ interface HeaderProps {
 
 export default function Header({ cartItemsCount = 0, onSearchChange }: HeaderProps) {
   const { language, setLanguage, t } = useLanguage();
+  const { user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -52,6 +54,17 @@ export default function Header({ cartItemsCount = 0, onSearchChange }: HeaderPro
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 md:gap-4">
+            {/* Admin Dashboard Link */}
+            {user?.role === 'admin' && (
+              <Link href="/admin">
+                <a>
+                  <Button variant="outline" size="icon" title={language === 'ar' ? 'لوحة التحكم' : 'Admin Dashboard'}>
+                    <Settings className="w-5 h-5" />
+                  </Button>
+                </a>
+              </Link>
+            )}
+
             {/* Language Toggle */}
             <Button
               variant="outline"

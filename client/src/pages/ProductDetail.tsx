@@ -9,7 +9,7 @@ import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ProductDetail() {
-  const { language, t } = useLanguage();
+  const { language, t: useLanguageT } = useLanguage();
   const { slug } = useParams<{ slug: string }>();
   const [, setLocation] = useLocation();
   const [quantity, setQuantity] = useState(1);
@@ -168,7 +168,7 @@ export default function ProductDetail() {
                     ? language === 'ar'
                       ? 'جاري الإضافة...'
                       : 'Adding...'
-                    : t('add_to_cart')}
+                    : language === 'ar' ? 'أضف إلى السلة' : 'Add to Cart'}
                 </Button>
 
                 <Button
