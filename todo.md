@@ -81,3 +81,8 @@
 - [x] Ensure category filtering works on mobile
 - [x] Responsive text sizes (sm, md, lg breakpoints)
 - [x] Responsive image sizes and spacing
+
+## Bug Fixes - Product Filtering
+- [x] Fix: Show only category products when category is selected
+- [x] Fix: Don't show all products on page load
+- [x] Fix: Empty state when no category is selected

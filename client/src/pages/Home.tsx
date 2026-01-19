@@ -12,10 +12,10 @@ export default function Home() {
   // Fetch categories
   const { data: categories = [] } = trpc.categories.list.useQuery();
 
-  // Fetch products - all products or filtered by category
+  // Fetch products - only show when category is selected
   const { data: products = [] } = selectedCategoryId
     ? trpc.products.byCategory.useQuery({ categoryId: selectedCategoryId })
-    : trpc.products.list.useQuery();
+    : { data: [] }; // Don't fetch products until a category is selected
 
   // Add to cart mutation
   const addToCartMutation = trpc.cart.add.useMutation({
