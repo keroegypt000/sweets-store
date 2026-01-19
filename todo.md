@@ -59,3 +59,10 @@
 
 ## Bug Fixes
 - [x] Fixed nested anchor tag error in ProductCard component (HTML validation error)
+
+## UI Redesign - Two-Column Layout
+- [x] Redesign home page with two-column layout (right: categories, left: products)
+- [x] Create category cards with images and yellow background containers
+- [x] Implement category selection and product filtering
+- [x] Update responsive design for mobile (stack columns vertically)
+- [x] Add category image backgrounds to cards

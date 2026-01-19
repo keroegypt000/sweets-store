@@ -1,34 +1,30 @@
+import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState, useEffect } from 'react';
 import { trpc } from '@/lib/trpc';
-import Header from '@/components/Header';
-import CategorySidebar from '@/components/CategorySidebar';
+import { Product } from '@/types';
 import ProductCard from '@/components/ProductCard';
-import { Loader2 } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Home() {
   const { language, t } = useLanguage();
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
-  // Fetch products
-  const { data: products, isLoading: productsLoading } = trpc.products.list.useQuery({
-    limit: 20,
-    offset: page * 20,
-  });
+  // Fetch categories
+  const { data: categories = [] } = trpc.categories.list.useQuery();
 
-  // Fetch featured products
-  const { data: featuredProducts } = trpc.products.featured.useQuery({ limit: 10 });
+  // Fetch products - all products or filtered by category
+  const { data: products = [] } = selectedCategoryId
+    ? trpc.products.byCategory.useQuery({ categoryId: selectedCategoryId })
+    : trpc.products.list.useQuery();
 
   // Add to cart mutation
   const addToCartMutation = trpc.cart.add.useMutation({
     onSuccess: () => {
-      toast.success(language === 'ar' ? 'تم إضافة المنتج إلى السلة' : 'Product added to cart');
+      toast.success(language === 'ar' ? 'تمت إضافة المنتج إلى السلة' : 'Product added to cart');
     },
-    onError: (error) => {
-      toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
+    onError: (error: any) => {
+      toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'Error'));
     },
   });
 
@@ -36,116 +32,102 @@ export default function Home() {
     addToCartMutation.mutate({ productId, quantity });
   };
 
-  const handleSelectCategory = (categoryId: number) => {
-    setSelectedCategoryId(categoryId);
-    setPage(0);
-  };
-
-  // Determine which products to display
-  const displayProducts = selectedCategoryId
-    ? products?.filter((p) => p.categoryId === selectedCategoryId)
-    : products;
+  // Get selected category info
+  const selectedCategory = categories.find(c => c.id === selectedCategoryId);
 
   return (
-    <div className="min-h-screen bg-light-bg">
-      <Header onSearchChange={setSearchQuery} />
+    <div className="min-h-screen bg-background" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      {/* Main Content - Two Column Layout */}
+      <div className="flex flex-col lg:flex-row gap-6 p-6 max-w-7xl mx-auto">
+        
+        {/* Right Column - Categories (on desktop) / Top (on mobile) */}
+        <div className="w-full lg:w-1/3 space-y-4">
+          <h2 className="text-2xl font-bold text-dark-text mb-6">
+            {language === 'ar' ? 'الفئات' : 'Categories'}
+          </h2>
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary-yellow to-accent-yellow py-12 md:py-20">
-        <div className="container">
-          <div className="text-center">
-            <h1 className="text-3xl md:text-5xl font-bold text-dark-text mb-4">
-              {t('welcome')}
-            </h1>
-            <p className="text-lg text-dark-text opacity-90">
-              {t('best_sweets')}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <div className="container py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {/* Sidebar - Categories */}
-          <div className="md:col-span-1">
-            <CategorySidebar
-              selectedCategoryId={selectedCategoryId}
-              onSelectCategory={handleSelectCategory}
-            />
-          </div>
-
-          {/* Products Grid */}
-          <div className="md:col-span-3">
-            {/* Featured Products Section */}
-            {!selectedCategoryId && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-dark-text mb-6">
-                  {t('recently_added')}
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {featuredProducts?.slice(0, 6).map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onAddToCart={handleAddToCart}
+          {/* Categories Grid */}
+          <div className="space-y-3 max-h-[600px] overflow-y-auto">
+            {categories.map((category) => (
+              <div
+                key={category.id}
+                onClick={() => setSelectedCategoryId(category.id)}
+                className={`p-4 rounded-lg cursor-pointer transition-all transform hover:scale-105 ${
+                  selectedCategoryId === category.id
+                    ? 'bg-primary-yellow ring-2 ring-accent-yellow shadow-lg'
+                    : 'bg-primary-yellow hover:shadow-md'
+                } flex items-center gap-4 group`}
+              >
+                {/* Category Image */}
+                {category.image && (
+                  <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-white">
+                    <img
+                      src={category.image}
+                      alt={language === 'ar' ? category.nameAr : category.nameEn}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                     />
-                  ))}
-                </div>
-              </div>
-            )}
+                  </div>
+                )}
 
-            {/* All Products Section */}
-            <div>
-              <h2 className="text-2xl font-bold text-dark-text mb-6">
-                {selectedCategoryId ? t('products') : t('all_products') || 'All Products'}
-              </h2>
-
-              {productsLoading ? (
-                <div className="flex items-center justify-center h-64">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                </div>
-              ) : displayProducts && displayProducts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {displayProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onAddToCart={handleAddToCart}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground text-lg">
-                    {language === 'ar' ? 'لا توجد منتجات' : 'No products found'}
+                {/* Category Name */}
+                <div className="flex-1">
+                  <h3 className="font-bold text-dark-text text-sm">
+                    {language === 'ar' ? category.nameAr : category.nameEn}
+                  </h3>
+                  <p className="text-xs text-dark-text opacity-75">
+                    {products.filter(p => p.categoryId === category.id).length} {language === 'ar' ? 'منتج' : 'items'}
                   </p>
                 </div>
-              )}
-            </div>
 
-            {/* Pagination */}
-            {displayProducts && displayProducts.length > 0 && (
-              <div className="flex justify-center gap-4 mt-12">
-                <button
-                  onClick={() => setPage(Math.max(0, page - 1))}
-                  disabled={page === 0}
-                  className="px-4 py-2 border border-border rounded-lg hover:bg-light-bg disabled:opacity-50"
-                >
-                  {language === 'ar' ? 'السابق' : 'Previous'}
-                </button>
-                <span className="px-4 py-2 text-dark-text">
-                  {language === 'ar' ? `الصفحة ${page + 1}` : `Page ${page + 1}`}
-                </span>
-                <button
-                  onClick={() => setPage(page + 1)}
-                  className="px-4 py-2 border border-border rounded-lg hover:bg-light-bg"
-                >
-                  {language === 'ar' ? 'التالي' : 'Next'}
-                </button>
+                {/* Arrow Icon */}
+                <div className="text-dark-text text-xl group-hover:translate-x-1 transition-transform">
+                  {language === 'ar' ? '←' : '→'}
+                </div>
               </div>
-            )}
+            ))}
           </div>
+        </div>
+
+        {/* Left Column - Products (on desktop) / Bottom (on mobile) */}
+        <div className="w-full lg:w-2/3">
+          {/* Selected Category Header */}
+          {selectedCategory && (
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-dark-text">
+                {language === 'ar' ? selectedCategory.nameAr : selectedCategory.nameEn}
+              </h2>
+              <p className="text-muted-foreground mt-1">
+                {language === 'ar' ? 'اختر المنتجات التي تريدها' : 'Select the products you want'}
+              </p>
+            </div>
+          )}
+
+          {/* Products Grid */}
+          {products.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </div>
+          ) : selectedCategoryId ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <ShoppingCart className="w-16 h-16 text-muted-foreground mb-4 opacity-50" />
+              <p className="text-muted-foreground text-lg">
+                {language === 'ar' ? 'لا توجد منتجات في هذه الفئة' : 'No products in this category'}
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <ShoppingCart className="w-16 h-16 text-muted-foreground mb-4 opacity-50" />
+              <p className="text-muted-foreground text-lg">
+                {language === 'ar' ? 'اختر فئة لعرض المنتجات' : 'Select a category to view products'}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
