@@ -141,3 +141,10 @@
 - [x] Mobile: Add back button to return to categories
 - [x] Desktop: Keep horizontal 50/50 layout (unchanged)
 - [x] Breakpoint: Use md breakpoint for layout switch
+
+## Mobile Banner & Search
+- [x] Add banner image at top of mobile view (medium size)
+- [x] Add search bar below banner
+- [x] Categories display below search
+- [x] Banner and search visible only on mobile
+- [x] Search functionality to filter categories

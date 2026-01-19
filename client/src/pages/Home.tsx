@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import ProductCard from '@/components/ProductCard';
-import { ShoppingCart, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Home() {
   const { language } = useLanguage();
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch categories
   const { data: categories = [] } = trpc.categories.list.useQuery();
@@ -19,6 +20,12 @@ export default function Home() {
   const products = selectedCategoryId
     ? allProducts.filter(p => p.categoryId === selectedCategoryId)
     : allProducts;
+
+  // Filter categories by search query
+  const filteredCategories = categories.filter(cat => {
+    const name = language === 'ar' ? cat.nameAr : cat.nameEn;
+    return name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   // Add to cart mutation
   const addToCartMutation = trpc.cart.add.useMutation({
@@ -48,8 +55,32 @@ export default function Home() {
         <div className={`${
           selectedCategoryId && window.innerWidth < 768 ? 'hidden' : ''
         } w-full md:w-1/2 md:h-screen bg-gradient-to-br from-primary-yellow via-accent-yellow to-yellow-200 overflow-y-auto flex flex-col md:block`}>
+          
+          {/* Mobile Banner - Only on mobile */}
+          <div className="md:hidden w-full h-32 sm:h-40 bg-gradient-to-r from-yellow-400 to-yellow-500 flex items-center justify-center overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1599599810694-b5ac4dd64e90?w=500&h=200&fit=crop"
+              alt="Banner"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Mobile Search Bar - Only on mobile */}
+          <div className="md:hidden p-2 sm:p-3 bg-yellow-100 border-b border-yellow-300">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder={language === 'ar' ? 'ابحث عن فئة...' : 'Search categories...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-yellow text-sm"
+              />
+            </div>
+          </div>
+
           {/* Categories Header */}
-          <div className="p-2 sm:p-3 md:p-6 border-b border-yellow-300 bg-yellow-100 sticky top-0 z-20">
+          <div className="p-2 sm:p-3 md:p-6 border-b border-yellow-300 bg-yellow-100 sticky top-0 z-20 md:sticky md:top-0">
             <h2 className="text-sm sm:text-base md:text-2xl font-bold text-dark-text">
               {language === 'ar' ? 'الفئات' : 'Categories'}
             </h2>
@@ -57,8 +88,8 @@ export default function Home() {
 
           {/* Categories Container */}
           <div className="flex-1 flex flex-col md:h-screen md:overflow-y-auto">
-            {categories && categories.length > 0 && categories.map((category, index) => {
-              // On mobile: show all categories
+            {filteredCategories && filteredCategories.length > 0 && filteredCategories.map((category, index) => {
+              // On mobile: show all filtered categories
               // On desktop: show only first 6 categories
               if (window.innerWidth >= 768 && index >= 6) return null;
               
@@ -102,6 +133,15 @@ export default function Home() {
                 </div>
               );
             })}
+            
+            {/* No results message */}
+            {filteredCategories.length === 0 && (
+              <div className="flex-1 flex items-center justify-center">
+                <p className="text-sm text-dark-text opacity-50">
+                  {language === 'ar' ? 'لا توجد فئات' : 'No categories found'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
