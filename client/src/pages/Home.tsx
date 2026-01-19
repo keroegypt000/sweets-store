@@ -208,9 +208,9 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Categories Grid - 6 per row */}
+          {/* Categories Grid - One per row */}
           <div className="flex-1 overflow-y-auto p-4">
-            <div className="grid grid-cols-3 gap-2 auto-rows-max">
+            <div className="flex flex-col gap-3">
               {filteredCategories && filteredCategories.length > 0 && filteredCategories.map((category) => {
                 const categoryProductCount = allProducts.filter(p => p.categoryId === category.id).length;
                 
@@ -218,7 +218,7 @@ export default function Home() {
                   <div
                     key={category.id}
                     onClick={() => setSelectedCategoryId(category.id)}
-                    className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 overflow-hidden group h-32 rounded-lg shadow-md hover:shadow-lg ${
+                    className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 overflow-hidden group h-24 rounded-lg shadow-md hover:shadow-lg w-full ${
                       selectedCategoryId === category.id
                         ? 'ring-2 ring-yellow-500 shadow-xl'
                         : ''

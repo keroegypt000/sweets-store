@@ -1,4 +1,3 @@
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useParams } from 'wouter';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ProductDetail() {
   const { language, t } = useLanguage();

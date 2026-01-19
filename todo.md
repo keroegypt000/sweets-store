@@ -184,3 +184,10 @@
 - [x] Desktop: Show 6 categories in horizontal row (3 columns, 2 rows)
 - [x] Desktop: Categories scroll vertically as rows
 - [x] Desktop: Proportional sizing for all categories
+
+## Category Card Shape Update
+- [x] Change category cards from square to rectangular (landscape)
+- [x] Display one category per row (full width)
+- [x] Maintain image overlay and text styling
+- [x] Apply to both mobile and desktop
+- [x] Fix ProductDetail page import errors
