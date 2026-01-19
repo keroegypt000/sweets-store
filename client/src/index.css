@@ -43,15 +43,21 @@
 }
 
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
+  --primary-yellow: #FFD700;
+  --accent-yellow: #FFC107;
+  --dark-text: #2C3E50;
+  --light-bg: #F8F9FA;
+  --border-gray: #E0E0E0;
+  
+  --primary: var(--color-yellow-500);
+  --primary-foreground: var(--color-slate-900);
+  --sidebar-primary: var(--color-yellow-600);
+  --sidebar-primary-foreground: var(--color-slate-50);
+  --chart-1: var(--color-yellow-300);
+  --chart-2: var(--color-yellow-500);
+  --chart-3: var(--color-yellow-600);
+  --chart-4: var(--color-yellow-700);
+  --chart-5: var(--color-yellow-800);
   --radius: 0.65rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.235 0.015 65);
@@ -114,6 +120,16 @@
 }
 
 @layer base {
+  html[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+  }
+
+  html[dir="ltr"] {
+    direction: ltr;
+    text-align: left;
+  }
+  
   * {
     @apply border-border outline-ring/50;
   }

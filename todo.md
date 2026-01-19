@@ -1,0 +1,54 @@
+# Sweets Store - متجر الحلويات - Project TODO
+
+## Phase 1: Project Setup & Data Model
+- [x] Database schema for products, categories, users, orders, cart items
+- [x] Create product and category models with relationships
+- [x] Set up tRPC procedures for products and categories
+- [x] Implement bilingual support infrastructure (i18n)
+
+## Phase 2: Frontend - Product Catalog
+- [x] Home page with featured products and category navigation
+- [x] Product grid layout matching design (image, name, price, add to cart button)
+- [x] Category sidebar/navigation with all 29 categories
+- [x] Language toggle (Arabic/English) in header
+- [x] Responsive design for mobile and desktop
+- [ ] Search and filter functionality
+
+## Phase 3: Product Details & Shopping Cart
+- [x] Product detail page with image gallery
+- [x] Product description, price, quantity selector
+- [ ] Related products section
+- [x] Shopping cart system (add, remove, update quantity)
+- [x] Cart page with summary and checkout button
+- [ ] Persist cart in localStorage
+
+## Phase 4: Admin Dashboard
+- [x] Admin authentication and role-based access
+- [ ] Product management (create, edit, delete)
+- [ ] Category management
+- [ ] Inventory management
+- [ ] Order management and viewing
+- [ ] Dashboard analytics
+
+## Phase 5: Order & Notification System
+- [x] Order creation and processing
+- [x] Email notifications to owner on new orders
+- [ ] Order confirmation emails to customers
+- [ ] Order tracking page for customers
+- [x] Admin notifications for new orders
+
+## Phase 6: Design & Polish
+- [x] Ensure design matches provided screenshots
+- [x] RTL support for Arabic language
+- [x] Mobile responsiveness testing
+- [ ] Performance optimization
+- [x] Error handling and user feedback
+- [x] Loading states and animations
+
+## Phase 7: Testing & Deployment
+- [ ] Unit tests for critical functions
+- [ ] Integration testing
+- [ ] Cross-browser testing
+- [ ] Mobile device testing
+- [ ] Final bug fixes and polish
+- [ ] Project delivery and documentation

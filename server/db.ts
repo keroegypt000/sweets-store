@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, categories, products, cartItems, orders, orderItems } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,112 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// Categories queries
+export async function getCategories() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(categories).where(eq(categories.isActive, true)).orderBy(categories.order);
+}
+
+export async function getCategoryBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(categories).where(eq(categories.slug, slug)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+// Products queries
+export async function getProducts(limit: number = 20, offset: number = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(products)
+    .where(eq(products.isActive, true))
+    .limit(limit)
+    .offset(offset);
+}
+
+export async function getProductsByCategory(categoryId: number, limit: number = 20, offset: number = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(products)
+    .where((eq(products.categoryId, categoryId) as any) && (eq(products.isActive, true) as any))
+    .limit(limit)
+    .offset(offset);
+}
+
+export async function getProductBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(products).where(eq(products.slug, slug)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getFeaturedProducts(limit: number = 10) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(products)
+    .where(eq(products.isFeatured, true) && eq(products.isActive, true))
+    .limit(limit);
+}
+
+export async function getPromotionalProducts(limit: number = 10) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(products)
+    .where(eq(products.isPromotion, true) && eq(products.isActive, true))
+    .limit(limit);
+}
+
+// Cart queries
+export async function getCartItems(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const items = await db.select().from(cartItems).where(eq(cartItems.userId, userId));
+  // Fetch product details for each cart item
+  const itemsWithProducts = await Promise.all(
+    items.map(async (item) => {
+      const product = await db.select().from(products).where(eq(products.id, item.productId)).limit(1);
+      return {
+        ...item,
+        product: product[0] || null,
+      };
+    })
+  );
+  return itemsWithProducts;
+}
+
+export async function addToCart(userId: number, productId: number, quantity: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.insert(cartItems).values({ userId, productId, quantity });
+  return result;
+}
+
+// Orders queries
+export async function getUserOrders(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(orders).where(eq(orders.userId, userId));
+}
+
+export async function getOrderById(orderId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createOrder(userId: number, totalAmount: string, shippingAddress: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  await db.insert(orders).values({
+    userId,
+    orderNumber,
+    totalAmount: totalAmount as any,
+    shippingAddress,
+  });
+  // Fetch the created order
+  const result = await db.select().from(orders).where(eq(orders.orderNumber, orderNumber)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
