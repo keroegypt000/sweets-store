@@ -165,9 +165,11 @@ export const appRouter = router({
   }),
 
   cart: router({
-    list: protectedProcedure
-      .query(async ({ ctx }) => {
-        return getCartItems(ctx.user.id);
+    list: publicProcedure
+      .input(z.object({ userId: z.number().optional() }).optional())
+      .query(async ({ ctx, input }) => {
+        const userId = input?.userId || ctx.user?.id || 1;
+        return getCartItems(userId);
       }),
     add: publicProcedure
       .input(z.object({ productId: z.number(), quantity: z.number().default(1), userId: z.number().optional() }))
@@ -182,13 +184,14 @@ export const appRouter = router({
       .query(async ({ ctx }) => {
         return getUserOrders(ctx.user.id);
       }),
-    create: protectedProcedure
-      .input(z.object({ totalAmount: z.string(), shippingAddress: z.string() }))
+    create: publicProcedure
+      .input(z.object({ totalAmount: z.string(), shippingAddress: z.string(), userId: z.number().optional() }))
       .mutation(async ({ ctx, input }) => {
-        const result = await createOrder(ctx.user.id, input.totalAmount, input.shippingAddress);
+        const userId = input.userId || ctx.user?.id || 1;
+        const result = await createOrder(userId, input.totalAmount, input.shippingAddress);
         await notifyOwner({
           title: 'New Order Received',
-          content: `New order from ${ctx.user.name || 'Customer'} for ${input.totalAmount} KWD. Shipping address: ${input.shippingAddress}`,
+          content: `New order from ${ctx.user?.name || 'Guest Customer'} for ${input.totalAmount} KWD. Shipping address: ${input.shippingAddress}`,
         });
         return result;
       }),
