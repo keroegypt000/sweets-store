@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import ProductCard from '@/components/ProductCard';
+import Header from '@/components/Header';
 import { ShoppingCart, ArrowLeft, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -52,6 +53,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      <Header cartItemsCount={0} />
       {/* MOBILE VIEW - Vertical Layout */}
       <div className="md:hidden flex flex-col min-h-screen">
         {/* Banner */}

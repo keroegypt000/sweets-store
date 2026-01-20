@@ -74,13 +74,6 @@ export default function Header({ cartItemsCount = 0, onSearchChange }: HeaderPro
               </Button>
             </a>
 
-            {/* Admin Login Link */}
-            <a href="/admin-login" className="hidden sm:block">
-              <Button variant="outline" size="icon" title={language === 'ar' ? 'لوحة التحكم' : 'Admin Panel'}>
-                <Settings className="w-5 h-5" />
-              </Button>
-            </a>
-
             {/* Mobile Menu Toggle */}
             <Button
               variant="outline"
