@@ -51,32 +51,33 @@ export default function Header({ cartItemsCount = 0, onSearchChange }: HeaderPro
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 md:gap-4">
-            {/* Admin Login Link */}
-            <a href="/admin-login">
-              <Button variant="outline" size="icon" title={language === 'ar' ? 'لوحة التحكم' : 'Admin Panel'}>
-                <Settings className="w-5 h-5" />
-              </Button>
-            </a>
-
             {/* Language Toggle */}
             <Button
               variant="outline"
               size="sm"
               onClick={handleLanguageToggle}
-              className="text-xs md:text-sm"
+              className="text-xs md:text-sm font-bold bg-primary-yellow text-dark-text hover:bg-accent-yellow"
+              title={language === 'ar' ? 'تبديل اللغة' : 'Toggle Language'}
             >
               {language === 'ar' ? 'EN' : 'AR'}
             </Button>
 
             {/* Cart Button */}
             <a href="/cart" className="relative">
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" title={language === 'ar' ? 'سلة التسوق' : 'Shopping Cart'}>
                 <ShoppingCart className="w-5 h-5" />
                 {cartItemsCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-primary-yellow text-dark-text text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                     {cartItemsCount}
                   </span>
                 )}
+              </Button>
+            </a>
+
+            {/* Admin Login Link */}
+            <a href="/admin-login" className="hidden sm:block">
+              <Button variant="outline" size="icon" title={language === 'ar' ? 'لوحة التحكم' : 'Admin Panel'}>
+                <Settings className="w-5 h-5" />
               </Button>
             </a>
 
