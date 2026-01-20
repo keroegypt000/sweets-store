@@ -6,7 +6,7 @@ import { Loader2, ArrowLeft, CheckCircle2, Clock, Truck, Package } from 'lucide-
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { toast } from 'sonner';
-import Header from '@/components/Header';
+import PageLayout from '@/components/PageLayout';
 
 export default function OrderTracking() {
   const { language } = useLanguage();
@@ -63,8 +63,7 @@ export default function OrderTracking() {
   };
 
   return (
-    <div className="min-h-screen bg-light-bg">
-      <Header cartItemsCount={0} />
+    <PageLayout>
 
       <div className="container py-8">
         {/* Back Button */}
@@ -204,6 +203,6 @@ export default function OrderTracking() {
           </Card>
         )}
       </div>
-    </div>
+    </PageLayout>
   );
 }

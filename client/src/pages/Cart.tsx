@@ -6,7 +6,7 @@ import { Loader2, Trash2, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { toast } from 'sonner';
-import Header from '@/components/Header';
+import PageLayout from '@/components/PageLayout';
 
 export default function Cart() {
   const { language, t } = useLanguage();
@@ -78,18 +78,16 @@ export default function Cart() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-light-bg">
-        <Header cartItemsCount={cartItems.length} />
+      <PageLayout>
         <div className="flex items-center justify-center h-96">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-light-bg">
-      <Header cartItemsCount={cartItems.length} />
+    <PageLayout>
 
       <div className="container py-8">
         {/* Back Button */}
@@ -276,6 +274,6 @@ export default function Cart() {
           </div>
         )}
       </div>
-    </div>
+    </PageLayout>
   );
 }

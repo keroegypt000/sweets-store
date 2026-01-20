@@ -4,7 +4,7 @@ import { Loader2, ShoppingCart, Heart, ArrowLeft } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useLocation, useParams } from 'wouter';
 import { toast } from 'sonner';
-import Header from '@/components/Header';
+import PageLayout from '@/components/PageLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ProductCard from '@/components/ProductCard';
 
@@ -45,19 +45,17 @@ export default function ProductDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-light-bg">
-        <Header />
+      <PageLayout>
         <div className="flex items-center justify-center h-96">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-light-bg">
-        <Header />
+      <PageLayout>
         <div className="container py-12 text-center">
           <p className="text-lg text-muted-foreground mb-4">
             {language === 'ar' ? 'المنتج غير موجود' : 'Product not found'}
@@ -66,7 +64,7 @@ export default function ProductDetail() {
             {language === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
           </Button>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
@@ -78,8 +76,7 @@ export default function ProductDetail() {
   const stock = product.stock ?? 0;
 
   return (
-    <div className="min-h-screen bg-light-bg">
-      <Header />
+    <PageLayout>
 
       <div className="container py-8">
         {/* Back Button */}
@@ -233,6 +230,6 @@ export default function ProductDetail() {
           </div>
         )}
       </div>
-    </div>
+    </PageLayout>
   );
 }
