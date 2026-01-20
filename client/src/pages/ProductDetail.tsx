@@ -10,8 +10,12 @@ import ProductCard from '@/components/ProductCard';
 
 export default function ProductDetail() {
   const { language, t: useLanguageT } = useLanguage();
-  const { slug } = useParams<{ slug: string }>();
-  const [, setLocation] = useLocation();
+  const { slug: paramSlug } = useParams<{ slug: string }>();
+  const [location, setLocation] = useLocation();
+  
+  // Extract slug from URL path, handling query parameters
+  const slug = paramSlug || (typeof window !== 'undefined' ? 
+    window.location.pathname.split('/product/')[1]?.split('?')[0] : '');
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
