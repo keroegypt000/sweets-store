@@ -390,3 +390,17 @@
 - [ ] Display discount badge on product cards in home page
 - [ ] Update ProductCard component to show discount
 - [ ] Update ProductDetail component to show barcode
+
+
+## Price Breakdown & Receipt Printing
+- [x] Add price per item display in cart (سعر الحبة / Price per item)
+- [x] Add quantity display in cart (الكمية / Quantity)
+- [x] Add total per item in cart (الإجمالي / Total)
+- [x] Create Receipt page with bilingual format (Arabic/English)
+- [x] Add print button to Receipt page
+- [x] Format receipt with alternating Arabic/English lines
+- [x] Add customer information section to receipt
+- [x] Add order items table to receipt (bilingual)
+- [x] Add totals section with subtotal, tax, and total
+- [x] Add print styling for receipt page
+- [x] Redirect to receipt page after successful checkout

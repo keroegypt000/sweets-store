@@ -1,12 +1,12 @@
-import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Trash2, ArrowLeft } from 'lucide-react';
+import { Loader2, Trash2, ArrowLeft, Printer } from 'lucide-react';
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { toast } from 'sonner';
 import PageLayout from '@/components/PageLayout';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Cart() {
   const { language, t } = useLanguage();
@@ -46,7 +46,8 @@ export default function Cart() {
   const createOrderMutation = trpc.orders.create.useMutation({
     onSuccess: () => {
       toast.success(language === 'ar' ? 'تم إنشاء الطلب بنجاح' : 'Order created successfully');
-      setLocation('/');
+      // Redirect to receipt page
+      setLocation('/receipt');
     },
     onError: (error) => {
       toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
@@ -137,23 +138,42 @@ export default function Cart() {
                         <h3 className="font-bold text-dark-text">
                           {language === 'ar' ? item.product?.nameAr : item.product?.nameEn}
                         </h3>
-                        <p className="text-primary-yellow font-bold mt-2">
-                          {parseFloat(item.product?.price?.toString() || '0').toFixed(2)} KWD
-                        </p>
-                        <div className="flex items-center gap-2 mt-4">
-                          <label className="text-sm text-muted-foreground">
-                            {language === 'ar' ? 'الكمية:' : 'Qty:'}
-                          </label>
-                          <input
-                            type="number"
-                            min="1"
-                            value={item.quantity ?? 1}
-                            onChange={(e) => {
-                              const newQty = parseInt(e.target.value) || 1;
-                              updateCartMutation.mutate({ cartItemId: item.id, quantity: newQty });
-                            }}
-                            className="w-16 px-2 py-1 border border-border rounded text-center text-sm"
-                          />
+                        
+                        {/* Price Breakdown */}
+                        <div className="mt-3 space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              {language === 'ar' ? 'سعر الحبة:' : 'Price per item:'}
+                            </span>
+                            <span className="font-semibold text-primary-yellow">
+                              {parseFloat(item.product?.price?.toString() || '0').toFixed(2)} KWD
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <label className="text-muted-foreground">
+                              {language === 'ar' ? 'الكمية:' : 'Quantity:'}
+                            </label>
+                            <input
+                              type="number"
+                              min="1"
+                              value={item.quantity ?? 1}
+                              onChange={(e) => {
+                                const newQty = parseInt(e.target.value) || 1;
+                                updateCartMutation.mutate({ cartItemId: item.id, quantity: newQty });
+                              }}
+                              className="w-16 px-2 py-1 border border-border rounded text-center text-sm"
+                            />
+                          </div>
+                          
+                          <div className="flex justify-between border-t border-border pt-2">
+                            <span className="font-bold text-dark-text">
+                              {language === 'ar' ? 'الإجمالي:' : 'Total:'}
+                            </span>
+                            <span className="font-bold text-primary-yellow text-lg">
+                              {(parseFloat(item.product?.price?.toString() || '0') * (item.quantity ?? 1)).toFixed(2)} KWD
+                            </span>
+                          </div>
                         </div>
                       </div>
 
