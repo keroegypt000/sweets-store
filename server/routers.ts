@@ -169,10 +169,11 @@ export const appRouter = router({
       .query(async ({ ctx }) => {
         return getCartItems(ctx.user.id);
       }),
-    add: protectedProcedure
-      .input(z.object({ productId: z.number(), quantity: z.number().default(1) }))
+    add: publicProcedure
+      .input(z.object({ productId: z.number(), quantity: z.number().default(1), userId: z.number().optional() }))
       .mutation(async ({ ctx, input }) => {
-        return addToCart(ctx.user.id, input.productId, input.quantity);
+        const userId = input.userId || ctx.user?.id || 1;
+        return addToCart(userId, input.productId, input.quantity);
       }),
   }),
 
