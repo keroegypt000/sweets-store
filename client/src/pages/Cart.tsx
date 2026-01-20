@@ -2,7 +2,7 @@ import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Trash2, ArrowLeft, Printer } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { toast } from 'sonner';
 import PageLayout from '@/components/PageLayout';
@@ -20,25 +20,62 @@ export default function Cart() {
   // Fetch cart items
   const { data: cartItems = [], isLoading } = trpc.cart.list.useQuery();
 
-  // Delete cart item mutation
+  // Debounce timer for quantity updates
+  const updateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Delete cart item mutation with optimistic updates
   const deleteCartMutation = trpc.cart.delete.useMutation({
+    onMutate: async (variables) => {
+      // Cancel outgoing refetches
+      await utils.cart.list.cancel();
+      // Snapshot the previous value
+      const previousData = utils.cart.list.getData();
+      // Optimistically update to the new value
+      utils.cart.list.setData(undefined, (old) =>
+        old ? old.filter((item) => item.id !== variables.cartItemId) : []
+      );
+      return { previousData };
+    },
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousData) {
+        utils.cart.list.setData(undefined, context.previousData);
+      }
+      toast.error(err.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
+    },
     onSuccess: () => {
       toast.success(language === 'ar' ? 'تم حذف المنتج' : 'Product removed');
-      utils.cart.list.invalidate();
-    },
-    onError: (error) => {
-      toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
     },
   });
 
-  // Update cart quantity mutation
+  // Update cart quantity mutation with debouncing
   const updateCartMutation = trpc.cart.update.useMutation({
-    onSuccess: () => {
-      toast.success(language === 'ar' ? 'تم تحديث الكمية' : 'Quantity updated');
-      utils.cart.list.invalidate();
+    onMutate: async (variables) => {
+      // Cancel outgoing refetches
+      await utils.cart.list.cancel();
+      // Snapshot the previous value
+      const previousData = utils.cart.list.getData();
+      // Optimistically update to the new value
+      utils.cart.list.setData(undefined, (old) =>
+        old
+          ? old.map((item) =>
+              item.id === variables.cartItemId
+                ? { ...item, quantity: variables.quantity }
+                : item
+            )
+          : []
+      );
+      return { previousData };
     },
-    onError: (error) => {
-      toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousData) {
+        utils.cart.list.setData(undefined, context.previousData);
+      }
+      toast.error(err.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
+    },
+    onSuccess: () => {
+      // Silent success - no toast needed for quantity updates
     },
   });
 
@@ -61,7 +98,30 @@ export default function Cart() {
     return sum + price * qty;
   }, 0);
 
-  const handleCheckout = () => {
+  // Debounced quantity update handler
+  const handleQuantityChange = useCallback((cartItemId: number, newQuantity: number) => {
+    // Clear previous timer
+    if (updateTimerRef.current !== null) {
+      clearTimeout(updateTimerRef.current);
+    }
+    // Set new timer with 500ms debounce
+    updateTimerRef.current = setTimeout(() => {
+      if (newQuantity > 0) {
+        updateCartMutation.mutate({ cartItemId, quantity: newQuantity });
+      }
+    }, 500);
+  }, [updateCartMutation]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (updateTimerRef.current !== null) {
+        clearTimeout(updateTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleCheckout = useCallback(() => {
     if (!shippingAddress.trim()) {
       toast.error(language === 'ar' ? 'يرجى إدخال عنوان الشحن' : 'Please enter shipping address');
       return;
@@ -78,7 +138,7 @@ export default function Cart() {
       customerEmail,
       customerPhone,
     });
-  };
+  }, [shippingAddress, customerName, customerEmail, customerPhone, total, createOrderMutation, language]);
 
   if (isLoading) {
     return (
@@ -154,16 +214,16 @@ export default function Cart() {
                             <label className="text-muted-foreground">
                               {language === 'ar' ? 'الكمية:' : 'Quantity:'}
                             </label>
-                            <input
-                              type="number"
-                              min="1"
-                              value={item.quantity ?? 1}
-                              onChange={(e) => {
-                                const newQty = parseInt(e.target.value) || 1;
-                                updateCartMutation.mutate({ cartItemId: item.id, quantity: newQty });
-                              }}
-                              className="w-16 px-2 py-1 border border-border rounded text-center text-sm"
-                            />
+                          <input
+                            type="number"
+                            min="1"
+                            value={item.quantity ?? 1}
+                            onChange={(e) => {
+                              const newQty = parseInt(e.target.value) || 1;
+                              handleQuantityChange(item.id, newQty);
+                            }}
+                            className="w-16 px-2 py-1 border border-border rounded text-center text-sm"
+                          />
                           </div>
                           
                           <div className="flex justify-between border-t border-border pt-2">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import ProductCard from '@/components/ProductCard';
@@ -8,10 +8,25 @@ import PageLayout from '@/components/PageLayout';
 import { ShoppingCart, ArrowLeft, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
+// Debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  
+  return debouncedValue;
+}
+
 export default function Home() {
   const { language } = useLanguage();
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // Fetch categories
   const { data: categories = [] } = trpc.categories.list.useQuery(undefined, {
@@ -24,42 +39,54 @@ export default function Home() {
   });
 
   // Filter products based on selected category
-  const products = selectedCategoryId
-    ? allProducts.filter(p => p.categoryId === selectedCategoryId)
-    : allProducts;
+  const products = useMemo(() => {
+    return selectedCategoryId
+      ? allProducts.filter(p => p.categoryId === selectedCategoryId)
+      : allProducts;
+  }, [selectedCategoryId, allProducts]);
 
-  // Filter categories by search query
-  const filteredCategories = categories.filter(cat => {
-    const name = language === 'ar' ? cat.nameAr : cat.nameEn;
-    return name.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  // Filter categories by search query (memoized)
+  const filteredCategories = useMemo(() => {
+    return categories.filter(cat => {
+      const name = language === 'ar' ? cat.nameAr : cat.nameEn;
+      return name.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
+    });
+  }, [categories, debouncedSearchQuery, language]);
 
-  // Filter products by search query (both Arabic and English names)
-  const filteredProducts = searchQuery.trim() === '' 
-    ? products 
-    : products.filter(product => {
-        const productName = language === 'ar' ? product.nameAr : product.nameEn;
-        const productDesc = language === 'ar' ? (product.descriptionAr || '') : (product.descriptionEn || '');
-        const query = searchQuery.toLowerCase();
-        return productName.toLowerCase().includes(query) || productDesc.toLowerCase().includes(query);
-      });
+  // Filter products by search query (both Arabic and English names) (memoized)
+  const filteredProducts = useMemo(() => {
+    if (debouncedSearchQuery.trim() === '') {
+      return products;
+    }
+    return products.filter(product => {
+      const productName = language === 'ar' ? product.nameAr : product.nameEn;
+      const productDesc = language === 'ar' ? (product.descriptionAr || '') : (product.descriptionEn || '');
+      const query = debouncedSearchQuery.toLowerCase();
+      return productName.toLowerCase().includes(query) || productDesc.toLowerCase().includes(query);
+    });
+  }, [products, debouncedSearchQuery, language]);
 
-  // Add to cart mutation
+  // Add to cart mutation with optimistic updates
+  const utils = trpc.useUtils();
   const addToCartMutation = trpc.cart.add.useMutation({
     onSuccess: () => {
       toast.success(language === 'ar' ? 'تمت إضافة المنتج إلى السلة' : 'Product added to cart');
+      // Invalidate cart list to refresh count
+      utils.cart.list.invalidate();
     },
     onError: (error: any) => {
       toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'Error'));
     },
   });
 
-  const handleAddToCart = (productId: number, quantity: number) => {
+  const handleAddToCart = useCallback((productId: number, quantity: number) => {
     addToCartMutation.mutate({ productId, quantity });
-  };
+  }, [addToCartMutation]);
 
-  // Get selected category info
-  const selectedCategory = categories.find(c => c.id === selectedCategoryId);
+  // Get selected category info (memoized)
+  const selectedCategory = useMemo(() => {
+    return categories.find(c => c.id === selectedCategoryId);
+  }, [categories, selectedCategoryId]);
 
   return (
     <PageLayout>
@@ -90,6 +117,7 @@ export default function Home() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-xl border-2 border-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm font-medium bg-white transition-all"
+              spellCheck="false"
             />
           </div>
         </div>
