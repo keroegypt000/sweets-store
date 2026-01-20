@@ -1,9 +1,8 @@
-import { useParams } from 'wouter';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Loader2, ShoppingCart, Heart, ArrowLeft } from 'lucide-react';
 import { useState, useMemo } from 'react';
-import { useLocation } from 'wouter';
+import { useLocation, useParams } from 'wouter';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
