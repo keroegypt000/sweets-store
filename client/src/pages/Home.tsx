@@ -34,6 +34,16 @@ export default function Home() {
     return name.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
+  // Filter products by search query (both Arabic and English names)
+  const filteredProducts = searchQuery.trim() === '' 
+    ? products 
+    : products.filter(product => {
+        const productName = language === 'ar' ? product.nameAr : product.nameEn;
+        const productDesc = language === 'ar' ? (product.descriptionAr || '') : (product.descriptionEn || '');
+        const query = searchQuery.toLowerCase();
+        return productName.toLowerCase().includes(query) || productDesc.toLowerCase().includes(query);
+      });
+
   // Add to cart mutation
   const addToCartMutation = trpc.cart.add.useMutation({
     onSuccess: () => {
@@ -149,8 +159,8 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:p-6">
-              {products && products.length > 0 ? (
-                products.map((product) => (
+              {filteredProducts && filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
