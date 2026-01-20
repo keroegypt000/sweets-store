@@ -155,13 +155,13 @@ export default function ProductDetail() {
               </p>
             </div>
 
-            {/* Barcode */}
-            {product.barcode && (
+            {/* SKU - Visible to customers */}
+            {product.sku && (
               <div className="border-t border-b border-border py-4">
                 <p className="text-sm text-muted-foreground mb-2">
-                  {language === 'ar' ? 'الباركود' : 'Barcode'}
+                  {language === 'ar' ? 'رمز المنتج' : 'Product Code'}
                 </p>
-                <p className="text-lg font-mono font-bold text-dark-text">{product.barcode}</p>
+                <p className="text-lg font-mono font-bold text-dark-text">{product.sku}</p>
               </div>
             )}
 

@@ -167,6 +167,7 @@ export default function AdminDashboardPro() {
     slug: '',
     categoryId: '',
     barcode: '',
+    sku: '',
     discount: '',
   });
 
@@ -250,6 +251,7 @@ export default function AdminDashboardPro() {
           slug: '',
           categoryId: '',
           barcode: '',
+          sku: '',
           discount: '',
         });
         setImagePreview('');
@@ -428,6 +430,7 @@ export default function AdminDashboardPro() {
           slug: '',
           categoryId: '',
           barcode: '',
+          sku: '',
           discount: '',
         });
         setImagePreview('');
@@ -627,11 +630,16 @@ export default function AdminDashboardPro() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Input
-                      placeholder={language === 'ar' ? 'الباركود' : 'Barcode'}
+                      placeholder={language === 'ar' ? 'الباركود (داخلي)' : 'Barcode (Internal)'}
                       value={productForm.barcode || ''}
                       onChange={(e) => setProductForm({ ...productForm, barcode: e.target.value })}
+                    />
+                    <Input
+                      placeholder={language === 'ar' ? 'SKU (خارجي)' : 'SKU (External)'}
+                      value={productForm.sku || ''}
+                      onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
                     />
                     <Input
                       type="number"
@@ -704,6 +712,7 @@ export default function AdminDashboardPro() {
                         slug: '',
                         categoryId: '',
                         barcode: '',
+                        sku: '',
                         discount: '',
                       });
                       setImagePreview('');

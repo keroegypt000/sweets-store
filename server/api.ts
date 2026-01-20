@@ -24,7 +24,7 @@ router.post('/products', async (req: Request, res: Response) => {
   try {
     const db = await getDb();
     if (!db) return res.status(500).json({ error: 'Database not available' });
-    const { nameAr, nameEn, descriptionAr, descriptionEn, price, stock, image, slug, categoryId } = req.body;
+    const { nameAr, nameEn, descriptionAr, descriptionEn, price, stock, image, slug, categoryId, barcode, sku, discount } = req.body;
     
     await db.insert(products).values({
       nameAr,
@@ -36,6 +36,9 @@ router.post('/products', async (req: Request, res: Response) => {
       image,
       slug,
       categoryId: categoryId ? parseInt(categoryId) : 1,
+      barcode: barcode || null,
+      sku: sku || null,
+      discount: discount ? parseInt(discount) : 0,
     });
 
     res.json({ success: true });
@@ -50,7 +53,7 @@ router.put('/products/:id', async (req: Request, res: Response) => {
     const db = await getDb();
     if (!db) return res.status(500).json({ error: 'Database not available' });
     const { id } = req.params;
-    const { nameAr, nameEn, descriptionAr, descriptionEn, price, stock, image, slug, categoryId } = req.body;
+    const { nameAr, nameEn, descriptionAr, descriptionEn, price, stock, image, slug, categoryId, barcode, sku, discount } = req.body;
 
     await db.update(products)
       .set({
@@ -63,6 +66,9 @@ router.put('/products/:id', async (req: Request, res: Response) => {
         image,
         slug,
         categoryId: categoryId ? parseInt(categoryId) : 1,
+        barcode: barcode || null,
+        sku: sku || null,
+        discount: discount ? parseInt(discount) : 0,
       } as any)
       .where(eq(products.id, parseInt(id)));
 

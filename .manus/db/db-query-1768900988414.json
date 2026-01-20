@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, nameAr, nameEn, barcode, sku, discount FROM products LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user dBnEF2pw3cN7fdc.root --database TBvBXeooTqFpEvP3g5fESC --execute SELECT id, nameAr, nameEn, barcode, sku, discount FROM products LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "nameAr": "شوكولاتة داكنة",
+      "nameEn": "Dark Chocolate",
+      "barcode": "NULL",
+      "sku": "NULL",
+      "discount": "0"
+    },
+    {
+      "id": "2",
+      "nameAr": "شوكولاتة بالحليب",
+      "nameEn": "Milk Chocolate",
+      "barcode": "NULL",
+      "sku": "NULL",
+      "discount": "0"
+    },
+    {
+      "id": "3",
+      "nameAr": "رقائق البطاطس",
+      "nameEn": "Potato Chips",
+      "barcode": "NULL",
+      "sku": "NULL",
+      "discount": "0"
+    },
+    {
+      "id": "4",
+      "nameAr": "بسكويت الشوكولاتة",
+      "nameEn": "Chocolate Biscuits",
+      "barcode": "NULL",
+      "sku": "NULL",
+      "discount": "0"
+    },
+    {
+      "id": "5",
+      "nameAr": "قهوة عربية",
+      "nameEn": "Arabic Coffee",
+      "barcode": "NULL",
+      "sku": "NULL",
+      "discount": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnameAr\tnameEn\tbarcode\tsku\tdiscount\n1\tشوكولاتة داكنة\tDark Chocolate\tNULL\tNULL\t0\n2\tشوكولاتة بالحليب\tMilk Chocolate\tNULL\tNULL\t0\n3\tرقائق البطاطس\tPotato Chips\tNULL\tNULL\t0\n4\tبسكويت الشوكولاتة\tChocolate Biscuits\tNULL\tNULL\t0\n5\tقهوة عربية\tArabic Coffee\tNULL\tNULL\t0\n",
+  "stderr": "",
+  "execution_time_ms": 1604
+}
