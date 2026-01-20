@@ -29,6 +29,13 @@
       "when": 1768839651806,
       "tag": "0003_fixed_sentinel",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1768901781486,
+      "tag": "0004_certain_rhino",
+      "breakpoints": true
     }
   ]
 }

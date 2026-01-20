@@ -3,7 +3,9 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
-import { getCategories, getProducts, getProductsByCategory, getProductBySlug, getFeaturedProducts, getPromotionalProducts, getCartItems, addToCart, getUserOrders, createOrder, createProduct, updateProduct, deleteProduct, getProductById, getAllProducts, createCategory, updateCategory, deleteCategory, getCategoryById, getAllCategories, createBanner, updateBanner, deleteBanner, getBanners, getAllBanners, getAllOrders, updateOrderStatus, getOrderWithItems } from "./db";
+import { getCategories, getProducts, getProductsByCategory, getProductBySlug, getFeaturedProducts, getPromotionalProducts, getCartItems, addToCart, getUserOrders, createOrder, createProduct, updateProduct, deleteProduct, getProductById, getAllProducts, createCategory, updateCategory, deleteCategory, getCategoryById, getAllCategories, createBanner, updateBanner, deleteBanner, getBanners, getAllBanners, getAllOrders, updateOrderStatus, getOrderWithItems, getDb } from "./db";
+import { cartItems } from "../drizzle/schema";
+import { eq } from "drizzle-orm";
 import { notifyOwner } from "./_core/notification";
 import { TRPCError } from "@trpc/server";
 
@@ -177,6 +179,26 @@ export const appRouter = router({
         const userId = input.userId || ctx.user?.id || 1;
         return addToCart(userId, input.productId, input.quantity);
       }),
+    delete: publicProcedure
+      .input(z.object({ cartItemId: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        await db.delete(cartItems).where(eq(cartItems.id, input.cartItemId));
+        return { success: true };
+      }),
+    update: publicProcedure
+      .input(z.object({ cartItemId: z.number(), quantity: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        if (input.quantity <= 0) {
+          await db.delete(cartItems).where(eq(cartItems.id, input.cartItemId));
+        } else {
+          await db.update(cartItems).set({ quantity: input.quantity }).where(eq(cartItems.id, input.cartItemId));
+        }
+        return { success: true };
+      }),
   }),
 
   orders: router({
@@ -185,10 +207,10 @@ export const appRouter = router({
         return getUserOrders(ctx.user.id);
       }),
     create: publicProcedure
-      .input(z.object({ totalAmount: z.string(), shippingAddress: z.string(), userId: z.number().optional() }))
+      .input(z.object({ totalAmount: z.string(), shippingAddress: z.string(), userId: z.number().optional(), customerName: z.string().optional(), customerEmail: z.string().optional(), customerPhone: z.string().optional() }))
       .mutation(async ({ ctx, input }) => {
         const userId = input.userId || ctx.user?.id || 1;
-        const result = await createOrder(userId, input.totalAmount, input.shippingAddress);
+        const result = await createOrder(userId, input.totalAmount, input.shippingAddress, input.customerName, input.customerEmail, input.customerPhone);
         await notifyOwner({
           title: 'New Order Received',
           content: `New order from ${ctx.user?.name || 'Guest Customer'} for ${input.totalAmount} KWD. Shipping address: ${input.shippingAddress}`,

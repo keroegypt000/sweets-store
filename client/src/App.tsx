@@ -7,7 +7,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
-import Cart from "./pages/Cart";
+import Cart from '@/pages/Cart';
+import OrderTracking from '@/pages/OrderTracking';
 import AdminLogin from '@/pages/AdminLogin';
 import AdminDashboardPro from '@/pages/AdminDashboardPro';
 
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/product/:slug" component={ProductDetail} />
       <Route path="/cart" component={Cart} />
+      <Route path="/track-order" component={OrderTracking} />
       <Route path="/admin-login" component={AdminLogin} />
       <Route path="/admin-dashboard" component={AdminDashboardPro} />
       <Route path="/404" component={NotFound} />

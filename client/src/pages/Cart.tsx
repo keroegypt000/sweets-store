@@ -12,9 +12,32 @@ export default function Cart() {
   const { language, t } = useLanguage();
   const [, setLocation] = useLocation();
   const [shippingAddress, setShippingAddress] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
 
   // Fetch cart items
   const { data: cartItems = [], isLoading } = trpc.cart.list.useQuery();
+
+  // Delete cart item mutation
+  const deleteCartMutation = trpc.cart.delete.useMutation({
+    onSuccess: () => {
+      toast.success(language === 'ar' ? 'تم حذف المنتج' : 'Product removed');
+    },
+    onError: (error) => {
+      toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
+    },
+  });
+
+  // Update cart quantity mutation
+  const updateCartMutation = trpc.cart.update.useMutation({
+    onSuccess: () => {
+      toast.success(language === 'ar' ? 'تم تحديث الكمية' : 'Quantity updated');
+    },
+    onError: (error) => {
+      toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
+    },
+  });
 
   // Create order mutation
   const createOrderMutation = trpc.orders.create.useMutation({
@@ -39,10 +62,17 @@ export default function Cart() {
       toast.error(language === 'ar' ? 'يرجى إدخال عنوان الشحن' : 'Please enter shipping address');
       return;
     }
+    if (!customerName.trim() || !customerEmail.trim() || !customerPhone.trim()) {
+      toast.error(language === 'ar' ? 'يرجى إدخال جميع بيانات العميل' : 'Please enter all customer information');
+      return;
+    }
 
     createOrderMutation.mutate({
       totalAmount: total.toFixed(2),
       shippingAddress,
+      customerName,
+      customerEmail,
+      customerPhone,
     });
   };
 
@@ -117,8 +147,11 @@ export default function Cart() {
                             type="number"
                             min="1"
                             value={item.quantity ?? 1}
+                            onChange={(e) => {
+                              const newQty = parseInt(e.target.value) || 1;
+                              updateCartMutation.mutate({ cartItemId: item.id, quantity: newQty });
+                            }}
                             className="w-16 px-2 py-1 border border-border rounded text-center text-sm"
-                            disabled
                           />
                         </div>
                       </div>
@@ -128,6 +161,7 @@ export default function Cart() {
                         variant="ghost"
                         size="icon"
                         className="text-red-600 hover:text-red-700"
+                        onClick={() => deleteCartMutation.mutate({ cartItemId: item.id })}
                       >
                         <Trash2 className="w-5 h-5" />
                       </Button>
@@ -154,6 +188,46 @@ export default function Cart() {
                     <span className="font-medium text-dark-text">
                       {total.toFixed(2)} KWD
                     </span>
+                  </div>
+
+                  {/* Customer Information */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-dark-text">
+                      {language === 'ar' ? 'الاسم' : 'Name'}
+                    </label>
+                    <input
+                      type="text"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder={language === 'ar' ? 'أدخل اسمك' : 'Enter your name'}
+                      className="w-full px-3 py-2 border border-border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-dark-text">
+                      {language === 'ar' ? 'البريد الإلكتروني' : 'Email'}
+                    </label>
+                    <input
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      placeholder={language === 'ar' ? 'أدخل بريدك الإلكتروني' : 'Enter your email'}
+                      className="w-full px-3 py-2 border border-border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-dark-text">
+                      {language === 'ar' ? 'الهاتف' : 'Phone'}
+                    </label>
+                    <input
+                      type="tel"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder={language === 'ar' ? 'أدخل رقم هاتفك' : 'Enter your phone'}
+                      className="w-full px-3 py-2 border border-border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                   </div>
 
                   {/* Shipping Address */}

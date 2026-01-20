@@ -184,7 +184,7 @@ export async function getOrderById(orderId: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function createOrder(userId: number, totalAmount: string, shippingAddress: string) {
+export async function createOrder(userId: number, totalAmount: string, shippingAddress: string, customerName?: string, customerEmail?: string, customerPhone?: string) {
   const db = await getDb();
   if (!db) return null;
   const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -193,6 +193,9 @@ export async function createOrder(userId: number, totalAmount: string, shippingA
     orderNumber,
     totalAmount: totalAmount as any,
     shippingAddress,
+    customerName: customerName || null,
+    customerEmail: customerEmail || null,
+    customerPhone: customerPhone || null,
   });
   // Fetch the created order
   const result = await db.select().from(orders).where(eq(orders.orderNumber, orderNumber)).limit(1);
