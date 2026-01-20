@@ -155,16 +155,6 @@ export default function ProductDetail() {
               </p>
             </div>
 
-            {/* SKU - Visible to customers */}
-            {product.sku && (
-              <div className="border-t border-b border-border py-4">
-                <p className="text-sm text-muted-foreground mb-2">
-                  {language === 'ar' ? 'رمز المنتج' : 'Product Code'}
-                </p>
-                <p className="text-lg font-mono font-bold text-dark-text">{product.sku}</p>
-              </div>
-            )}
-
             {/* Quantity & Add to Cart */}
             <div className="space-y-4">
               <div className="flex items-center gap-4">
@@ -183,18 +173,21 @@ export default function ProductDetail() {
               </div>
 
               <div className="flex gap-4">
-                <Button
-                  onClick={() => addToCartMutation.mutate({ productId: product.id, quantity })}
-                  disabled={stock === 0 || addToCartMutation.isPending}
-                  className="flex-1 bg-primary-yellow text-dark-text hover:bg-accent-yellow py-6 text-lg font-bold"
-                >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  {addToCartMutation.isPending
-                    ? language === 'ar'
-                      ? 'جاري الإضافة...'
-                      : 'Adding...'
-                    : language === 'ar' ? 'أضف إلى السلة' : 'Add to Cart'}
-                </Button>
+                <div className="flex-1 relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary-yellow via-accent-yellow to-primary-yellow rounded-full blur-lg opacity-75 animate-pulse"></div>
+                  <Button
+                    onClick={() => addToCartMutation.mutate({ productId: product.id, quantity })}
+                    disabled={stock === 0 || addToCartMutation.isPending}
+                    className="relative w-full bg-primary-yellow text-dark-text hover:bg-accent-yellow py-6 text-lg font-bold rounded-full border-4 border-accent-yellow shadow-lg hover:shadow-2xl transition-all duration-300"
+                  >
+                    <ShoppingCart className="w-5 h-5 mr-2 inline" />
+                    {addToCartMutation.isPending
+                      ? language === 'ar'
+                        ? 'جاري الإضافة...'
+                        : 'Adding...'
+                      : language === 'ar' ? 'أضف إلى السلة' : 'Add to Cart'}
+                  </Button>
+                </div>
 
                 <Button
                   variant="outline"
