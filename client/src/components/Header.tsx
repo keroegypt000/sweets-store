@@ -1,5 +1,6 @@
+import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useCart } from '@/contexts/CartContext';
+
 import { useAuth } from '@/_core/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,15 +8,18 @@ import { ShoppingCart, Menu, X, Search, Settings } from 'lucide-react';
 import { useState } from 'react';
 
 interface HeaderProps {
-  cartItemsCount?: number;
   onSearchChange?: (query: string) => void;
 }
 
-export default function Header({ cartItemsCount = 0, onSearchChange }: HeaderProps) {
+export default function Header({ onSearchChange }: HeaderProps) {
   const { language, setLanguage, t } = useLanguage();
   const { user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Fetch cart items to get count
+  const { data: cartItems = [] } = trpc.cart.list.useQuery();
+  const cartItemsCount = cartItems.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0);
 
   const handleLanguageToggle = () => {
     setLanguage(language === 'ar' ? 'en' : 'ar');

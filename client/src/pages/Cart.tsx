@@ -11,6 +11,7 @@ import PageLayout from '@/components/PageLayout';
 export default function Cart() {
   const { language, t } = useLanguage();
   const [, setLocation] = useLocation();
+  const utils = trpc.useUtils();
   const [shippingAddress, setShippingAddress] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
@@ -23,6 +24,7 @@ export default function Cart() {
   const deleteCartMutation = trpc.cart.delete.useMutation({
     onSuccess: () => {
       toast.success(language === 'ar' ? 'تم حذف المنتج' : 'Product removed');
+      utils.cart.list.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
@@ -33,6 +35,7 @@ export default function Cart() {
   const updateCartMutation = trpc.cart.update.useMutation({
     onSuccess: () => {
       toast.success(language === 'ar' ? 'تم تحديث الكمية' : 'Quantity updated');
+      utils.cart.list.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
