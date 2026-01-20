@@ -215,6 +215,17 @@ export const appRouter = router({
           title: 'New Order Received',
           content: `New order from ${ctx.user?.name || 'Guest Customer'} for ${input.totalAmount} KWD. Shipping address: ${input.shippingAddress}`,
         });
+        // Send email notification to customer
+        if (input.customerEmail) {
+          const { sendOrderConfirmationEmail } = await import('./_core/emailService');
+          sendOrderConfirmationEmail(
+            input.customerEmail,
+            input.customerName || 'Customer',
+            result?.orderNumber || 'N/A',
+            input.totalAmount,
+            []
+          ).catch((err: any) => console.error('Email sending failed:', err));
+        }
         return result;
       }),
     allOrders: protectedProcedure
@@ -237,6 +248,26 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
         return updateOrderStatus(input.id, input.status);
+      }),
+    sendStatusEmail: protectedProcedure
+      .input(z.object({
+        orderId: z.number(),
+        customerEmail: z.string().email(),
+        customerName: z.string(),
+        status: z.enum(['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { sendOrderStatusUpdateEmail } = await import('./_core/emailService');
+        const orderNumber = `ORD-${input.orderId}`;
+        await sendOrderStatusUpdateEmail(
+          input.customerEmail,
+          input.customerName,
+          orderNumber,
+          input.status,
+          input.status
+        );
+        return { success: true };
       }),
   }),
 
