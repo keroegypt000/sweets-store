@@ -404,3 +404,16 @@
 - [x] Add totals section with subtotal, tax, and total
 - [x] Add print styling for receipt page
 - [x] Redirect to receipt page after successful checkout
+
+
+## Admin Dashboard Enhancements
+- [x] Add real-time notifications for new orders
+- [x] Add bell icon with unread count badge
+- [x] Add notification sound and toast alerts
+- [x] Implement advanced search (order ID, customer name, phone)
+- [x] Add date range filtering (from/to dates)
+- [x] Display order statistics (total, pending, confirmed)
+- [x] Show customer phone number in order list
+- [x] Add clear filters button
+- [x] Highlight new orders with notification animation
+- [x] Auto-hide notification after 5 seconds
