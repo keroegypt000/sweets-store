@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Loader2, Plus, Edit2, Trash2, LogOut, Search, X, Upload, Eye, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import OrdersManagement from './OrdersManagement';
+import BannerManagement from './BannerManagement';
 
-type Tab = 'products' | 'categories' | 'orders' | 'ordersManagement';
+type Tab = 'products' | 'categories' | 'orders' | 'ordersManagement' | 'banners';
 
 interface Product {
   id: number;
@@ -526,7 +527,7 @@ export default function AdminDashboardPro() {
       {/* Tabs */}
       <div className="bg-white border-b sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 flex gap-4">
-          {(['products', 'categories', 'orders', 'ordersManagement'] as Tab[]).map(tab => (
+          {(['products', 'categories', 'orders', 'ordersManagement', 'banners'] as Tab[]).map(tab => (
             <button
               key={tab}
               onClick={() => {
@@ -987,6 +988,11 @@ export default function AdminDashboardPro() {
               )}
             </div>
           </div>
+        )}
+
+        {/* BANNERS TAB */}
+        {activeTab === 'banners' && (
+          <BannerManagement />
         )}
       </main>
     </div>

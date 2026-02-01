@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import ProductCard from '@/components/ProductCard';
 import PageLayout from '@/components/PageLayout';
+import BannerSlider from '@/components/BannerSlider';
 import { ShoppingCart, ArrowLeft, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -88,23 +89,43 @@ export default function Home() {
     return categories.find(c => c.id === selectedCategoryId);
   }, [categories, selectedCategoryId]);
 
+  // Sample banners for display (in real app, these would come from database)
+  const sampleBanners = [
+    {
+      id: 1,
+      titleAr: 'متجر الحلويات',
+      titleEn: 'Sweets Store',
+      descriptionAr: 'أفضل الحلويات والمعجنات',
+      descriptionEn: 'Best sweets and pastries',
+      image: 'https://images.unsplash.com/photo-1599599810694-b5ac4dd64e90?w=800&h=400&fit=crop',
+      backgroundColor: '#FCD34D',
+      backgroundGradient: 'from-yellow-400 via-yellow-300 to-orange-300',
+      link: '#',
+      order: 0,
+      isActive: true,
+    },
+    {
+      id: 2,
+      titleAr: 'عروض خاصة',
+      titleEn: 'Special Offers',
+      descriptionAr: 'خصومات تصل إلى 50%',
+      descriptionEn: 'Discounts up to 50%',
+      image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&h=400&fit=crop',
+      backgroundColor: '#FCA5A5',
+      backgroundGradient: 'from-red-300 via-pink-300 to-red-200',
+      link: '#',
+      order: 1,
+      isActive: true,
+    },
+  ];
+
   return (
     <PageLayout>
       {/* MOBILE VIEW - Vertical Layout */}
       <div className="md:hidden flex flex-col min-h-screen">
-        {/* Banner */}
-        <div className="w-full h-40 bg-gradient-to-r from-yellow-400 via-yellow-300 to-orange-300 flex items-center justify-center overflow-hidden shadow-lg relative">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <img
-            src="https://images.unsplash.com/photo-1599599810694-b5ac4dd64e90?w=600&h=250&fit=crop"
-            alt="Banner"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">
-              {language === 'ar' ? 'متجر الحلويات' : 'Sweets Store'}
-            </h1>
-          </div>
+        {/* Banner Slider */}
+        <div className="w-full p-3 sm:p-4">
+          <BannerSlider banners={sampleBanners} language={language as 'ar' | 'en'} />
         </div>
 
         {/* Search Bar */}

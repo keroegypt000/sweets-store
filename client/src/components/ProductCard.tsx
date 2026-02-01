@@ -1,7 +1,7 @@
-import { useLanguage } from '@/contexts/LanguageContext';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { Product } from '@/types';
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProductCardProps {
   product: Product;
