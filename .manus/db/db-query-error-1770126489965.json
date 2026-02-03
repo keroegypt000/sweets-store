@@ -1,0 +1,8 @@
+{
+  "query": "UPDATE categories SET image_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/qCudpdamedMLSvxD.jpg' WHERE name_en LIKE '%Chocolate%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user dBnEF2pw3cN7fdc.root --database TBvBXeooTqFpEvP3g5fESC --execute UPDATE categories SET image_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/qCudpdamedMLSvxD.jpg' WHERE name_en LIKE '%Chocolate%'",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'name_en' in 'where clause'"
+  ]
+}
