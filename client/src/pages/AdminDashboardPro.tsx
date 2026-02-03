@@ -92,6 +92,8 @@ const translations = {
     shipped: 'مشحون',
     delivered: 'مسلم',
     cancelled: 'ملغى',
+    ordersManagement: 'إدارة الطلبات',
+    banners: 'إدارة البنرات',
   },
   en: {
     dashboard: 'Dashboard',
@@ -136,6 +138,8 @@ const translations = {
     shipped: 'Shipped',
     delivered: 'Delivered',
     cancelled: 'Cancelled',
+    ordersManagement: 'Orders Management',
+    banners: 'Banner Management',
   },
 };
 

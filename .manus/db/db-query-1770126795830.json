@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE categories SET image = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/yZFAUgcpmHrhNSfI.jpg' WHERE nameEn LIKE '%Dried%' OR nameAr LIKE '%جاف%'; UPDATE categories SET image = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/hrfAWvrAEQSqvIcJ.jpg' WHERE nameEn LIKE '%Ice%' OR nameAr LIKE '%آيس%'; UPDATE categories SET image = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/KdvkdMNSJEKgyFkz.jpg' WHERE nameEn LIKE '%Chip%' OR nameAr LIKE '%رقائق%'; UPDATE categories SET image = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/iURdCkutzgfBJEmt.jpg' WHERE nameEn LIKE '%Cookie%' OR nameAr LIKE '%بسكويت%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user dBnEF2pw3cN7fdc.root --database TBvBXeooTqFpEvP3g5fESC --execute UPDATE categories SET image = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/yZFAUgcpmHrhNSfI.jpg' WHERE nameEn LIKE '%Dried%' OR nameAr LIKE '%جاف%'; UPDATE categories SET image = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/hrfAWvrAEQSqvIcJ.jpg' WHERE nameEn LIKE '%Ice%' OR nameAr LIKE '%آيس%'; UPDATE categories SET image = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/KdvkdMNSJEKgyFkz.jpg' WHERE nameEn LIKE '%Chip%' OR nameAr LIKE '%رقائق%'; UPDATE categories SET image = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/iURdCkutzgfBJEmt.jpg' WHERE nameEn LIKE '%Cookie%' OR nameAr LIKE '%بسكويت%'",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2235
+}

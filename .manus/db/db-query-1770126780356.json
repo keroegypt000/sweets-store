@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, nameEn, nameAr, image FROM categories LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user dBnEF2pw3cN7fdc.root --database TBvBXeooTqFpEvP3g5fESC --execute SELECT id, nameEn, nameAr, image FROM categories LIMIT 5",
+  "rows": [
+    {
+      "id": "1",
+      "nameEn": "Recently Added",
+      "nameAr": "تم إضافته مؤخراً",
+      "image": "NULL"
+    },
+    {
+      "id": "2",
+      "nameEn": "Most Selling",
+      "nameAr": "الأكثر مبيعاً",
+      "image": "NULL"
+    },
+    {
+      "id": "3",
+      "nameEn": "Promotions",
+      "nameAr": "العروض الترويجية",
+      "image": "NULL"
+    },
+    {
+      "id": "4",
+      "nameEn": "Wholesale",
+      "nameAr": "الجملة",
+      "image": "NULL"
+    },
+    {
+      "id": "5",
+      "nameEn": "Chocolates",
+      "nameAr": "الشوكولاتة",
+      "image": "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/qCudpdamedMLSvxD.jpg"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnameEn\tnameAr\timage\n1\tRecently Added\tتم إضافته مؤخراً\tNULL\n2\tMost Selling\tالأكثر مبيعاً\tNULL\n3\tPromotions\tالعروض الترويجية\tNULL\n4\tWholesale\tالجملة\tNULL\n5\tChocolates\tالشوكولاتة\thttps://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/qCudpdamedMLSvxD.jpg\n",
+  "stderr": "",
+  "execution_time_ms": 1494
+}
