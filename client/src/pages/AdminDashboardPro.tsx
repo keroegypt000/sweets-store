@@ -550,20 +550,7 @@ export default function AdminDashboardPro() {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="relative">
-            <Search size={20} className="absolute left-3 top-2.5 text-gray-400" />
-            <Input
-              placeholder={t.search}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={`${language === 'ar' ? 'pr-10' : 'pl-10'}`}
-            />
-          </div>
-        </div>
-      </div>
+
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -572,7 +559,7 @@ export default function AdminDashboardPro() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold">{t.products}</h2>
-              <Button onClick={() => setShowForm(!showForm)} size="lg">
+              <Button onClick={() => setShowForm(!showForm)} size="lg" className={language === 'ar' ? 'flex-row-reverse' : ''}>
                 <Plus size={18} className={language === 'ar' ? 'ml-2' : 'mr-2'} />
                 {t.add}
               </Button>
@@ -770,7 +757,7 @@ export default function AdminDashboardPro() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold">{t.categories}</h2>
-              <Button onClick={() => setShowForm(!showForm)} size="lg">
+              <Button onClick={() => setShowForm(!showForm)} size="lg" className={language === 'ar' ? 'flex-row-reverse' : ''}>
                 <Plus size={18} className={language === 'ar' ? 'ml-2' : 'mr-2'} />
                 {t.add}
               </Button>

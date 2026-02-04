@@ -1,0 +1,148 @@
+{
+  "query": "SELECT id, nameEn, nameAr, image FROM categories WHERE image IS NULL OR image = ''",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user dBnEF2pw3cN7fdc.root --database TBvBXeooTqFpEvP3g5fESC --execute SELECT id, nameEn, nameAr, image FROM categories WHERE image IS NULL OR image = ''",
+  "rows": [
+    {
+      "id": "1",
+      "nameEn": "Recently Added",
+      "nameAr": "تم إضافته مؤخراً",
+      "image": "NULL"
+    },
+    {
+      "id": "2",
+      "nameEn": "Most Selling",
+      "nameAr": "الأكثر مبيعاً",
+      "image": "NULL"
+    },
+    {
+      "id": "3",
+      "nameEn": "Promotions",
+      "nameAr": "العروض الترويجية",
+      "image": "NULL"
+    },
+    {
+      "id": "4",
+      "nameEn": "Wholesale",
+      "nameAr": "الجملة",
+      "image": "NULL"
+    },
+    {
+      "id": "6",
+      "nameEn": "Trending",
+      "nameAr": "الاتجاهات",
+      "image": "NULL"
+    },
+    {
+      "id": "7",
+      "nameEn": "Turkish Products",
+      "nameAr": "المنتجات التركية",
+      "image": "NULL"
+    },
+    {
+      "id": "8",
+      "nameEn": "Noodles",
+      "nameAr": "المعكرونة",
+      "image": "NULL"
+    },
+    {
+      "id": "9",
+      "nameEn": "Toys",
+      "nameAr": "الألعاب",
+      "image": "NULL"
+    },
+    {
+      "id": "10",
+      "nameEn": "Gifts",
+      "nameAr": "الهدايا",
+      "image": "NULL"
+    },
+    {
+      "id": "11",
+      "nameEn": "Imported",
+      "nameAr": "المستوردة",
+      "image": "NULL"
+    },
+    {
+      "id": "12",
+      "nameEn": "Made in Kuwait",
+      "nameAr": "صنع في الكويت",
+      "image": "NULL"
+    },
+    {
+      "id": "16",
+      "nameEn": "Wafer",
+      "nameAr": "الويفر",
+      "image": "NULL"
+    },
+    {
+      "id": "18",
+      "nameEn": "Cake",
+      "nameAr": "الكعك",
+      "image": "NULL"
+    },
+    {
+      "id": "20",
+      "nameEn": "Jelly",
+      "nameAr": "الهلام",
+      "image": "NULL"
+    },
+    {
+      "id": "22",
+      "nameEn": "Corn & Cotton",
+      "nameAr": "الذرة والقطن",
+      "image": "NULL"
+    },
+    {
+      "id": "23",
+      "nameEn": "Marshmallow",
+      "nameAr": "المارشميلو",
+      "image": "NULL"
+    },
+    {
+      "id": "24",
+      "nameEn": "Gum",
+      "nameAr": "العلكة",
+      "image": "NULL"
+    },
+    {
+      "id": "25",
+      "nameEn": "Spread",
+      "nameAr": "الفرش",
+      "image": "NULL"
+    },
+    {
+      "id": "27",
+      "nameEn": "Protein",
+      "nameAr": "البروتين",
+      "image": "NULL"
+    },
+    {
+      "id": "29",
+      "nameEn": "Cereal",
+      "nameAr": "الحبوب",
+      "image": "NULL"
+    },
+    {
+      "id": "30",
+      "nameEn": "Soft Drinks",
+      "nameAr": "المشروبات الغازية",
+      "image": "NULL"
+    },
+    {
+      "id": "31",
+      "nameEn": "Water",
+      "nameAr": "الماء",
+      "image": "NULL"
+    },
+    {
+      "id": "33",
+      "nameEn": "Energy Drinks",
+      "nameAr": "مشروبات الطاقة",
+      "image": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnameEn\tnameAr\timage\n1\tRecently Added\tتم إضافته مؤخراً\tNULL\n2\tMost Selling\tالأكثر مبيعاً\tNULL\n3\tPromotions\tالعروض الترويجية\tNULL\n4\tWholesale\tالجملة\tNULL\n6\tTrending\tالاتجاهات\tNULL\n7\tTurkish Products\tالمنتجات التركية\tNULL\n8\tNoodles\tالمعكرونة\tNULL\n9\tToys\tالألعاب\tNULL\n10\tGifts\tالهدايا\tNULL\n11\tImported\tالمستوردة\tNULL\n12\tMade in Kuwait\tصنع في الكويت\tNULL\n16\tWafer\tالويفر\tNULL\n18\tCake\tالكعك\tNULL\n20\tJelly\tالهلام\tNULL\n22\tCorn & Cotton\tالذرة والقطن\tNULL\n23\tMarshmallow\tالمارشميلو\tNULL\n24\tGum\tالعلكة\tNULL\n25\tSpread\tالفرش\tNULL\n27\tProtein\tالبروتين\tNULL\n29\tCereal\tالحبوب\tNULL\n30\tSoft Drinks\tالمشروبات الغازية\tNULL\n31\tWater\tالماء\tNULL\n33\tEnergy Drinks\tمشروبات الطاقة\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1571
+}
