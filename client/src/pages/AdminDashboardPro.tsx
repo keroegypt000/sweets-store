@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Plus, Edit2, Trash2, LogOut, Search, X, Upload, Eye, Printer } from 'lucide-react';
 import { toast } from 'sonner';
+import { trpc } from '@/lib/trpc';
 import OrdersManagement from './OrdersManagement';
 import BannerManagement from './BannerManagement';
 
@@ -221,17 +222,24 @@ export default function AdminDashboardPro() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const base64 = event.target?.result as string;
-      setImagePreview(base64);
-      if (isCategory) {
-        setCategoryForm({ ...categoryForm, image: base64 });
-      } else {
-        setProductForm({ ...productForm, image: base64 });
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Convert file to base64
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        setImagePreview(base64);
+        if (isCategory) {
+          setCategoryForm({ ...categoryForm, image: base64 });
+        } else {
+          setProductForm({ ...productForm, image: base64 });
+        }
+        toast.success(language === 'ar' ? 'تم تحميل الصورة' : 'Image loaded');
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast.error(language === 'ar' ? 'خطأ في تحميل الصورة' : 'Error loading image');
+      console.error('Image upload error:', error);
+    }
   };
 
   // Product handlers
@@ -282,44 +290,57 @@ export default function AdminDashboardPro() {
   };
 
   // Category handlers
+  const createCategoryMutation = trpc.categories.create.useMutation();
+  const updateCategoryMutation = trpc.categories.update.useMutation();
+  
   const handleAddCategory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API_BASE}/categories`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(categoryForm),
+      // Convert image to base64 if it's a data URL
+      const imageUrl = imagePreview && imagePreview.startsWith('data:') 
+        ? imagePreview 
+        : categoryForm.image;
+      
+      await createCategoryMutation.mutateAsync({
+        nameAr: categoryForm.nameAr,
+        nameEn: categoryForm.nameEn,
+        descriptionAr: categoryForm.descriptionAr || '',
+        descriptionEn: categoryForm.descriptionEn || '',
+        image: imageUrl || '',
+        slug: categoryForm.slug,
+        order: parseInt(categoryForm.order) || 0,
       });
-      if (response.ok) {
-        toast.success(t.success);
-        setShowForm(false);
-        setCategoryForm({
-          nameAr: '',
-          nameEn: '',
-          descriptionAr: '',
-          descriptionEn: '',
-          image: '',
-          slug: '',
-          order: '0',
-        });
-        setImagePreview('');
-        fetchAllData();
-      }
+      
+      toast.success(t.success);
+      setShowForm(false);
+      setCategoryForm({
+        nameAr: '',
+        nameEn: '',
+        descriptionAr: '',
+        descriptionEn: '',
+        image: '',
+        slug: '',
+        order: '0',
+      });
+      setImagePreview('');
+      fetchAllData();
     } catch (error) {
       toast.error(t.error);
+      console.error('Failed to create category:', error);
     }
   };
 
+  const deleteCategoryMutation = trpc.categories.delete.useMutation();
+  
   const handleDeleteCategory = async (id: number) => {
     if (!confirm(t.confirmDelete)) return;
     try {
-      const response = await fetch(`${API_BASE}/categories/${id}`, { method: 'DELETE' });
-      if (response.ok) {
-        toast.success(t.success);
-        fetchAllData();
-      }
+      await deleteCategoryMutation.mutateAsync({ id });
+      toast.success(t.success);
+      fetchAllData();
     } catch (error) {
       toast.error(t.error);
+      console.error('Failed to delete category:', error);
     }
   };
 
