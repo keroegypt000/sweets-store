@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, nameEn, nameAr, image FROM categories LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user dBnEF2pw3cN7fdc.root --database TBvBXeooTqFpEvP3g5fESC --execute SELECT id, nameEn, nameAr, image FROM categories LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "nameEn": "Recently Added",
+      "nameAr": "تم إضافته مؤخراً",
+      "image": "NULL"
+    },
+    {
+      "id": "2",
+      "nameEn": "Most Selling",
+      "nameAr": "الأكثر مبيعاً",
+      "image": "NULL"
+    },
+    {
+      "id": "3",
+      "nameEn": "Promotions",
+      "nameAr": "العروض الترويجية",
+      "image": "NULL"
+    },
+    {
+      "id": "4",
+      "nameEn": "Wholesale",
+      "nameAr": "الجملة",
+      "image": "NULL"
+    },
+    {
+      "id": "5",
+      "nameEn": "Chocolates",
+      "nameAr": "الشوكولاتة",
+      "image": "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/qCudpdamedMLSvxD.jpg"
+    },
+    {
+      "id": "6",
+      "nameEn": "Trending",
+      "nameAr": "الاتجاهات",
+      "image": "NULL"
+    },
+    {
+      "id": "7",
+      "nameEn": "Turkish Products",
+      "nameAr": "المنتجات التركية",
+      "image": "NULL"
+    },
+    {
+      "id": "8",
+      "nameEn": "Noodles",
+      "nameAr": "المعكرونة",
+      "image": "NULL"
+    },
+    {
+      "id": "9",
+      "nameEn": "Toys",
+      "nameAr": "الألعاب",
+      "image": "NULL"
+    },
+    {
+      "id": "10",
+      "nameEn": "Gifts",
+      "nameAr": "الهدايا",
+      "image": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnameEn\tnameAr\timage\n1\tRecently Added\tتم إضافته مؤخراً\tNULL\n2\tMost Selling\tالأكثر مبيعاً\tNULL\n3\tPromotions\tالعروض الترويجية\tNULL\n4\tWholesale\tالجملة\tNULL\n5\tChocolates\tالشوكولاتة\thttps://files.manuscdn.com/user_upload_by_module/session_file/310419663029238813/qCudpdamedMLSvxD.jpg\n6\tTrending\tالاتجاهات\tNULL\n7\tTurkish Products\tالمنتجات التركية\tNULL\n8\tNoodles\tالمعكرونة\tNULL\n9\tToys\tالألعاب\tNULL\n10\tGifts\tالهدايا\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1550
+}
