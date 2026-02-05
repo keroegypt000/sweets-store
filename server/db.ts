@@ -231,6 +231,29 @@ export async function createProduct(data: {
   
   // Fetch and return the created product
   const created = await db.select().from(products).where(eq(products.slug, data.slug)).limit(1);
+  
+  // Auto-register product image if provided
+  if (created.length > 0 && data.image) {
+    try {
+      const product = created[0];
+      const existingImage = await db.select().from(images).where(eq(images.url, data.image)).limit(1);
+      
+      if (existingImage.length === 0) {
+        const fileName = data.image.split('/').pop() || `product-${product.id}.jpg`;
+        await db.insert(images).values({
+          fileName: fileName,
+          fileKey: `products/${product.id}-${fileName}`,
+          url: data.image,
+          mimeType: 'image/jpeg',
+          usageType: 'product',
+          description: `Product image for ${data.nameAr}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error registering product image:', error);
+    }
+  }
+  
   return created.length > 0 ? created[0] : null;
 }
 
@@ -311,6 +334,29 @@ export async function createCategory(data: {
   
   // Fetch and return the created category
   const created = await db.select().from(categories).where(eq(categories.slug, data.slug)).limit(1);
+  
+  // Auto-register category image if provided
+  if (created.length > 0 && data.image) {
+    try {
+      const category = created[0];
+      const existingImage = await db.select().from(images).where(eq(images.url, data.image)).limit(1);
+      
+      if (existingImage.length === 0) {
+        const fileName = data.image.split('/').pop() || `category-${category.id}.jpg`;
+        await db.insert(images).values({
+          fileName: fileName,
+          fileKey: `categories/${category.id}-${fileName}`,
+          url: data.image,
+          mimeType: 'image/jpeg',
+          usageType: 'category',
+          description: `Category image for ${data.nameAr}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error registering category image:', error);
+    }
+  }
+  
   return created.length > 0 ? created[0] : null;
 }
 
@@ -384,6 +430,29 @@ export async function createBanner(data: {
   });
   
   const created = await db.select().from(banners).orderBy(banners.id).limit(1);
+  
+  // Auto-register banner image if provided
+  if (created.length > 0 && data.image) {
+    try {
+      const banner = created[0];
+      const existingImage = await db.select().from(images).where(eq(images.url, data.image)).limit(1);
+      
+      if (existingImage.length === 0) {
+        const fileName = data.image.split('/').pop() || `banner-${banner.id}.jpg`;
+        await db.insert(images).values({
+          fileName: fileName,
+          fileKey: `banners/${banner.id}-${fileName}`,
+          url: data.image,
+          mimeType: 'image/jpeg',
+          usageType: 'banner',
+          description: `Banner image for ${data.titleAr}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error registering banner image:', error);
+    }
+  }
+  
   return created.length > 0 ? created[0] : null;
 }
 
