@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Upload, Trash2, Copy, Check, Search, X, Edit2 } from 'lucide-react';
+import { Loader2, Upload, Trash2, Copy, Check, Search, X, Edit2, AlertCircle, HardDrive } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 
@@ -33,13 +33,33 @@ interface Banner {
   isActive: boolean;
 }
 
-type Tab = 'gallery' | 'banners';
+interface ImageStatistics {
+  totalImages: number;
+  totalSize: number;
+  countByType: {
+    product: number;
+    category: number;
+    banner: number;
+    general: number;
+  };
+  sizeByType: {
+    product: number;
+    category: number;
+    banner: number;
+    general: number;
+  };
+  storageLimit: number;
+  usagePercentage: number;
+}
+
+type Tab = 'gallery' | 'banners' | 'statistics';
 
 export default function ImageManagement() {
   const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState<Tab>('gallery');
   const [images, setImages] = useState<Image[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
+  const [statistics, setStatistics] = useState<ImageStatistics | null>(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const uploadMutation = trpc.images.upload.useMutation();
@@ -66,6 +86,7 @@ export default function ImageManagement() {
       uploadImage: 'رفع صورة',
       gallery: 'معرض الصور',
       banners: 'إدارة البنرات',
+      statistics: 'الإحصائيات',
       search: 'ابحث عن الصور...',
       filter: 'فلتر حسب النوع',
       all: 'الكل',
@@ -108,12 +129,24 @@ export default function ImageManagement() {
       titleEn: 'العنوان بالإنجليزية',
       descriptionAr: 'الوصف بالعربية',
       descriptionEn: 'الوصف بالإنجليزية',
+      totalImages: 'إجمالي الصور',
+      totalStorage: 'إجمالي التخزين المستخدم',
+      storageUsage: 'نسبة استخدام التخزين',
+      storageLimit: 'حد التخزين الأقصى',
+      imagesCount: 'عدد الصور',
+      storageUsed: 'التخزين المستخدم',
+      warning: 'تحذير',
+      storageAlmostFull: 'التخزين قريب من الامتلاء!',
+      storageWarning: 'لقد استخدمت أكثر من 80% من مساحة التخزين المتاحة',
+      storageCritical: 'التخزين ممتلئ تقريباً!',
+      storageCriticalWarning: 'لقد استخدمت أكثر من 95% من مساحة التخزين المتاحة',
     },
     en: {
       title: 'Image & Banner Management',
       uploadImage: 'Upload Image',
       gallery: 'Image Gallery',
       banners: 'Banner Management',
+      statistics: 'Statistics',
       search: 'Search images...',
       filter: 'Filter by type',
       all: 'All',
@@ -156,6 +189,17 @@ export default function ImageManagement() {
       titleEn: 'Title (English)',
       descriptionAr: 'Description (Arabic)',
       descriptionEn: 'Description (English)',
+      totalImages: 'Total Images',
+      totalStorage: 'Total Storage Used',
+      storageUsage: 'Storage Usage',
+      storageLimit: 'Storage Limit',
+      imagesCount: 'Images Count',
+      storageUsed: 'Storage Used',
+      warning: 'Warning',
+      storageAlmostFull: 'Storage Almost Full!',
+      storageWarning: 'You have used more than 80% of available storage',
+      storageCritical: 'Storage Almost Full!',
+      storageCriticalWarning: 'You have used more than 95% of available storage',
     },
   };
 
@@ -164,6 +208,7 @@ export default function ImageManagement() {
   // Fetch images
   const { data: imagesList, isLoading: isLoadingImages } = trpc.images.list.useQuery();
   const { data: bannersList, isLoading: isLoadingBanners } = trpc.banners.allBanners.useQuery();
+  const { data: statisticsData, isLoading: isLoadingStatistics } = trpc.images.statistics.useQuery();
 
   useEffect(() => {
     if (imagesList) {
@@ -178,8 +223,14 @@ export default function ImageManagement() {
   }, [bannersList]);
 
   useEffect(() => {
-    setLoading(isLoadingImages || isLoadingBanners);
-  }, [isLoadingImages, isLoadingBanners]);
+    if (statisticsData) {
+      setStatistics(statisticsData as ImageStatistics);
+    }
+  }, [statisticsData]);
+
+  useEffect(() => {
+    setLoading(isLoadingImages || isLoadingBanners || isLoadingStatistics);
+  }, [isLoadingImages, isLoadingBanners, isLoadingStatistics]);
 
   // Handle file upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -212,6 +263,7 @@ export default function ImageManagement() {
             fileInputRef.current.value = '';
           }
           utils.images.list.invalidate();
+          utils.images.statistics.invalidate();
         }
       };
       reader.readAsDataURL(file);
@@ -237,6 +289,7 @@ export default function ImageManagement() {
       toast.success(currentT.deleteSuccess);
       setImages(images.filter((img) => img.id !== id));
       utils.images.list.invalidate();
+      utils.images.statistics.invalidate();
     } catch (error) {
       toast.error(currentT.error);
       console.error('Delete error:', error);
@@ -358,16 +411,28 @@ export default function ImageManagement() {
     return new Date(date).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US');
   };
 
+  const getStorageStatusColor = (percentage: number) => {
+    if (percentage >= 95) return 'text-red-600';
+    if (percentage >= 80) return 'text-yellow-600';
+    return 'text-green-600';
+  };
+
+  const getStorageBarColor = (percentage: number) => {
+    if (percentage >= 95) return 'bg-red-500';
+    if (percentage >= 80) return 'bg-yellow-500';
+    return 'bg-green-500';
+  };
+
   return (
     <div className={`p-6 ${language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-6">{currentT.title}</h1>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b">
+        <div className="flex gap-4 mb-6 border-b overflow-x-auto">
           <button
             onClick={() => setActiveTab('gallery')}
-            className={`px-4 py-2 font-medium border-b-2 ${
+            className={`px-4 py-2 font-medium border-b-2 whitespace-nowrap ${
               activeTab === 'gallery'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-600'
@@ -377,7 +442,7 @@ export default function ImageManagement() {
           </button>
           <button
             onClick={() => setActiveTab('banners')}
-            className={`px-4 py-2 font-medium border-b-2 ${
+            className={`px-4 py-2 font-medium border-b-2 whitespace-nowrap ${
               activeTab === 'banners'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-600'
@@ -385,7 +450,128 @@ export default function ImageManagement() {
           >
             {currentT.banners}
           </button>
+          <button
+            onClick={() => setActiveTab('statistics')}
+            className={`px-4 py-2 font-medium border-b-2 whitespace-nowrap ${
+              activeTab === 'statistics'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-600'
+            }`}
+          >
+            {currentT.statistics}
+          </button>
         </div>
+
+        {/* STATISTICS TAB */}
+        {activeTab === 'statistics' && (
+          <div className="space-y-6">
+            {loading ? (
+              <div className="flex justify-center items-center p-12">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+              </div>
+            ) : statistics ? (
+              <>
+                {/* Storage Alerts */}
+                {statistics.usagePercentage >= 80 && (
+                  <div className={`bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded ${statistics.usagePercentage >= 95 ? 'bg-red-50 border-red-400' : ''}`}>
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className={`w-5 h-5 mt-0.5 ${statistics.usagePercentage >= 95 ? 'text-red-600' : 'text-yellow-600'}`} />
+                      <div>
+                        <h3 className={`font-bold ${statistics.usagePercentage >= 95 ? 'text-red-800' : 'text-yellow-800'}`}>
+                          {statistics.usagePercentage >= 95 ? currentT.storageCritical : currentT.storageAlmostFull}
+                        </h3>
+                        <p className={`text-sm ${statistics.usagePercentage >= 95 ? 'text-red-700' : 'text-yellow-700'}`}>
+                          {statistics.usagePercentage >= 95 ? currentT.storageCriticalWarning : currentT.storageWarning}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Statistics Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Total Images */}
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium text-gray-600">{currentT.totalImages}</h3>
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Upload className="w-5 h-5 text-blue-600" />
+                      </div>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900">{statistics.totalImages}</p>
+                  </div>
+
+                  {/* Total Storage */}
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium text-gray-600">{currentT.totalStorage}</h3>
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <HardDrive className="w-5 h-5 text-purple-600" />
+                      </div>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900">{formatFileSize(statistics.totalSize)}</p>
+                  </div>
+
+                  {/* Storage Usage Percentage */}
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium text-gray-600">{currentT.storageUsage}</h3>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getStorageBarColor(statistics.usagePercentage).replace('bg-', 'bg-opacity-20 ')}`}>
+                        <span className={`text-lg font-bold ${getStorageStatusColor(statistics.usagePercentage)}`}>
+                          {statistics.usagePercentage.toFixed(1)}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full transition-all ${getStorageBarColor(statistics.usagePercentage)}`}
+                        style={{ width: `${Math.min(statistics.usagePercentage, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  {/* Storage Limit */}
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium text-gray-600">{currentT.storageLimit}</h3>
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <HardDrive className="w-5 h-5 text-green-600" />
+                      </div>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900">{formatFileSize(statistics.storageLimit)}</p>
+                  </div>
+                </div>
+
+                {/* Images by Type */}
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-bold mb-6">{currentT.imagesCount}</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                      { type: 'product', label: currentT.product, color: 'blue' },
+                      { type: 'category', label: currentT.category, color: 'purple' },
+                      { type: 'banner', label: currentT.banner, color: 'green' },
+                      { type: 'general', label: currentT.general, color: 'yellow' },
+                    ].map((item) => (
+                      <div key={item.type} className={`bg-${item.color}-50 rounded-lg p-4 border border-${item.color}-200`}>
+                        <p className={`text-sm font-medium text-${item.color}-600 mb-2`}>{item.label}</p>
+                        <p className={`text-2xl font-bold text-${item.color}-900`}>
+                          {statistics.countByType[item.type as keyof typeof statistics.countByType]}
+                        </p>
+                        <p className={`text-xs text-${item.color}-500 mt-2`}>
+                          {formatFileSize(statistics.sizeByType[item.type as keyof typeof statistics.sizeByType])}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="p-12 text-center text-gray-500">
+                {currentT.error}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* GALLERY TAB */}
         {activeTab === 'gallery' && (

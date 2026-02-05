@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { getDb, createImage, getImages, getImageById, deleteImage, updateImage, getImagesByUsageType } from './db';
+import { getDb, createImage, getImages, getImageById, deleteImage, updateImage, getImagesByUsageType, getImageStatistics, getImagesByType } from './db';
 
 describe('Image Management', () => {
   let testImageId: number;
@@ -163,5 +163,45 @@ describe('Image Management', () => {
     if (result?.id) {
       await deleteImage(result.id);
     }
+  });
+});
+
+
+describe('Image Statistics', () => {
+  it('should calculate image statistics correctly', async () => {
+    const stats = await getImageStatistics();
+    expect(stats).toBeDefined();
+    expect(stats?.totalImages).toBeGreaterThanOrEqual(0);
+    expect(stats?.totalSize).toBeGreaterThanOrEqual(0);
+    expect(stats?.countByType).toBeDefined();
+    expect(stats?.sizeByType).toBeDefined();
+    expect(stats?.usagePercentage).toBeGreaterThanOrEqual(0);
+    expect(stats?.usagePercentage).toBeLessThanOrEqual(100);
+  });
+
+  it('should have correct count by type structure', async () => {
+    const stats = await getImageStatistics();
+    expect(stats?.countByType).toHaveProperty('product');
+    expect(stats?.countByType).toHaveProperty('category');
+    expect(stats?.countByType).toHaveProperty('banner');
+    expect(stats?.countByType).toHaveProperty('general');
+  });
+
+  it('should have correct size by type structure', async () => {
+    const stats = await getImageStatistics();
+    expect(stats?.sizeByType).toHaveProperty('product');
+    expect(stats?.sizeByType).toHaveProperty('category');
+    expect(stats?.sizeByType).toHaveProperty('banner');
+    expect(stats?.sizeByType).toHaveProperty('general');
+  });
+
+  it('should calculate storage limit correctly', async () => {
+    const stats = await getImageStatistics();
+    expect(stats?.storageLimit).toBe(1024 * 1024 * 1024); // 1GB
+  });
+
+  it('should retrieve images by type', async () => {
+    const productImages = await getImagesByType('product');
+    expect(Array.isArray(productImages)).toBe(true);
   });
 });

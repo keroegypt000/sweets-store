@@ -543,3 +543,58 @@ export async function updateImage(id: number, data: {
   const updated = await db.select().from(images).where(eq(images.id, id)).limit(1);
   return updated.length > 0 ? updated[0] : null;
 }
+
+
+// Image Statistics Functions
+export async function getImageStatistics() {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    // Get all images
+    const allImages = await db.select().from(images);
+    
+    // Calculate total storage
+    const totalSize = allImages.reduce((sum, img) => sum + (img.fileSize || 0), 0);
+    
+    // Count by usage type
+    const countByType = {
+      product: allImages.filter(img => img.usageType === 'product').length,
+      category: allImages.filter(img => img.usageType === 'category').length,
+      banner: allImages.filter(img => img.usageType === 'banner').length,
+      general: allImages.filter(img => img.usageType === 'general').length,
+    };
+    
+    // Size by usage type
+    const sizeByType = {
+      product: allImages.filter(img => img.usageType === 'product').reduce((sum, img) => sum + (img.fileSize || 0), 0),
+      category: allImages.filter(img => img.usageType === 'category').reduce((sum, img) => sum + (img.fileSize || 0), 0),
+      banner: allImages.filter(img => img.usageType === 'banner').reduce((sum, img) => sum + (img.fileSize || 0), 0),
+      general: allImages.filter(img => img.usageType === 'general').reduce((sum, img) => sum + (img.fileSize || 0), 0),
+    };
+    
+    return {
+      totalImages: allImages.length,
+      totalSize,
+      countByType,
+      sizeByType,
+      storageLimit: 1024 * 1024 * 1024, // 1GB default limit
+      usagePercentage: (totalSize / (1024 * 1024 * 1024)) * 100,
+    };
+  } catch (error) {
+    console.error('Error calculating image statistics:', error);
+    return null;
+  }
+}
+
+export async function getImagesByType(usageType: string) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  try {
+    return await db.select().from(images).where(eq(images.usageType, usageType as any));
+  } catch (error) {
+    console.error('Error fetching images by type:', error);
+    return [];
+  }
+}
