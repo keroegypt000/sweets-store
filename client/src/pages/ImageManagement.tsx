@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Upload, Trash2, Copy, Check, Search } from 'lucide-react';
+import { Loader2, Upload, Trash2, Copy, Check, Search, X, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 
@@ -21,9 +21,25 @@ interface Image {
   createdAt: Date;
 }
 
+interface Banner {
+  id: number;
+  titleAr: string;
+  titleEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  image: string;
+  link?: string;
+  order: number;
+  isActive: boolean;
+}
+
+type Tab = 'gallery' | 'banners';
+
 export default function ImageManagement() {
   const { language } = useLanguage();
+  const [activeTab, setActiveTab] = useState<Tab>('gallery');
   const [images, setImages] = useState<Image[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const uploadMutation = trpc.images.upload.useMutation();
@@ -33,12 +49,23 @@ export default function ImageManagement() {
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const utils = trpc.useUtils();
+  const [selectedImageForBanner, setSelectedImageForBanner] = useState<Image | null>(null);
+  const [editingBannerId, setEditingBannerId] = useState<number | null>(null);
+  const [bannerForm, setBannerForm] = useState({
+    titleAr: '',
+    titleEn: '',
+    descriptionAr: '',
+    descriptionEn: '',
+    link: '',
+    order: '0',
+  });
 
   const t = {
     ar: {
-      title: 'إدارة الصور',
+      title: 'إدارة الصور والبنرات',
       uploadImage: 'رفع صورة',
       gallery: 'معرض الصور',
+      banners: 'إدارة البنرات',
       search: 'ابحث عن الصور...',
       filter: 'فلتر حسب النوع',
       all: 'الكل',
@@ -62,11 +89,31 @@ export default function ImageManagement() {
       usageType: 'نوع الاستخدام',
       copied: 'تم النسخ',
       deleteConfirm: 'هل أنت متأكد من حذف هذه الصورة؟',
+      noBanners: 'لا توجد بنرات',
+      bannerTitle: 'عنوان البنر',
+      bannerDescription: 'وصف البنر',
+      bannerLink: 'رابط البنر',
+      bannerOrder: 'ترتيب البنر',
+      selectBannerImage: 'اختر صورة للبنر',
+      addBanner: 'إضافة بنر',
+      editBanner: 'تعديل البنر',
+      saveBanner: 'حفظ البنر',
+      cancelEdit: 'إلغاء',
+      previewImage: 'معاينة الصورة',
+      usedIn: 'مستخدمة في',
+      usageInfo: 'معلومات الاستخدام',
+      selectImageForBanner: 'اختر صورة من المعرض لاستخدامها في البنر',
+      imageSelected: 'تم اختيار الصورة بنجاح',
+      titleAr: 'العنوان بالعربية',
+      titleEn: 'العنوان بالإنجليزية',
+      descriptionAr: 'الوصف بالعربية',
+      descriptionEn: 'الوصف بالإنجليزية',
     },
     en: {
-      title: 'Image Management',
+      title: 'Image & Banner Management',
       uploadImage: 'Upload Image',
       gallery: 'Image Gallery',
+      banners: 'Banner Management',
       search: 'Search images...',
       filter: 'Filter by type',
       all: 'All',
@@ -90,6 +137,25 @@ export default function ImageManagement() {
       usageType: 'Usage Type',
       copied: 'Copied',
       deleteConfirm: 'Are you sure you want to delete this image?',
+      noBanners: 'No banners',
+      bannerTitle: 'Banner Title',
+      bannerDescription: 'Banner Description',
+      bannerLink: 'Banner Link',
+      bannerOrder: 'Banner Order',
+      selectBannerImage: 'Select image for banner',
+      addBanner: 'Add Banner',
+      editBanner: 'Edit Banner',
+      saveBanner: 'Save Banner',
+      cancelEdit: 'Cancel',
+      previewImage: 'Preview Image',
+      usedIn: 'Used in',
+      usageInfo: 'Usage Information',
+      selectImageForBanner: 'Select an image from gallery to use in banner',
+      imageSelected: 'Image selected successfully',
+      titleAr: 'Title (Arabic)',
+      titleEn: 'Title (English)',
+      descriptionAr: 'Description (Arabic)',
+      descriptionEn: 'Description (English)',
     },
   };
 
@@ -97,25 +163,29 @@ export default function ImageManagement() {
 
   // Fetch images
   const { data: imagesList, isLoading: isLoadingImages } = trpc.images.list.useQuery();
-  
+  const { data: bannersList, isLoading: isLoadingBanners } = trpc.banners.allBanners.useQuery();
+
   useEffect(() => {
     if (imagesList) {
       setImages(imagesList as Image[]);
     }
   }, [imagesList]);
-  
+
   useEffect(() => {
-    setLoading(isLoadingImages);
-  }, [isLoadingImages]);
+    if (bannersList) {
+      setBanners(bannersList as Banner[]);
+    }
+  }, [bannersList]);
 
-
+  useEffect(() => {
+    setLoading(isLoadingImages || isLoadingBanners);
+  }, [isLoadingImages, isLoadingBanners]);
 
   // Handle file upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       toast.error(currentT.error);
       return;
@@ -126,7 +196,7 @@ export default function ImageManagement() {
       const reader = new FileReader();
       reader.onload = async (event) => {
         const base64 = event.target?.result as string;
-        const base64Data = base64.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+        const base64Data = base64.split(',')[1];
 
         const result = await uploadMutation.mutateAsync({
           fileName: file.name,
@@ -153,8 +223,13 @@ export default function ImageManagement() {
     }
   };
 
-  // Handle delete
-  const handleDelete = async (id: number) => {
+  // Delete mutation
+  const deleteMutationBanner = trpc.banners.delete.useMutation();
+  const updateBannerMutation = trpc.banners.update.useMutation();
+  const createBannerMutation = trpc.banners.create.useMutation();
+
+  // Handle delete image
+  const handleDeleteImage = async (id: number) => {
     if (!confirm(currentT.deleteConfirm)) return;
 
     try {
@@ -174,6 +249,93 @@ export default function ImageManagement() {
     setCopiedId(id);
     toast.success(currentT.copied);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  // Handle select image for banner
+  const handleSelectImageForBanner = (image: Image) => {
+    setSelectedImageForBanner(image);
+    toast.success(currentT.imageSelected);
+  };
+
+  // Handle save banner
+  const handleSaveBanner = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedImageForBanner) {
+      toast.error(currentT.selectBannerImage);
+      return;
+    }
+
+    try {
+      if (editingBannerId) {
+        await updateBannerMutation.mutateAsync({
+          id: editingBannerId,
+          titleAr: bannerForm.titleAr,
+          titleEn: bannerForm.titleEn,
+          descriptionAr: bannerForm.descriptionAr || undefined,
+          descriptionEn: bannerForm.descriptionEn || undefined,
+          image: selectedImageForBanner.url,
+          link: bannerForm.link || undefined,
+          order: parseInt(bannerForm.order) || 0,
+        });
+        toast.success(currentT.uploadSuccess);
+      } else {
+        await createBannerMutation.mutateAsync({
+          titleAr: bannerForm.titleAr,
+          titleEn: bannerForm.titleEn,
+          descriptionAr: bannerForm.descriptionAr || undefined,
+          descriptionEn: bannerForm.descriptionEn || undefined,
+          image: selectedImageForBanner.url,
+          link: bannerForm.link || undefined,
+          order: parseInt(bannerForm.order) || 0,
+        });
+        toast.success(currentT.uploadSuccess);
+      }
+
+      setBannerForm({
+        titleAr: '',
+        titleEn: '',
+        descriptionAr: '',
+        descriptionEn: '',
+        link: '',
+        order: '0',
+      });
+      setSelectedImageForBanner(null);
+      setEditingBannerId(null);
+      utils.banners.allBanners.invalidate();
+    } catch (error) {
+      toast.error(currentT.error);
+      console.error('Save banner error:', error);
+    }
+  };
+
+  // Handle edit banner
+  const handleEditBanner = (banner: Banner) => {
+    setEditingBannerId(banner.id);
+    setBannerForm({
+      titleAr: banner.titleAr,
+      titleEn: banner.titleEn,
+      descriptionAr: banner.descriptionAr || '',
+      descriptionEn: banner.descriptionEn || '',
+      link: banner.link || '',
+      order: banner.order.toString(),
+    });
+    const bannerImage = images.find((img) => img.url === banner.image);
+    setSelectedImageForBanner(bannerImage || null);
+  };
+
+  // Handle delete banner
+  const handleDeleteBanner = async (id: number) => {
+    if (!confirm(currentT.deleteConfirm)) return;
+
+    try {
+      await deleteMutationBanner.mutateAsync({ id });
+      toast.success(currentT.deleteSuccess);
+      setBanners(banners.filter((b) => b.id !== id));
+      utils.banners.allBanners.invalidate();
+    } catch (error) {
+      toast.error(currentT.error);
+      console.error('Delete banner error:', error);
+    }
   };
 
   // Filter images
@@ -199,163 +361,425 @@ export default function ImageManagement() {
   return (
     <div className={`p-6 ${language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-4">{currentT.title}</h1>
+        <h1 className="text-3xl font-bold mb-6">{currentT.title}</h1>
 
-        {/* Upload Section */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="flex items-center gap-4">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              disabled={uploading}
-              className="hidden"
-            />
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="flex items-center gap-2"
-            >
-              {uploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  {currentT.uploadImage}
-                </>
+        {/* Tabs */}
+        <div className="flex gap-4 mb-6 border-b">
+          <button
+            onClick={() => setActiveTab('gallery')}
+            className={`px-4 py-2 font-medium border-b-2 ${
+              activeTab === 'gallery'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-600'
+            }`}
+          >
+            {currentT.gallery}
+          </button>
+          <button
+            onClick={() => setActiveTab('banners')}
+            className={`px-4 py-2 font-medium border-b-2 ${
+              activeTab === 'banners'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-600'
+            }`}
+          >
+            {currentT.banners}
+          </button>
+        </div>
+
+        {/* GALLERY TAB */}
+        {activeTab === 'gallery' && (
+          <>
+            {/* Upload Section */}
+            <div className="bg-white rounded-lg shadow p-6 mb-6">
+              <div className="flex items-center gap-4">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  disabled={uploading}
+                  className="hidden"
+                />
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="flex items-center gap-2"
+                >
+                  {uploading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {currentT.uploadImage}
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4" />
+                      {currentT.uploadImage}
+                    </>
+                  )}
+                </Button>
+                <p className="text-sm text-gray-500">{currentT.selectImage}</p>
+              </div>
+            </div>
+
+            {/* Search and Filter */}
+            <div className="bg-white rounded-lg shadow p-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                  <Input
+                    placeholder={currentT.search}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={`${language === 'ar' ? 'pr-10 text-right' : 'pl-10'}`}
+                  />
+                </div>
+                <select
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">{currentT.all}</option>
+                  <option value="product">{currentT.product}</option>
+                  <option value="category">{currentT.category}</option>
+                  <option value="banner">{currentT.banner}</option>
+                  <option value="general">{currentT.general}</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Gallery */}
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              {loading ? (
+                <div className="flex justify-center items-center p-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                </div>
+              ) : filteredImages.length === 0 ? (
+                <div className="p-12 text-center text-gray-500">
+                  {currentT.noImages}
+                </div>
               ) : (
-                <>
-                  <Upload className="w-4 h-4" />
-                  {currentT.uploadImage}
-                </>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b">
+                      <tr>
+                        <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
+                          {currentT.fileName}
+                        </th>
+                        <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
+                          {currentT.usageType}
+                        </th>
+                        <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
+                          {currentT.fileSize}
+                        </th>
+                        <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
+                          {currentT.uploadedDate}
+                        </th>
+                        <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
+                          {currentT.imageUrl}
+                        </th>
+                        <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
+                          {currentT.usedIn}
+                        </th>
+                        <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
+                          {currentT.delete}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {filteredImages.map((image) => {
+                        const usedInBanners = banners.filter((b) => b.image === image.url);
+                        return (
+                          <tr key={image.id} className="hover:bg-gray-50 transition">
+                            <td className="px-6 py-4 text-sm text-gray-700">
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={image.url}
+                                  alt={image.fileName}
+                                  className="w-10 h-10 rounded object-cover"
+                                />
+                                <span className="truncate">{image.fileName}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-700">
+                              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                                {image.usageType}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-700">
+                              {formatFileSize(image.fileSize)}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-700">
+                              {formatDate(image.createdAt)}
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleCopyUrl(image.url, image.id)}
+                                className="flex items-center gap-2"
+                              >
+                                {copiedId === image.id ? (
+                                  <>
+                                    <Check className="w-4 h-4" />
+                                    {currentT.copied}
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-4 h-4" />
+                                    {currentT.copyUrl}
+                                  </>
+                                )}
+                              </Button>
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              {usedInBanners.length > 0 ? (
+                                <div className="flex flex-wrap gap-1">
+                                  {usedInBanners.map((b) => (
+                                    <span key={b.id} className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
+                                      {language === 'ar' ? b.titleAr : b.titleEn}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-gray-400 text-xs">{currentT.noImages}</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleDeleteImage(image.id)}
+                                className="flex items-center gap-2"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                {currentT.delete}
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               )}
-            </Button>
-            <p className="text-sm text-gray-500">{currentT.selectImage}</p>
-          </div>
-        </div>
+            </div>
+          </>
+        )}
 
-        {/* Search and Filter */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder={currentT.search}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className={`${language === 'ar' ? 'pr-10 text-right' : 'pl-10'}`}
-              />
-            </div>
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">{currentT.all}</option>
-              <option value="product">{currentT.product}</option>
-              <option value="category">{currentT.category}</option>
-              <option value="banner">{currentT.banner}</option>
-              <option value="general">{currentT.general}</option>
-            </select>
-          </div>
-        </div>
+        {/* BANNERS TAB */}
+        {activeTab === 'banners' && (
+          <>
+            {/* Banner Form */}
+            <div className="bg-white rounded-lg shadow p-6 mb-6">
+              <h2 className="text-xl font-bold mb-4">
+                {editingBannerId ? currentT.editBanner : currentT.addBanner}
+              </h2>
 
-        {/* Gallery */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          {loading ? (
-            <div className="flex justify-center items-center p-12">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-            </div>
-          ) : filteredImages.length === 0 ? (
-            <div className="p-12 text-center text-gray-500">
-              {currentT.noImages}
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
-                      {currentT.fileName}
-                    </th>
-                    <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
-                      {currentT.usageType}
-                    </th>
-                    <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
-                      {currentT.fileSize}
-                    </th>
-                    <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
-                      {currentT.uploadedDate}
-                    </th>
-                    <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
-                      {currentT.imageUrl}
-                    </th>
-                    <th className={`px-6 py-3 text-left text-sm font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : ''}`}>
-                      {currentT.delete}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {filteredImages.map((image) => (
-                    <tr key={image.id} className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={image.url}
-                            alt={image.fileName}
-                            className="w-10 h-10 rounded object-cover"
-                          />
-                          <span className="truncate">{image.fileName}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                          {image.usageType}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {formatFileSize(image.fileSize)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {formatDate(image.createdAt)}
-                      </td>
-                      <td className="px-6 py-4 text-sm">
+              <form onSubmit={handleSaveBanner} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{currentT.titleAr}</label>
+                    <Input
+                      value={bannerForm.titleAr}
+                      onChange={(e) => setBannerForm({ ...bannerForm, titleAr: e.target.value })}
+                      placeholder={currentT.titleAr}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{currentT.titleEn}</label>
+                    <Input
+                      value={bannerForm.titleEn}
+                      onChange={(e) => setBannerForm({ ...bannerForm, titleEn: e.target.value })}
+                      placeholder={currentT.titleEn}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{currentT.descriptionAr}</label>
+                    <Input
+                      value={bannerForm.descriptionAr}
+                      onChange={(e) => setBannerForm({ ...bannerForm, descriptionAr: e.target.value })}
+                      placeholder={currentT.descriptionAr}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{currentT.descriptionEn}</label>
+                    <Input
+                      value={bannerForm.descriptionEn}
+                      onChange={(e) => setBannerForm({ ...bannerForm, descriptionEn: e.target.value })}
+                      placeholder={currentT.descriptionEn}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{currentT.bannerLink}</label>
+                    <Input
+                      value={bannerForm.link}
+                      onChange={(e) => setBannerForm({ ...bannerForm, link: e.target.value })}
+                      placeholder={currentT.bannerLink}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{currentT.bannerOrder}</label>
+                    <Input
+                      type="number"
+                      value={bannerForm.order}
+                      onChange={(e) => setBannerForm({ ...bannerForm, order: e.target.value })}
+                      placeholder={currentT.bannerOrder}
+                    />
+                  </div>
+                </div>
+
+                {/* Image Selection */}
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                  {selectedImageForBanner ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-medium">{currentT.previewImage}</h3>
                         <Button
+                          type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => handleCopyUrl(image.url, image.id)}
-                          className="flex items-center gap-2"
+                          onClick={() => setSelectedImageForBanner(null)}
                         >
-                          {copiedId === image.id ? (
-                            <>
-                              <Check className="w-4 h-4" />
-                              {currentT.copied}
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-4 h-4" />
-                              {currentT.copyUrl}
-                            </>
-                          )}
+                          <X className="w-4 h-4" />
                         </Button>
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDelete(image.id)}
-                          className="flex items-center gap-2"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          {currentT.delete}
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                      <img
+                        src={selectedImageForBanner.url}
+                        alt={selectedImageForBanner.fileName}
+                        className="w-full h-48 object-cover rounded"
+                      />
+                      <p className="text-sm text-gray-600">{selectedImageForBanner.fileName}</p>
+                    </div>
+                  ) : (
+                    <p className="text-center text-gray-500">{currentT.selectImageForBanner}</p>
+                  )}
+                </div>
+
+                <div className="flex gap-4">
+                  <Button type="submit" className="flex-1">
+                    {currentT.saveBanner}
+                  </Button>
+                  {editingBannerId && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => {
+                        setEditingBannerId(null);
+                        setBannerForm({
+                          titleAr: '',
+                          titleEn: '',
+                          descriptionAr: '',
+                          descriptionEn: '',
+                          link: '',
+                          order: '0',
+                        });
+                        setSelectedImageForBanner(null);
+                      }}
+                    >
+                      {currentT.cancelEdit}
+                    </Button>
+                  )}
+                </div>
+              </form>
             </div>
-          )}
-        </div>
+
+            {/* Image Gallery for Banner Selection */}
+            {!editingBannerId && (
+              <div className="bg-white rounded-lg shadow p-6 mb-6">
+                <h3 className="text-lg font-bold mb-4">{currentT.gallery}</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {images.map((image) => (
+                    <div
+                      key={image.id}
+                      onClick={() => handleSelectImageForBanner(image)}
+                      className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition ${
+                        selectedImageForBanner?.id === image.id
+                          ? 'border-blue-500 ring-2 ring-blue-300'
+                          : 'border-gray-200 hover:border-blue-300'
+                      }`}
+                    >
+                      <img
+                        src={image.url}
+                        alt={image.fileName}
+                        className="w-full h-24 object-cover"
+                      />
+                      {selectedImageForBanner?.id === image.id && (
+                        <div className="absolute inset-0 bg-blue-500 bg-opacity-30 flex items-center justify-center">
+                          <Check className="w-6 h-6 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Banners List */}
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-bold">{currentT.banners}</h3>
+              </div>
+
+              {loading ? (
+                <div className="flex justify-center items-center p-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                </div>
+              ) : banners.length === 0 ? (
+                <div className="p-12 text-center text-gray-500">
+                  {currentT.noBanners}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                  {banners.map((banner) => (
+                    <div key={banner.id} className="border rounded-lg overflow-hidden hover:shadow-lg transition">
+                      <img
+                        src={banner.image}
+                        alt={banner.titleAr}
+                        className="w-full h-40 object-cover"
+                      />
+                      <div className="p-4 space-y-2">
+                        <h4 className="font-bold text-sm">{language === 'ar' ? banner.titleAr : banner.titleEn}</h4>
+                        <p className="text-xs text-gray-600 line-clamp-2">
+                          {language === 'ar' ? banner.descriptionAr : banner.descriptionEn}
+                        </p>
+                        <div className="flex gap-2 pt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditBanner(banner)}
+                            className="flex-1 flex items-center justify-center gap-2"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                            {currentT.editBanner}
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteBanner(banner.id)}
+                            className="flex-1 flex items-center justify-center gap-2"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            {currentT.delete}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
