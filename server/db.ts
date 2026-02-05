@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, categories, products, cartItems, orders, orderItems, banners } from "../drizzle/schema";
+import { InsertUser, users, categories, products, cartItems, orders, orderItems, banners, images } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -465,4 +465,81 @@ export async function getOrderWithItems(orderId: number) {
     ...order[0],
     items: items,
   };
+}
+
+// Image CRUD operations
+export async function createImage(data: {
+  fileName: string;
+  fileKey: string;
+  url: string;
+  mimeType?: string;
+  fileSize?: number;
+  width?: number;
+  height?: number;
+  altText?: string;
+  description?: string;
+  usageType?: string;
+  uploadedBy?: number;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(images).values({
+    ...data,
+    mimeType: data.mimeType || "image/jpeg",
+    usageType: (data.usageType || "general") as any,
+  });
+  
+  const created = await db.select().from(images).where(eq(images.fileKey, data.fileKey)).limit(1);
+  return created.length > 0 ? created[0] : null;
+}
+
+export async function getImages(limit: number = 100, offset: number = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(images).limit(limit).offset(offset);
+}
+
+export async function getImagesByUsageType(usageType: string, limit: number = 100, offset: number = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(images).where(eq(images.usageType, usageType as any)).limit(limit).offset(offset);
+}
+
+export async function getImageById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(images).where(eq(images.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function deleteImage(id: number) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  await db.delete(images).where(eq(images.id, id));
+  return true;
+}
+
+export async function updateImage(id: number, data: {
+  altText?: string;
+  description?: string;
+  usageType?: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const updateData: any = {};
+  Object.keys(data).forEach(key => {
+    if (data[key as keyof typeof data] !== undefined) {
+      updateData[key] = data[key as keyof typeof data];
+    }
+  });
+  
+  if (Object.keys(updateData).length === 0) return null;
+  
+  await db.update(images).set(updateData).where(eq(images.id, id));
+  
+  const updated = await db.select().from(images).where(eq(images.id, id)).limit(1);
+  return updated.length > 0 ? updated[0] : null;
 }

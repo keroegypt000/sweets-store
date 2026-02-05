@@ -3,11 +3,12 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
-import { getCategories, getProducts, getProductsByCategory, getProductBySlug, getFeaturedProducts, getPromotionalProducts, getCartItems, addToCart, getUserOrders, createOrder, createProduct, updateProduct, deleteProduct, getProductById, getAllProducts, createCategory, updateCategory, deleteCategory, getCategoryById, getAllCategories, createBanner, updateBanner, deleteBanner, getBanners, getAllBanners, getAllOrders, updateOrderStatus, getOrderWithItems, getDb } from "./db";
+import { getCategories, getProducts, getProductsByCategory, getProductBySlug, getFeaturedProducts, getPromotionalProducts, getCartItems, addToCart, getUserOrders, createOrder, createProduct, updateProduct, deleteProduct, getProductById, getAllProducts, createCategory, updateCategory, deleteCategory, getCategoryById, getAllCategories, createBanner, updateBanner, deleteBanner, getBanners, getAllBanners, getAllOrders, updateOrderStatus, getOrderWithItems, getDb, createImage, getImages, getImagesByUsageType, getImageById, deleteImage, updateImage } from "./db";
 import { cartItems } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { notifyOwner } from "./_core/notification";
 import { TRPCError } from "@trpc/server";
+import { storagePut } from "./storage";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -318,6 +319,86 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
         return deleteBanner(input.id);
+      }),
+  }),
+
+  images: router({
+    list: protectedProcedure
+      .input(z.object({ limit: z.number().default(100), offset: z.number().default(0) }).optional())
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return getImages(input?.limit || 100, input?.offset || 0);
+      }),
+    byUsageType: protectedProcedure
+      .input(z.object({ usageType: z.string(), limit: z.number().default(100), offset: z.number().default(0) }))
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return getImagesByUsageType(input.usageType, input.limit, input.offset);
+      }),
+    byId: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return getImageById(input.id);
+      }),
+    upload: protectedProcedure
+      .input(z.object({
+        fileName: z.string().min(1),
+        fileData: z.string(),
+        mimeType: z.string().default('image/jpeg'),
+        altText: z.string().optional(),
+        description: z.string().optional(),
+        usageType: z.enum(['product', 'category', 'banner', 'general']).default('general'),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        
+        try {
+          const timestamp = Date.now();
+          const randomStr = Math.random().toString(36).substring(2, 9);
+          const fileKey = `images/${input.usageType}/${timestamp}-${randomStr}-${input.fileName}`;
+          
+          const buffer = Buffer.from(input.fileData, 'base64');
+          const { url } = await storagePut(fileKey, buffer, input.mimeType);
+          
+          const image = await createImage({
+            fileName: input.fileName,
+            fileKey: fileKey,
+            url: url,
+            mimeType: input.mimeType,
+            fileSize: buffer.length,
+            altText: input.altText,
+            description: input.description,
+            usageType: input.usageType,
+            uploadedBy: ctx.user.id,
+          });
+          
+          return image;
+        } catch (error) {
+          console.error('Image upload error:', error);
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to upload image',
+          });
+        }
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return deleteImage(input.id);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        altText: z.string().optional(),
+        description: z.string().optional(),
+        usageType: z.enum(['product', 'category', 'banner', 'general']).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { id, ...data } = input;
+        return updateImage(id, data);
       }),
   }),
 

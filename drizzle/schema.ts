@@ -138,6 +138,27 @@ export const banners = mysqlTable("banners", {
 export type Banner = typeof banners.$inferSelect;
 export type InsertBanner = typeof banners.$inferInsert;
 
+// Images table - centralized image storage management
+export const images = mysqlTable("images", {
+  id: int("id").autoincrement().primaryKey(),
+  fileName: varchar("fileName", { length: 255 }).notNull(),
+  fileKey: varchar("fileKey", { length: 255 }).notNull().unique(), // S3 key for the file
+  url: varchar("url", { length: 500 }).notNull(), // Direct S3 URL
+  mimeType: varchar("mimeType", { length: 50 }).default("image/jpeg"),
+  fileSize: int("fileSize"), // Size in bytes
+  width: int("width"), // Image width in pixels
+  height: int("height"), // Image height in pixels
+  altText: text("altText"), // Alternative text for accessibility
+  description: text("description"), // Description of the image
+  usageType: mysqlEnum("usageType", ["product", "category", "banner", "general"]).default("general"),
+  uploadedBy: int("uploadedBy"), // User ID who uploaded
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Image = typeof images.$inferSelect;
+export type InsertImage = typeof images.$inferInsert;
+
 // Relations
 export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, {
@@ -185,4 +206,15 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
     fields: [orderItems.productId],
     references: [products.id],
   }),
+}));
+
+export const imagesRelations = relations(images, ({ one }) => ({
+  uploadedByUser: one(users, {
+    fields: [images.uploadedBy],
+    references: [users.id],
+  }),
+}));
+
+export const usersImagesRelations = relations(users, ({ many }) => ({
+  uploadedImages: many(images),
 }));

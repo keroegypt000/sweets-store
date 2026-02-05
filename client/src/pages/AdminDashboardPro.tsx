@@ -10,8 +10,9 @@ import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 import OrdersManagement from './OrdersManagement';
 import BannerManagement from './BannerManagement';
+import ImageManagement from './ImageManagement';
 
-type Tab = 'products' | 'categories' | 'orders' | 'ordersManagement' | 'banners';
+type Tab = 'products' | 'categories' | 'orders' | 'ordersManagement' | 'banners' | 'images';
 
 interface Product {
   id: number;
@@ -95,6 +96,7 @@ const translations = {
     cancelled: 'ملغى',
     ordersManagement: 'إدارة الطلبات',
     banners: 'إدارة البنرات',
+    images: 'إدارة الصور',
   },
   en: {
     dashboard: 'Dashboard',
@@ -141,6 +143,7 @@ const translations = {
     cancelled: 'Cancelled',
     ordersManagement: 'Orders Management',
     banners: 'Banner Management',
+    images: 'Image Management',
   },
 };
 
@@ -552,7 +555,7 @@ export default function AdminDashboardPro() {
       {/* Tabs */}
       <div className="bg-white border-b sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 flex gap-4">
-          {(['products', 'categories', 'orders', 'ordersManagement', 'banners'] as Tab[]).map(tab => (
+          {(['products', 'categories', 'orders', 'ordersManagement', 'banners', 'images'] as Tab[]).map(tab => (
             <button
               key={tab}
               onClick={() => {
@@ -1005,6 +1008,10 @@ export default function AdminDashboardPro() {
         {/* BANNERS TAB */}
         {activeTab === 'banners' && (
           <BannerManagement />
+        )}
+
+        {activeTab === 'images' && (
+          <ImageManagement />
         )}
       </main>
     </div>
