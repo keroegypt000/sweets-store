@@ -89,35 +89,25 @@ export default function Home() {
     return categories.find(c => c.id === selectedCategoryId);
   }, [categories, selectedCategoryId]);
 
-  // Sample banners for display (in real app, these would come from database)
-  const sampleBanners = [
-    {
-      id: 1,
-      titleAr: 'متجر الحلويات',
-      titleEn: 'Sweets Store',
-      descriptionAr: 'أفضل الحلويات والمعجنات',
-      descriptionEn: 'Best sweets and pastries',
-      image: 'https://images.unsplash.com/photo-1599599810694-b5ac4dd64e90?w=800&h=400&fit=crop',
-      backgroundColor: '#FCD34D',
-      backgroundGradient: 'from-yellow-400 via-yellow-300 to-orange-300',
-      link: '#',
-      order: 0,
-      isActive: true,
-    },
-    {
-      id: 2,
-      titleAr: 'عروض خاصة',
-      titleEn: 'Special Offers',
-      descriptionAr: 'خصومات تصل إلى 50%',
-      descriptionEn: 'Discounts up to 50%',
-      image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&h=400&fit=crop',
-      backgroundColor: '#FCA5A5',
-      backgroundGradient: 'from-red-300 via-pink-300 to-red-200',
-      link: '#',
-      order: 1,
-      isActive: true,
-    },
-  ];
+  // Fetch banners from database
+  const { data: banners = [] } = trpc.banners.list.useQuery(undefined, {
+    retry: false,
+  });
+
+  // Transform banners for display
+  const sampleBanners = banners.filter(b => b.isActive).sort((a, b) => (a.order || 0) - (b.order || 0)).map(banner => ({
+    id: banner.id,
+    titleAr: banner.titleAr,
+    titleEn: banner.titleEn,
+    descriptionAr: banner.descriptionAr || '',
+    descriptionEn: banner.descriptionEn || '',
+    image: banner.image,
+    backgroundColor: '#FCD34D',
+    backgroundGradient: 'from-yellow-400 via-yellow-300 to-orange-300',
+    link: banner.link || '#',
+    order: banner.order || 0,
+    isActive: banner.isActive || false,
+  }));
 
   return (
     <PageLayout>

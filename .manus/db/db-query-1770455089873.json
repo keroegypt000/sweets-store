@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO banners (titleAr, titleEn, descriptionAr, descriptionEn, image, link, `order`, isActive) VALUES \n('متجر الحلويات', 'Sweets Store', 'أفضل الحلويات والمعجنات', 'Best sweets and pastries', 'https://images.unsplash.com/photo-1599599810694-b5ac4dd64e90?w=800&h=400&fit=crop', '/', 0, 1),\n('عروض خاصة', 'Special Offers', 'خصومات تصل إلى 50%', 'Discounts up to 50%', 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&h=400&fit=crop', '/', 1, 1);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user dBnEF2pw3cN7fdc.root --database TBvBXeooTqFpEvP3g5fESC --execute INSERT INTO banners (titleAr, titleEn, descriptionAr, descriptionEn, image, link, `order`, isActive) VALUES \n('متجر الحلويات', 'Sweets Store', 'أفضل الحلويات والمعجنات', 'Best sweets and pastries', 'https://images.unsplash.com/photo-1599599810694-b5ac4dd64e90?w=800&h=400&fit=crop', '/', 0, 1),\n('عروض خاصة', 'Special Offers', 'خصومات تصل إلى 50%', 'Discounts up to 50%', 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&h=400&fit=crop', '/', 1, 1);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1565
+}
