@@ -4,9 +4,10 @@ import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Upload, Trash2, Copy, Check, Search, X, Edit2, AlertCircle, HardDrive } from 'lucide-react';
+import { Loader2, Upload, Trash2, Copy, Check, Search, X, Edit2, AlertCircle, HardDrive, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
+import { UnusedImagesCleanup } from './UnusedImagesCleanup';
 
 interface Image {
   id: number;
@@ -52,7 +53,7 @@ interface ImageStatistics {
   usagePercentage: number;
 }
 
-type Tab = 'gallery' | 'banners' | 'statistics';
+type Tab = 'gallery' | 'banners' | 'statistics' | 'cleanup';
 
 export default function ImageManagement() {
   const { language } = useLanguage();
@@ -459,6 +460,16 @@ export default function ImageManagement() {
             }`}
           >
             {currentT.statistics}
+          </button>
+          <button
+            onClick={() => setActiveTab('cleanup')}
+            className={`px-4 py-2 font-medium border-b-2 whitespace-nowrap ${
+              activeTab === 'cleanup'
+                ? 'border-red-500 text-red-600'
+                : 'border-transparent text-gray-600'
+            }`}
+          >
+            تنظيف الصور
           </button>
         </div>
 
@@ -965,6 +976,11 @@ export default function ImageManagement() {
               )}
             </div>
           </>
+        )}
+
+        {/* CLEANUP TAB */}
+        {activeTab === 'cleanup' && (
+          <UnusedImagesCleanup />
         )}
       </div>
     </div>

@@ -411,6 +411,25 @@ export const appRouter = router({
         if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
         return getImagesByType(input.usageType);
       }),
+    unusedImages: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { getUnusedImages } = await import('./db');
+        return getUnusedImages();
+      }),
+    unusedImagesStats: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { getUnusedImagesStats } = await import('./db');
+        return getUnusedImagesStats();
+      }),
+    deleteUnused: protectedProcedure
+      .input(z.object({ imageIds: z.array(z.number()).min(1) }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { deleteUnusedImages } = await import('./db');
+        return deleteUnusedImages(input.imageIds);
+      }),
   }),
 
   admin: router({
@@ -461,3 +480,5 @@ export type AppRouter = typeof appRouter;
 
 
 
+
+    // Placeholder - will be replaced with actual procedures

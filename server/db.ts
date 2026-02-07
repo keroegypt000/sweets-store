@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, categories, products, cartItems, orders, orderItems, banners, images } from "../drizzle/schema";
+import { eq, sql } from "drizzle-orm";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -666,4 +666,146 @@ export async function getImagesByType(usageType: string) {
     console.error('Error fetching images by type:', error);
     return [];
   }
+}
+
+
+// Unused Images Detection Functions
+export async function getUnusedImages() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  try {
+    // Get all images
+    const allImages = await db.select().from(images);
+    
+    // Get all image URLs used in products
+    const productsData = await db.select().from(products);
+    const usedProductImages = new Set<string>();
+    
+    for (const product of productsData) {
+      if (product.image) {
+        usedProductImages.add(product.image);
+      }
+      if (product.images) {
+        try {
+          const imageUrls = JSON.parse(product.images);
+          if (Array.isArray(imageUrls)) {
+            imageUrls.forEach((url: string) => usedProductImages.add(url));
+          }
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+    }
+    
+    // Get all image URLs used in categories
+    const categoriesData = await db.select().from(categories);
+    const usedCategoryImages = new Set<string>();
+    
+    for (const category of categoriesData) {
+      if (category.image) {
+        usedCategoryImages.add(category.image);
+      }
+    }
+    
+    // Get all image URLs used in banners
+    const bannersData = await db.select().from(banners);
+    const usedBannerImages = new Set<string>();
+    
+    for (const banner of bannersData) {
+      if (banner.image) {
+        usedBannerImages.add(banner.image);
+      }
+    }
+    
+    // Find unused images
+    const unusedImages = allImages.filter(img => {
+      const isUsedInProduct = usedProductImages.has(img.url);
+      const isUsedInCategory = usedCategoryImages.has(img.url);
+      const isUsedInBanner = usedBannerImages.has(img.url);
+      
+      return !isUsedInProduct && !isUsedInCategory && !isUsedInBanner;
+    });
+    
+    return unusedImages;
+  } catch (error) {
+    console.error('Error detecting unused images:', error);
+    return [];
+  }
+}
+
+export async function getUnusedImagesStats() {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    const unusedImages = await getUnusedImages();
+    
+    const totalUnusedSize = unusedImages.reduce((sum, img) => sum + (img.fileSize || 0), 0);
+    const unusedCount = unusedImages.length;
+    
+    // Calculate potential savings
+    const stats = await getImageStatistics();
+    const currentUsage = stats?.totalSize || 0;
+    const potentialSavingsPercentage = stats ? (totalUnusedSize / stats.totalSize) * 100 : 0;
+    
+    return {
+      unusedCount,
+      totalUnusedSize,
+      unusedImages,
+      potentialSavingsPercentage,
+      currentStorageUsage: stats?.usagePercentage || 0,
+      storageAfterCleanup: stats ? ((currentUsage - totalUnusedSize) / (stats.storageLimit || 1)) * 100 : 0,
+    };
+  } catch (error) {
+    console.error('Error calculating unused images stats:', error);
+    return null;
+  }
+}
+
+export async function deleteUnusedImages(imageIds: number[]) {
+  const db = await getDb();
+  if (!db) return { deleted: 0, failed: 0 };
+  
+  let deleted = 0;
+  let failed = 0;
+  
+  for (const id of imageIds) {
+    try {
+      // Verify image is unused before deleting
+      const image = await db.select().from(images).where(eq(images.id, id)).limit(1);
+      
+      if (image.length === 0) {
+        failed++;
+        continue;
+      }
+      
+      const img = image[0];
+      
+      // Check if image is still unused
+      const productsUsing = await db.select().from(products).where(
+        sql`${products.image} = ${img.url}`
+      );
+      
+      // Also check products with multiple images
+      const productsWithMultipleImages = await db.select().from(products).where(
+        sql`${products.images} LIKE ${"%" + img.url + "%"}`
+      );
+      
+      const categoriesUsing = await db.select().from(categories).where(eq(categories.image, img.url));
+      const bannersUsing = await db.select().from(banners).where(eq(banners.image, img.url));
+      
+      if (productsUsing.length === 0 && productsWithMultipleImages.length === 0 && categoriesUsing.length === 0 && bannersUsing.length === 0) {
+        await db.delete(images).where(eq(images.id, id));
+        deleted++;
+      } else {
+        failed++;
+      }
+    } catch (error) {
+      console.error(`Error deleting image ${id}:`, error);
+      failed++;
+    }
+  }
+  
+  return { deleted, failed };
 }
