@@ -890,36 +890,12 @@ export default function ImageManagement() {
               </form>
             </div>
 
-            {/* Image Gallery for Banner Selection */}
-            {!editingBannerId && (
-              <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h3 className="text-lg font-bold mb-4">{currentT.gallery}</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                  {images.map((image) => (
-                    <div
-                      key={image.id}
-                      onClick={() => handleSelectImageForBanner(image)}
-                      className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition ${
-                        selectedImageForBanner?.id === image.id
-                          ? 'border-blue-500 ring-2 ring-blue-300'
-                          : 'border-gray-200 hover:border-blue-300'
-                      }`}
-                    >
-                      <img
-                        src={image.url}
-                        alt={image.fileName}
-                        className="w-full h-24 object-cover"
-                      />
-                      {selectedImageForBanner?.id === image.id && (
-                        <div className="absolute inset-0 bg-blue-500 bg-opacity-30 flex items-center justify-center">
-                          <Check className="w-6 h-6 text-white" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Note: Use the Gallery tab to select images for banners */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <p className="text-sm text-blue-800">
+                💡 {currentT.selectImageForBanner}
+              </p>
+            </div>
 
             {/* Banners List */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
