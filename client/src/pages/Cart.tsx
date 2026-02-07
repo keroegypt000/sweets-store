@@ -139,7 +139,6 @@ export default function Cart() {
   const handleCheckout = useCallback(() => {
     const fields: FormField[] = [
       { name: language === 'ar' ? 'الاسم' : 'Name', value: customerName, required: true, type: 'text', minLength: 2 },
-      { name: language === 'ar' ? 'البريد الإلكتروني' : 'Email', value: customerEmail, required: true, type: 'email' },
       { name: language === 'ar' ? 'الهاتف' : 'Phone', value: customerPhone, required: true, type: 'tel' },
       { name: language === 'ar' ? 'عنوان الشحن' : 'Shipping Address', value: shippingAddress, required: true, type: 'textarea', minLength: 5 },
     ];
@@ -315,7 +314,7 @@ export default function Cart() {
 
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-dark-text">
-                      {language === 'ar' ? 'البريد الإلكتروني' : 'Email'}
+                      {language === 'ar' ? 'البريد الإلكتروني (اختياري)' : 'Email (Optional)'}
                     </label>
                     <input
                       ref={emailInputRef}
