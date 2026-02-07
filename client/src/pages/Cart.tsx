@@ -138,9 +138,9 @@ export default function Cart() {
 
   const handleCheckout = useCallback(() => {
     const fields: FormField[] = [
-      { name: language === 'ar' ? 'الاسم' : 'Name', value: customerName, required: true, type: 'text', minLength: 2 },
-      { name: language === 'ar' ? 'الهاتف' : 'Phone', value: customerPhone, required: true, type: 'tel' },
-      { name: language === 'ar' ? 'عنوان الشحن' : 'Shipping Address', value: shippingAddress, required: true, type: 'textarea', minLength: 5 },
+      { id: 'customerName', name: language === 'ar' ? 'الاسم' : 'Name', value: customerName, required: true, type: 'text', minLength: 2 },
+      { id: 'customerPhone', name: language === 'ar' ? 'الهاتف' : 'Phone', value: customerPhone, required: true, type: 'tel' },
+      { id: 'shippingAddress', name: language === 'ar' ? 'عنوان الشحن' : 'Shipping Address', value: shippingAddress, required: true, type: 'textarea', minLength: 5 },
     ];
 
     if (!validate(fields)) {
@@ -294,6 +294,7 @@ export default function Cart() {
                     </label>
                     <input
                       ref={nameInputRef}
+                      id="customerName"
                       type="text"
                       value={customerName}
                       onChange={(e) => {
@@ -342,6 +343,7 @@ export default function Cart() {
                     </label>
                     <input
                       ref={phoneInputRef}
+                      id="customerPhone"
                       type="tel"
                       value={customerPhone}
                       onChange={(e) => {
@@ -367,6 +369,7 @@ export default function Cart() {
                     </label>
                     <textarea
                       ref={addressInputRef}
+                      id="shippingAddress"
                       value={shippingAddress}
                       onChange={(e) => {
                         setShippingAddress(e.target.value);

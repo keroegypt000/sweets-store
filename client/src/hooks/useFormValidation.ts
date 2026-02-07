@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 
 export interface FormField {
+  id: string;
   name: string;
   value: string;
   required?: boolean;
@@ -9,42 +10,51 @@ export interface FormField {
 }
 
 export interface ValidationError {
-  [fieldName: string]: string;
+  [fieldId: string]: string;
 }
 
 export function useFormValidation() {
   const [errors, setErrors] = useState<ValidationError>({});
   const fieldRefsMap = useRef<Map<string, HTMLInputElement | HTMLTextAreaElement>>(new Map());
 
-  const registerField = useCallback((fieldName: string, ref: HTMLInputElement | HTMLTextAreaElement | null) => {
+  const registerField = useCallback((fieldId: string, ref: HTMLInputElement | HTMLTextAreaElement | null) => {
     if (ref) {
-      fieldRefsMap.current.set(fieldName, ref);
+      fieldRefsMap.current.set(fieldId, ref);
     } else {
-      fieldRefsMap.current.delete(fieldName);
+      fieldRefsMap.current.delete(fieldId);
     }
   }, []);
 
   const validateField = useCallback((field: FormField): string | null => {
+    // Check if required and empty
     if (field.required && !field.value.trim()) {
-      return `${field.name} is required`;
+      return `${field.name} مطلوب`;
     }
 
-    if (field.type === 'email' && field.value.trim()) {
+    // Skip other validations if field is empty and not required
+    if (!field.value.trim()) {
+      return null;
+    }
+
+    // Email validation
+    if (field.type === 'email') {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(field.value)) {
-        return `${field.name} must be a valid email`;
+        return `${field.name} يجب أن يكون بريد إلكتروني صحيح`;
       }
     }
 
-    if (field.type === 'tel' && field.value.trim()) {
+    // Phone validation
+    if (field.type === 'tel') {
       const phoneRegex = /^[\d\s\-\+\(\)]+$/;
       if (!phoneRegex.test(field.value) || field.value.replace(/\D/g, '').length < 7) {
-        return `${field.name} must be a valid phone number`;
+        return `${field.name} يجب أن يكون رقم هاتف صحيح`;
       }
     }
 
+    // Min length validation
     if (field.minLength && field.value.trim().length < field.minLength) {
-      return `${field.name} must be at least ${field.minLength} characters`;
+      return `${field.name} يجب أن يكون ${field.minLength} أحرف على الأقل`;
     }
 
     return null;
@@ -52,14 +62,14 @@ export function useFormValidation() {
 
   const validate = useCallback((fields: FormField[]): boolean => {
     const newErrors: ValidationError = {};
-    let firstInvalidFieldName: string | null = null;
+    let firstInvalidFieldId: string | null = null;
 
     fields.forEach(field => {
       const error = validateField(field);
       if (error) {
-        newErrors[field.name] = error;
-        if (!firstInvalidFieldName) {
-          firstInvalidFieldName = field.name;
+        newErrors[field.id] = error;
+        if (!firstInvalidFieldId) {
+          firstInvalidFieldId = field.id;
         }
       }
     });
@@ -67,8 +77,8 @@ export function useFormValidation() {
     setErrors(newErrors);
 
     // Scroll to first invalid field
-    if (firstInvalidFieldName) {
-      const fieldRef = fieldRefsMap.current.get(firstInvalidFieldName);
+    if (firstInvalidFieldId) {
+      const fieldRef = fieldRefsMap.current.get(firstInvalidFieldId);
       if (fieldRef) {
         setTimeout(() => {
           fieldRef.focus();
@@ -80,10 +90,10 @@ export function useFormValidation() {
     return Object.keys(newErrors).length === 0;
   }, [validateField]);
 
-  const clearError = useCallback((fieldName: string) => {
+  const clearError = useCallback((fieldId: string) => {
     setErrors(prev => {
       const newErrors = { ...prev };
-      delete newErrors[fieldName];
+      delete newErrors[fieldId];
       return newErrors;
     });
   }, []);
