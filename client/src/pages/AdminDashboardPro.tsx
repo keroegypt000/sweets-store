@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 import OrdersManagement from './OrdersManagement';
 import ImageManagement from './ImageManagement';
+import OrderNotificationBell from '@/components/OrderNotificationBell';
+import { OrderNotificationProvider } from '@/contexts/OrderNotificationContext';
 
 type Tab = 'products' | 'categories' | 'orders' | 'ordersManagement' | 'images';
 
@@ -148,7 +150,7 @@ const translations = {
 
 const API_BASE = '/api/admin';
 
-export default function AdminDashboardPro() {
+function AdminDashboardProContent() {
   const { language, setLanguage } = useLanguage();
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<Tab>('products');
@@ -537,6 +539,7 @@ export default function AdminDashboardPro() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">{t.dashboard}</h1>
           <div className="flex items-center gap-4">
+            <OrderNotificationBell />
             <button
               onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
               className="px-3 py-1 bg-gray-200 rounded"
@@ -1010,5 +1013,13 @@ export default function AdminDashboardPro() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function AdminDashboardPro() {
+  return (
+    <OrderNotificationProvider>
+      <AdminDashboardProContent />
+    </OrderNotificationProvider>
   );
 }
