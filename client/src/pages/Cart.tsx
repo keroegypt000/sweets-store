@@ -1,4 +1,3 @@
-import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Trash2, ArrowLeft, Printer } from 'lucide-react';
@@ -7,6 +6,8 @@ import { useLocation } from 'wouter';
 import { toast } from 'sonner';
 import PageLayout from '@/components/PageLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFormValidation, type FormField } from '@/hooks/useFormValidation';
+import { trpc } from '@/lib/trpc';
 
 export default function Cart() {
   const { language, t } = useLanguage();
@@ -121,13 +122,29 @@ export default function Cart() {
     };
   }, []);
 
+  const { errors, validate, registerField, clearError } = useFormValidation();
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const phoneInputRef = useRef<HTMLInputElement>(null);
+  const addressInputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Register refs
+  useEffect(() => {
+    if (nameInputRef.current) registerField('customerName', nameInputRef.current);
+    if (emailInputRef.current) registerField('customerEmail', emailInputRef.current);
+    if (phoneInputRef.current) registerField('customerPhone', phoneInputRef.current);
+    if (addressInputRef.current) registerField('shippingAddress', addressInputRef.current);
+  }, [registerField]);
+
   const handleCheckout = useCallback(() => {
-    if (!shippingAddress.trim()) {
-      toast.error(language === 'ar' ? 'يرجى إدخال عنوان الشحن' : 'Please enter shipping address');
-      return;
-    }
-    if (!customerName.trim() || !customerEmail.trim() || !customerPhone.trim()) {
-      toast.error(language === 'ar' ? 'يرجى إدخال جميع بيانات العميل' : 'Please enter all customer information');
+    const fields: FormField[] = [
+      { name: language === 'ar' ? 'الاسم' : 'Name', value: customerName, required: true, type: 'text', minLength: 2 },
+      { name: language === 'ar' ? 'البريد الإلكتروني' : 'Email', value: customerEmail, required: true, type: 'email' },
+      { name: language === 'ar' ? 'الهاتف' : 'Phone', value: customerPhone, required: true, type: 'tel' },
+      { name: language === 'ar' ? 'عنوان الشحن' : 'Shipping Address', value: shippingAddress, required: true, type: 'textarea', minLength: 5 },
+    ];
+
+    if (!validate(fields)) {
       return;
     }
 
@@ -138,7 +155,7 @@ export default function Cart() {
       customerEmail,
       customerPhone,
     });
-  }, [shippingAddress, customerName, customerEmail, customerPhone, total, createOrderMutation, language]);
+  }, [shippingAddress, customerName, customerEmail, customerPhone, total, createOrderMutation, language, validate]);
 
   if (isLoading) {
     return (
@@ -277,12 +294,23 @@ export default function Cart() {
                       {language === 'ar' ? 'الاسم' : 'Name'}
                     </label>
                     <input
+                      ref={nameInputRef}
                       type="text"
                       value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
+                      onChange={(e) => {
+                        setCustomerName(e.target.value);
+                        if (errors.customerName) clearError('customerName');
+                      }}
                       placeholder={language === 'ar' ? 'أدخل اسمك' : 'Enter your name'}
-                      className="w-full px-3 py-2 border border-border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      className={`w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 ${
+                        errors.customerName
+                          ? 'border-red-500 focus:ring-red-500 bg-red-50'
+                          : 'border-border focus:ring-primary'
+                      }`}
                     />
+                    {errors.customerName && (
+                      <p className="text-red-600 text-xs mt-1">{errors.customerName}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -290,12 +318,23 @@ export default function Cart() {
                       {language === 'ar' ? 'البريد الإلكتروني' : 'Email'}
                     </label>
                     <input
+                      ref={emailInputRef}
                       type="email"
                       value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      onChange={(e) => {
+                        setCustomerEmail(e.target.value);
+                        if (errors.customerEmail) clearError('customerEmail');
+                      }}
                       placeholder={language === 'ar' ? 'أدخل بريدك الإلكتروني' : 'Enter your email'}
-                      className="w-full px-3 py-2 border border-border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      className={`w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 ${
+                        errors.customerEmail
+                          ? 'border-red-500 focus:ring-red-500 bg-red-50'
+                          : 'border-border focus:ring-primary'
+                      }`}
                     />
+                    {errors.customerEmail && (
+                      <p className="text-red-600 text-xs mt-1">{errors.customerEmail}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -303,12 +342,23 @@ export default function Cart() {
                       {language === 'ar' ? 'الهاتف' : 'Phone'}
                     </label>
                     <input
+                      ref={phoneInputRef}
                       type="tel"
                       value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      onChange={(e) => {
+                        setCustomerPhone(e.target.value);
+                        if (errors.customerPhone) clearError('customerPhone');
+                      }}
                       placeholder={language === 'ar' ? 'أدخل رقم هاتفك' : 'Enter your phone'}
-                      className="w-full px-3 py-2 border border-border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      className={`w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 ${
+                        errors.customerPhone
+                          ? 'border-red-500 focus:ring-red-500 bg-red-50'
+                          : 'border-border focus:ring-primary'
+                      }`}
                     />
+                    {errors.customerPhone && (
+                      <p className="text-red-600 text-xs mt-1">{errors.customerPhone}</p>
+                    )}
                   </div>
 
                   {/* Shipping Address */}
@@ -317,12 +367,23 @@ export default function Cart() {
                       {language === 'ar' ? 'عنوان الشحن' : 'Shipping Address'}
                     </label>
                     <textarea
+                      ref={addressInputRef}
                       value={shippingAddress}
-                      onChange={(e) => setShippingAddress(e.target.value)}
+                      onChange={(e) => {
+                        setShippingAddress(e.target.value);
+                        if (errors.shippingAddress) clearError('shippingAddress');
+                      }}
                       placeholder={language === 'ar' ? 'أدخل عنوان الشحن' : 'Enter shipping address'}
-                      className="w-full px-3 py-2 border border-border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      className={`w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 ${
+                        errors.shippingAddress
+                          ? 'border-red-500 focus:ring-red-500 bg-red-50'
+                          : 'border-border focus:ring-primary'
+                      }`}
                       rows={3}
                     />
+                    {errors.shippingAddress && (
+                      <p className="text-red-600 text-xs mt-1">{errors.shippingAddress}</p>
+                    )}
                   </div>
 
                   {/* Total */}
