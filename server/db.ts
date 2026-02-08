@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, categories, products, cartItems, orders, orderItems, banners, images } from "../drizzle/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, desc } from "drizzle-orm";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -537,7 +537,30 @@ export async function getAllBanners(limit: number = 100, offset: number = 0) {
 export async function getAllOrders(limit: number = 100, offset: number = 0) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(orders).limit(limit).offset(offset);
+  
+  try {
+    // Get all orders sorted by newest first
+    const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(limit).offset(offset);
+    
+    console.log('Fetched orders from database:', allOrders.length);
+    
+    // Get items for each order
+    const ordersWithItems = await Promise.all(
+      allOrders.map(async (order) => {
+        const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
+        return {
+          ...order,
+          items,
+        };
+      })
+    );
+    
+    console.log('Orders with items:', ordersWithItems);
+    return ordersWithItems;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    return [];
+  }
 }
 
 export async function updateOrderStatus(id: number, status: string) {
