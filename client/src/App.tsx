@@ -8,6 +8,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from '@/pages/Cart';
+import OrderConfirmation from '@/pages/OrderConfirmation';
 import Receipt from '@/pages/Receipt';
 import OrderTracking from '@/pages/OrderTracking';
 import AdminLogin from '@/pages/AdminLogin';
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/product/:slug" component={ProductDetail} />
       <Route path="/cart" component={Cart} />
+      <Route path="/order-confirmation" component={OrderConfirmation} />
       <Route path="/receipt" component={Receipt} />
       <Route path="/track-order" component={OrderTracking} />
       <Route path="/admin-login" component={AdminLogin} />

@@ -80,7 +80,7 @@ export default function Cart() {
     },
   });
 
-  // Create order mutation
+  // Create order mutation (not used directly anymore, moved to confirmation page)
   const createOrderMutation = trpc.orders.create.useMutation({
     onSuccess: () => {
       toast.success(language === 'ar' ? 'تم إنشاء الطلب بنجاح' : 'Order created successfully');
@@ -91,6 +91,9 @@ export default function Cart() {
       toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
     },
   });
+  
+  // Remove unused createOrderMutation from handleCheckout
+  // It's now called from OrderConfirmation page
 
   // Calculate totals
   const total = cartItems.reduce((sum, item) => {
@@ -154,7 +157,7 @@ export default function Cart() {
       price: item.product?.price?.toString() || '0',
     }));
 
-    // Save order data to localStorage for receipt page
+    // Save order data to localStorage for confirmation page
     const orderData = {
       totalAmount: total.toFixed(2),
       shippingAddress,
@@ -169,16 +172,10 @@ export default function Cart() {
         product: item.product,
       })),
     };
-    localStorage.setItem('lastOrder', JSON.stringify(orderData));
+    localStorage.setItem('pendingOrder', JSON.stringify(orderData));
 
-    createOrderMutation.mutate({
-      totalAmount: total.toFixed(2),
-      shippingAddress,
-      customerName,
-      customerEmail,
-      customerPhone,
-      items,
-    });
+    // Navigate to confirmation page
+    setLocation('/order-confirmation');
   }, [shippingAddress, customerName, customerEmail, customerPhone, total, createOrderMutation, language, validate]);
 
   if (isLoading) {
