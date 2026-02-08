@@ -4,7 +4,6 @@ import { ArrowLeft, Printer } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PageLayout from '@/components/PageLayout';
 import { useEffect, useState } from 'react';
-import { trpc } from '@/lib/trpc';
 
 interface OrderItem {
   id: number;
@@ -37,18 +36,13 @@ export default function Receipt() {
   const [orderData, setOrderData] = useState<OrderData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Get the latest order from the server
-  const { data: allOrders } = trpc.orders.allOrders.useQuery(
-    { limit: 1, offset: 0 },
-    { enabled: false } // Only fetch when needed
-  );
-
   useEffect(() => {
-    // Try to get order from localStorage first
+    // Try to get order from localStorage (saved from OrderConfirmation)
     const savedOrder = localStorage.getItem('lastOrder');
     if (savedOrder) {
       try {
         const order = JSON.parse(savedOrder);
+        console.log('Loaded order from localStorage:', order);
         setOrderData(order);
         setIsLoading(false);
         return;
@@ -78,6 +72,8 @@ export default function Receipt() {
   };
 
   const handleBack = () => {
+    // Clear order data and go back to home
+    localStorage.removeItem('lastOrder');
     setLocation('/');
   };
 
@@ -90,11 +86,27 @@ export default function Receipt() {
       </PageLayout>
     );
   }
+  
+  if (!orderData) {
+    return (
+      <PageLayout>
+        <div className="container py-8 text-center">
+          <p className="text-red-600 mb-4">{language === 'ar' ? 'لا توجد بيانات طلب' : 'No order data found'}</p>
+          <Button onClick={() => setLocation('/')} className="bg-primary-yellow hover:bg-accent-yellow">
+            {language === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
+          </Button>
+        </div>
+      </PageLayout>
+    );
+  }
 
   const items = orderData?.items || [];
   const subtotal = parseFloat(orderData?.totalAmount || '0');
   const tax = subtotal * 0.05; // 5% tax
   const total = subtotal + tax;
+  
+  console.log('Receipt orderData:', orderData);
+  console.log('Receipt items:', items);
 
   return (
     <PageLayout>

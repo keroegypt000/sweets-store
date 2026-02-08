@@ -4,7 +4,7 @@ import { ArrowLeft, Check, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PageLayout from '@/components/PageLayout';
 import { useLocation } from 'wouter';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 
@@ -96,6 +96,11 @@ export default function OrderConfirmation() {
 
   const handleConfirm = async () => {
     setIsConfirming(true);
+    console.log('Confirming order with data:', orderData);
+    
+    // Save order data to localStorage before creating
+    localStorage.setItem('lastOrder', JSON.stringify(orderData));
+    
     createOrderMutation.mutate({
       totalAmount: orderData.totalAmount,
       shippingAddress: orderData.shippingAddress,
