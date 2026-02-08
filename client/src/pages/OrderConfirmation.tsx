@@ -4,7 +4,7 @@ import { ArrowLeft, Check, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PageLayout from '@/components/PageLayout';
 import { useLocation } from 'wouter';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 
@@ -32,20 +32,24 @@ export default function OrderConfirmation() {
   const { language } = useLanguage();
   const [, setLocation] = useLocation();
   const [isConfirming, setIsConfirming] = useState(false);
+  const [orderData, setOrderData] = useState<OrderData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Get order data from location state or localStorage
-  const [orderData] = useState<OrderData | null>(() => {
-    // Try to get from localStorage first
+  // Get order data from localStorage on component mount
+  useEffect(() => {
     const saved = localStorage.getItem('pendingOrder');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        console.log('Loaded order data:', parsed);
+        setOrderData(parsed);
       } catch (e) {
         console.error('Failed to parse pending order:', e);
+        setOrderData(null);
       }
     }
-    return null;
-  });
+    setIsLoading(false);
+  }, []);
 
   const createOrderMutation = trpc.orders.create.useMutation({
     onSuccess: () => {
@@ -61,7 +65,17 @@ export default function OrderConfirmation() {
     },
   });
 
-  if (!orderData) {
+  if (isLoading) {
+    return (
+      <PageLayout>
+        <div className="container py-8 text-center">
+          <p>{language === 'ar' ? 'جاري التحميل...' : 'Loading...'}</p>
+        </div>
+      </PageLayout>
+    );
+  }
+
+  if (!orderData || !orderData.items || orderData.items.length === 0) {
     return (
       <PageLayout>
         <div className="container py-8 text-center">
