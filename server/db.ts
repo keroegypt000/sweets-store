@@ -187,7 +187,20 @@ export async function getOrderById(orderId: number) {
 export async function createOrder(userId: number, totalAmount: string, shippingAddress: string, customerName?: string, customerEmail?: string, customerPhone?: string, cartItems?: Array<{productId: number, quantity: number, price: string}>) {
   const db = await getDb();
   if (!db) return null;
-  const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  
+  // Generate unique order number: ORD-YYYYMMDD-HHMMSS-RANDOM
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  const orderNumber = `ORD-${year}${month}${day}-${hours}${minutes}${seconds}-${random}`;
+  
+  console.log('Creating order with number:', orderNumber);
+  
   await db.insert(orders).values({
     userId,
     orderNumber,
@@ -197,6 +210,7 @@ export async function createOrder(userId: number, totalAmount: string, shippingA
     customerEmail: customerEmail || null,
     customerPhone: customerPhone || null,
   });
+  
   // Fetch the created order
   const result = await db.select().from(orders).where(eq(orders.orderNumber, orderNumber)).limit(1);
   
@@ -213,6 +227,7 @@ export async function createOrder(userId: number, totalAmount: string, shippingA
     }
   }
   
+  console.log('Order created:', result.length > 0 ? result[0] : null);
   return result.length > 0 ? result[0] : null;
 }
 

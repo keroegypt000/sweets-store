@@ -52,8 +52,23 @@ export default function OrderConfirmation() {
   }, []);
 
   const createOrderMutation = trpc.orders.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (createdOrder) => {
+      console.log('Order created successfully:', createdOrder);
       toast.success(language === 'ar' ? 'تم إنشاء الطلب بنجاح' : 'Order created successfully');
+      
+      // Save the created order to localStorage for receipt page with the generated order number
+      if (orderData && createdOrder) {
+        const orderForReceipt = {
+          ...orderData,
+          id: createdOrder.id,
+          orderNumber: createdOrder.orderNumber,
+          createdAt: new Date(),
+          status: createdOrder.status || 'pending',
+        };
+        console.log('Saving order to localStorage:', orderForReceipt);
+        localStorage.setItem('lastOrder', JSON.stringify(orderForReceipt));
+      }
+      
       // Clear pending order
       localStorage.removeItem('pendingOrder');
       // Redirect to receipt
