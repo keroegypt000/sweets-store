@@ -147,12 +147,37 @@ export default function Cart() {
       return;
     }
 
+    // Prepare cart items for order
+    const items = cartItems.map(item => ({
+      productId: item.productId,
+      quantity: item.quantity ?? 1,
+      price: item.product?.price?.toString() || '0',
+    }));
+
+    // Save order data to localStorage for receipt page
+    const orderData = {
+      totalAmount: total.toFixed(2),
+      shippingAddress,
+      customerName,
+      customerEmail,
+      customerPhone,
+      items: cartItems.map(item => ({
+        id: item.id,
+        productId: item.productId,
+        quantity: item.quantity ?? 1,
+        price: item.product?.price?.toString() || '0',
+        product: item.product,
+      })),
+    };
+    localStorage.setItem('lastOrder', JSON.stringify(orderData));
+
     createOrderMutation.mutate({
       totalAmount: total.toFixed(2),
       shippingAddress,
       customerName,
       customerEmail,
       customerPhone,
+      items,
     });
   }, [shippingAddress, customerName, customerEmail, customerPhone, total, createOrderMutation, language, validate]);
 

@@ -184,7 +184,7 @@ export async function getOrderById(orderId: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function createOrder(userId: number, totalAmount: string, shippingAddress: string, customerName?: string, customerEmail?: string, customerPhone?: string) {
+export async function createOrder(userId: number, totalAmount: string, shippingAddress: string, customerName?: string, customerEmail?: string, customerPhone?: string, cartItems?: Array<{productId: number, quantity: number, price: string}>) {
   const db = await getDb();
   if (!db) return null;
   const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -199,6 +199,20 @@ export async function createOrder(userId: number, totalAmount: string, shippingA
   });
   // Fetch the created order
   const result = await db.select().from(orders).where(eq(orders.orderNumber, orderNumber)).limit(1);
+  
+  // Save order items if provided
+  if (result.length > 0 && cartItems && cartItems.length > 0) {
+    const orderId = result[0].id;
+    for (const item of cartItems) {
+      await db.insert(orderItems).values({
+        orderId,
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price as any,
+      });
+    }
+  }
+  
   return result.length > 0 ? result[0] : null;
 }
 

@@ -208,10 +208,10 @@ export const appRouter = router({
         return getUserOrders(ctx.user.id);
       }),
     create: publicProcedure
-      .input(z.object({ totalAmount: z.string(), shippingAddress: z.string(), userId: z.number().optional(), customerName: z.string().optional(), customerEmail: z.string().optional(), customerPhone: z.string().optional() }))
+      .input(z.object({ totalAmount: z.string(), shippingAddress: z.string(), userId: z.number().optional(), customerName: z.string().optional(), customerEmail: z.string().optional(), customerPhone: z.string().optional(), items: z.array(z.object({ productId: z.number(), quantity: z.number(), price: z.string() })).optional() }))
       .mutation(async ({ ctx, input }) => {
         const userId = input.userId || ctx.user?.id || 1;
-        const result = await createOrder(userId, input.totalAmount, input.shippingAddress, input.customerName, input.customerEmail, input.customerPhone);
+        const result = await createOrder(userId, input.totalAmount, input.shippingAddress, input.customerName, input.customerEmail, input.customerPhone, input.items);
         await notifyOwner({
           title: 'New Order Received',
           content: `New order from ${ctx.user?.name || 'Guest Customer'} for ${input.totalAmount} KWD. Shipping address: ${input.shippingAddress}`,
