@@ -1,7 +1,6 @@
-import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, ChevronDown, Mail, Bell, Search, X } from 'lucide-react';
+import { Loader2, ChevronDown, Mail, Bell, Search, X, Eye } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -12,6 +11,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import OrderDetailModal from '@/components/admin/OrderDetailModal';
+import { trpc } from '@/lib/trpc';
+
+interface OrderItem {
+  id: number;
+  productId: number;
+  quantity: number;
+  price: string;
+  productName?: string;
+  productImage?: string;
+}
 
 interface Order {
   id: number;
@@ -24,11 +34,14 @@ interface Order {
   status: string | null;
   createdAt: Date;
   updatedAt: Date;
+  items?: OrderItem[];
 }
 
 export default function OrdersManagement() {
   const { language } = useLanguage();
-  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState<Record<number, string>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFrom, setDateFrom] = useState('');
@@ -37,7 +50,7 @@ export default function OrdersManagement() {
   const [lastOrderCount, setLastOrderCount] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
 
-  // Fetch all orders
+  // Fetch all orders with items
   const { data: orders = [], isLoading, refetch } = trpc.orders.allOrders.useQuery();
 
   // Update order status mutation
@@ -69,7 +82,7 @@ export default function OrdersManagement() {
       setShowNotification(true);
       
       // Play notification sound
-      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj==');
+      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBg==');
       audio.play().catch(() => {});
       
       // Show toast
@@ -102,6 +115,19 @@ export default function OrdersManagement() {
       customerName: order.customerName || 'Customer',
       status: (order.status || 'pending') as any,
     });
+  };
+
+  const handleOpenDetail = (order: Order) => {
+    setSelectedOrder(order);
+    setShowDetailModal(true);
+  };
+
+  const handleUpdateOrder = (updatedOrder: Order) => {
+    if (updatedOrder.status !== selectedOrder?.status) {
+      handleStatusChange(updatedOrder.id, updatedOrder.status || 'pending');
+    }
+    setShowDetailModal(false);
+    refetch();
   };
 
   const getStatusLabel = (status: string) => {
@@ -159,6 +185,16 @@ export default function OrdersManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Detail Modal */}
+      {selectedOrder && (
+        <OrderDetailModal
+          order={selectedOrder}
+          isOpen={showDetailModal}
+          onClose={() => setShowDetailModal(false)}
+          onUpdate={handleUpdateOrder}
+        />
+      )}
+
       {/* Notification Bell */}
       {showNotification && (
         <div className="fixed top-4 right-4 z-50 animate-bounce">
@@ -289,20 +325,18 @@ export default function OrdersManagement() {
                       </span>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
-                    className="p-2 hover:bg-gray-100 rounded"
+                  <Button
+                    onClick={() => handleOpenDetail(order)}
+                    size="sm"
+                    variant="outline"
+                    className="ml-2"
                   >
-                    <ChevronDown
-                      className={`w-5 h-5 transition-transform ${
-                        expandedOrderId === order.id ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </button>
+                    <Eye className="w-4 h-4" />
+                  </Button>
                 </div>
               </CardHeader>
 
-              {expandedOrderId === order.id && (
+              {selectedOrderId === order.id && (
                 <CardContent className="space-y-4 border-t border-border pt-4">
                   {/* Order Details */}
                   <div className="grid grid-cols-2 gap-4">

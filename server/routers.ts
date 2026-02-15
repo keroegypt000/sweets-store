@@ -3,7 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
-import { getCategories, getProducts, getProductsByCategory, getProductBySlug, getFeaturedProducts, getPromotionalProducts, getCartItems, addToCart, getUserOrders, createOrder, createProduct, updateProduct, deleteProduct, getProductById, getAllProducts, createCategory, updateCategory, deleteCategory, getCategoryById, getAllCategories, createBanner, updateBanner, deleteBanner, getBanners, getAllBanners, getAllOrders, updateOrderStatus, getOrderWithItems, getDb, createImage, getImages, getImagesByUsageType, getImageById, deleteImage, updateImage, getImageStatistics, getImagesByType } from "./db";
+import { getCategories, getProducts, getProductsByCategory, getProductBySlug, getFeaturedProducts, getPromotionalProducts, getCartItems, addToCart, getUserOrders, createOrder, createProduct, updateProduct, deleteProduct, getProductById, getAllProducts, createCategory, updateCategory, deleteCategory, getCategoryById, getAllCategories, createBanner, updateBanner, deleteBanner, getBanners, getAllBanners, getAllOrders, updateOrderStatus, updateOrder, getOrderWithItems, getDb, createImage, getImages, getImagesByUsageType, getImageById, deleteImage, updateImage, getImageStatistics, getImagesByType } from "./db";
 import { cartItems } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { notifyOwner } from "./_core/notification";
@@ -249,6 +249,27 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
         return updateOrderStatus(input.id, input.status);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        customerName: z.string().optional(),
+        customerEmail: z.string().email().optional(),
+        customerPhone: z.string().optional(),
+        shippingAddress: z.string().optional(),
+        status: z.enum(['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        return updateOrder(input.id, {
+          customerName: input.customerName,
+          customerEmail: input.customerEmail,
+          customerPhone: input.customerPhone,
+          shippingAddress: input.shippingAddress,
+          status: input.status,
+          notes: input.notes,
+        });
       }),
     sendStatusEmail: protectedProcedure
       .input(z.object({

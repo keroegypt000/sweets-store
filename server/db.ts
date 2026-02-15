@@ -573,6 +573,40 @@ export async function updateOrderStatus(id: number, status: string) {
   return updated.length > 0 ? updated[0] : null;
 }
 
+export async function updateOrder(id: number, data: {
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  shippingAddress?: string;
+  status?: string;
+  notes?: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const updateData: any = {};
+  if (data.customerName !== undefined) updateData.customerName = data.customerName;
+  if (data.customerEmail !== undefined) updateData.customerEmail = data.customerEmail;
+  if (data.customerPhone !== undefined) updateData.customerPhone = data.customerPhone;
+  if (data.shippingAddress !== undefined) updateData.shippingAddress = data.shippingAddress;
+  if (data.status !== undefined) updateData.status = data.status;
+  if (data.notes !== undefined) updateData.notes = data.notes;
+  
+  if (Object.keys(updateData).length === 0) return null;
+  
+  await db.update(orders).set(updateData).where(eq(orders.id, id));
+  
+  const updated = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
+  if (updated.length === 0) return null;
+  
+  const items = await db.select().from(orderItems).where(eq(orderItems.orderId, id));
+  
+  return {
+    ...updated[0],
+    items: items,
+  };
+}
+
 export async function getOrderWithItems(orderId: number) {
   const db = await getDb();
   if (!db) return null;
