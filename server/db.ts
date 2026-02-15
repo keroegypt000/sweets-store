@@ -392,9 +392,9 @@ export async function createCategory(data: {
 export async function updateCategory(id: number, data: {
   nameAr?: string;
   nameEn?: string;
-  descriptionAr?: string;
-  descriptionEn?: string;
-  image?: string;
+  descriptionAr?: string | null;
+  descriptionEn?: string | null;
+  image?: string | null;
   slug?: string;
   order?: number;
 }) {

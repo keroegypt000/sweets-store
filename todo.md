@@ -448,3 +448,18 @@
 - [ ] Check API endpoint for category image update
 - [ ] Test category image update with new image file
 - [ ] Ensure image is properly sent to backend
+
+
+## Centralized Image Management System
+
+- [x] Create `/webdev-static-assets/images/` folder structure (products, categories, banners)
+- [x] Create centralized ImageUploader component for all image uploads
+- [x] Add API endpoint `/api/upload-image` for handling image uploads
+- [x] Update CategoryEditModal to use ImageUploader component
+- [ ] Update product upload component to use ImageUploader
+- [ ] Update banner upload component to use ImageUploader
+- [ ] Migrate all existing product images to centralized folder
+- [ ] Migrate all existing category images to centralized folder
+- [ ] Migrate all existing banner images to centralized folder
+- [ ] Test all image uploads and displays
+- [ ] Verify all components work with centralized images

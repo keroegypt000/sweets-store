@@ -262,28 +262,31 @@ export default function AdminDashboardAPI() {
     }
   };
 
-  const handleSaveCategory = async (category: Category) => {
-    try {
-      const response = await fetch('/api/trpc/categories.update', {
+  const handleSaveCategory = async (updatedCategory: Category) => {
+    console.log('handleSaveCategory called with:', updatedCategory);
+    try {const response = await fetch('/api/trpc/categories.update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           json: {
-            id: category.id,
-            nameAr: category.nameAr,
-            nameEn: category.nameEn,
-            descriptionAr: category.descriptionAr,
-            descriptionEn: category.descriptionEn,
-            image: category.image,
-            slug: category.slug,
-            order: category.order,
+            id: updatedCategory.id,
+            nameAr: updatedCategory.nameAr,
+            nameEn: updatedCategory.nameEn,
+            descriptionAr: updatedCategory.descriptionAr,
+            descriptionEn: updatedCategory.descriptionEn,
+            image: updatedCategory.image,
+            slug: updatedCategory.slug,
+            order: updatedCategory.order,
           },
         }),
       });
+      const responseText = await response.text();
+      console.log('Response status:', response.status);
+      console.log('Response body:', responseText);
       if (response.ok) {
         fetchAllData();
       } else {
-        throw new Error('Failed to update category');
+        throw new Error(`Failed to update category: ${response.status} ${responseText}`);
       }
     } catch (error) {
       console.error('Save error:', error);

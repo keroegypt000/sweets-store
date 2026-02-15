@@ -148,9 +148,9 @@ export const appRouter = router({
         id: z.number(),
         nameAr: z.string().optional(),
         nameEn: z.string().optional(),
-        descriptionAr: z.string().optional(),
-        descriptionEn: z.string().optional(),
-        image: z.string().optional(),
+        descriptionAr: z.string().nullable().optional(),
+        descriptionEn: z.string().nullable().optional(),
+        image: z.string().nullable().optional(),
         slug: z.string().optional(),
         order: z.number().optional(),
       }))

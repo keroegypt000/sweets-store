@@ -38,6 +38,25 @@ async function startServer() {
   registerOAuthRoutes(app);
   // Public API routes for admin dashboard
   app.use("/api/admin", apiRouter);
+  
+  // Image upload endpoint
+  app.post("/api/upload-image", async (req, res) => {
+    try {
+      const { file, folder } = req.body;
+      
+      if (!file || !folder) {
+        return res.status(400).json({ error: "Missing file or folder" });
+      }
+      
+      // For now, just return the base64 data as the URL
+      // In production, you would save to S3 or disk
+      res.json({ url: file });
+    } catch (error) {
+      console.error("Upload error:", error);
+      res.status(500).json({ error: "Upload failed" });
+    }
+  });
+  
   // tRPC API
   app.use(
     "/api/trpc",

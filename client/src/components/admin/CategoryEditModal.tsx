@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
+import { ImageUploader } from './ImageUploader';
 
 interface Category {
   id: number;
@@ -25,28 +27,17 @@ interface CategoryEditModalProps {
 
 export function CategoryEditModal({ isOpen, category, onClose, onSave }: CategoryEditModalProps) {
   const [formData, setFormData] = useState<Category | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (category) {
       setFormData(category);
-      setImagePreview(category.image || '');
     }
   }, [category, isOpen]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64 = event.target?.result as string;
-        setImagePreview(base64);
-        if (formData) {
-          setFormData({ ...formData, image: base64 });
-        }
-      };
-      reader.readAsDataURL(file);
+  const handleImageSelect = (imageUrl: string) => {
+    if (formData) {
+      setFormData({ ...formData, image: imageUrl });
     }
   };
 
@@ -78,7 +69,7 @@ export function CategoryEditModal({ isOpen, category, onClose, onSave }: Categor
     }
   };
 
-  if (!formData) return null;
+  if (!isOpen || !formData) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -89,20 +80,12 @@ export function CategoryEditModal({ isOpen, category, onClose, onSave }: Categor
 
         <div className="space-y-4">
           {/* Image Upload */}
-          <div>
-            <label className="block text-sm font-medium mb-2">صورة الفئة</label>
-            {imagePreview && (
-              <div className="mb-2">
-                <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover rounded" />
-              </div>
-            )}
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="cursor-pointer"
-            />
-          </div>
+          <ImageUploader
+            onImageSelect={handleImageSelect}
+            currentImage={formData.image}
+            folder="categories"
+            label="صورة الفئة"
+          />
 
           {/* Arabic Name */}
           <div>
@@ -175,7 +158,14 @@ export function CategoryEditModal({ isOpen, category, onClose, onSave }: Categor
               disabled={isSaving}
               className="flex-1"
             >
-              {isSaving ? 'جاري الحفظ...' : 'حفظ'}
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  جاري الحفظ...
+                </>
+              ) : (
+                'حفظ'
+              )}
             </Button>
             <Button
               variant="outline"
