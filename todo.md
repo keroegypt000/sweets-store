@@ -440,3 +440,11 @@
 - [x] Add order deletion with confirmation
 - [x] Implement data validation for edited orders
 - [x] Add success/error notifications for order updates
+
+
+## Bug Fix - Category Image Update Issue
+- [ ] Fix category image not saving when updating in admin dashboard
+- [ ] Verify image upload handler in category edit form
+- [ ] Check API endpoint for category image update
+- [ ] Test category image update with new image file
+- [ ] Ensure image is properly sent to backend

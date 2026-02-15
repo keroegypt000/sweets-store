@@ -12,7 +12,7 @@ import OrderConfirmation from '@/pages/OrderConfirmation';
 import Receipt from '@/pages/Receipt';
 import OrderTracking from '@/pages/OrderTracking';
 import AdminLogin from '@/pages/AdminLogin';
-import AdminDashboardPro from '@/pages/AdminDashboardPro';
+import AdminDashboardAPI from '@/pages/AdminDashboardAPI';
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -25,7 +25,7 @@ function Router() {
       <Route path="/receipt" component={Receipt} />
       <Route path="/track-order" component={OrderTracking} />
       <Route path="/admin-login" component={AdminLogin} />
-      <Route path="/admin-dashboard" component={AdminDashboardPro} />
+      <Route path="/admin-dashboard" component={AdminDashboardAPI} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

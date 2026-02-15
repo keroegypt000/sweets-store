@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Plus, Edit2, Trash2, LogOut, Menu, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { CategoryEditModal } from '@/components/admin/CategoryEditModal';
+
 
 type Tab = 'products' | 'categories' | 'banners' | 'orders';
 
@@ -141,6 +143,9 @@ export default function AdminDashboardAPI() {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [formData, setFormData] = useState<any>({});
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   // Data state
   const [products, setProducts] = useState<Product[]>([]);
@@ -213,20 +218,76 @@ export default function AdminDashboardAPI() {
   // Category handlers
   const handleAddCategory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
     try {
       const response = await fetch(`${API_BASE}/categories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(formData)),
+        body: JSON.stringify(formData),
       });
       if (response.ok) {
         toast.success(t.success);
         setShowForm(false);
+        setFormData({});
         fetchAllData();
+      } else {
+        toast.error(t.error);
       }
     } catch (error) {
       toast.error(t.error);
+      console.error('Add error:', error);
+    }
+  };
+
+  const handleUpdateCategory = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editingId) return;
+    try {
+      const response = await fetch(`${API_BASE}/categories/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        toast.success(t.success);
+        setShowForm(false);
+        setEditingId(null);
+        setFormData({});
+        fetchAllData();
+      } else {
+        toast.error(t.error);
+      }
+    } catch (error) {
+      toast.error(t.error);
+      console.error('Update error:', error);
+    }
+  };
+
+  const handleSaveCategory = async (category: Category) => {
+    try {
+      const response = await fetch('/api/trpc/categories.update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          json: {
+            id: category.id,
+            nameAr: category.nameAr,
+            nameEn: category.nameEn,
+            descriptionAr: category.descriptionAr,
+            descriptionEn: category.descriptionEn,
+            image: category.image,
+            slug: category.slug,
+            order: category.order,
+          },
+        }),
+      });
+      if (response.ok) {
+        fetchAllData();
+      } else {
+        throw new Error('Failed to update category');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      throw error;
     }
   };
 
@@ -429,17 +490,60 @@ export default function AdminDashboardAPI() {
             </div>
 
             {showForm && (
-              <form onSubmit={handleAddCategory} className="bg-white p-4 rounded-lg mb-4 space-y-3">
-                <Input name="nameAr" placeholder={t.nameAr} required />
-                <Input name="nameEn" placeholder={t.nameEn} required />
-                <Input name="descriptionAr" placeholder={t.descriptionAr} />
-                <Input name="descriptionEn" placeholder={t.descriptionEn} />
-                <Input name="image" placeholder={t.image} />
-                <Input name="slug" placeholder={t.slug} required />
-                <Input name="order" type="number" placeholder={t.order} defaultValue="0" />
+              <form onSubmit={editingId ? handleUpdateCategory : handleAddCategory} className="bg-white p-4 rounded-lg mb-4 space-y-3">
+                <Input 
+                  name="nameAr" 
+                  placeholder={t.nameAr} 
+                  value={editingId ? (formData.nameAr || categories.find(c => c.id === editingId)?.nameAr || '') : (formData.nameAr || '')}
+                  onChange={(e) => setFormData({...formData, nameAr: e.target.value})}
+                  required 
+                />
+                <Input 
+                  name="nameEn" 
+                  placeholder={t.nameEn} 
+                  value={editingId ? (formData.nameEn || categories.find(c => c.id === editingId)?.nameEn || '') : (formData.nameEn || '')}
+                  onChange={(e) => setFormData({...formData, nameEn: e.target.value})}
+                  required 
+                />
+                <Input 
+                  name="descriptionAr" 
+                  placeholder={t.descriptionAr} 
+                  value={editingId ? (formData.descriptionAr || categories.find(c => c.id === editingId)?.descriptionAr || '') : (formData.descriptionAr || '')}
+                  onChange={(e) => setFormData({...formData, descriptionAr: e.target.value})}
+                />
+                <Input 
+                  name="descriptionEn" 
+                  placeholder={t.descriptionEn} 
+                  value={editingId ? (formData.descriptionEn || categories.find(c => c.id === editingId)?.descriptionEn || '') : (formData.descriptionEn || '')}
+                  onChange={(e) => setFormData({...formData, descriptionEn: e.target.value})}
+                />
+                <Input 
+                  name="image" 
+                  placeholder={t.image} 
+                  value={editingId ? (formData.image || categories.find(c => c.id === editingId)?.image || '') : (formData.image || '')}
+                  onChange={(e) => setFormData({...formData, image: e.target.value})}
+                />
+                <Input 
+                  name="slug" 
+                  placeholder={t.slug} 
+                  value={editingId ? (formData.slug || categories.find(c => c.id === editingId)?.slug || '') : (formData.slug || '')}
+                  onChange={(e) => setFormData({...formData, slug: e.target.value})}
+                  required 
+                />
+                <Input 
+                  name="order" 
+                  type="number" 
+                  placeholder={t.order} 
+                  value={editingId ? (formData.order || categories.find(c => c.id === editingId)?.order || 0) : (formData.order || 0)}
+                  onChange={(e) => setFormData({...formData, order: parseInt(e.target.value)})}
+                />
                 <div className="flex gap-2">
-                  <Button type="submit">{t.save}</Button>
-                  <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                  <Button type="submit">{editingId ? t.edit : t.add}</Button>
+                  <Button type="button" variant="outline" onClick={() => {
+                    setShowForm(false);
+                    setEditingId(null);
+                    setFormData({});
+                  }}>
                     {t.cancel}
                   </Button>
                 </div>
@@ -457,7 +561,10 @@ export default function AdminDashboardAPI() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setEditingId(category.id)}
+                        onClick={() => {
+                          setEditingCategory(category);
+                          setShowCategoryModal(true);
+                        }}
                       >
                         <Edit2 size={16} />
                       </Button>
@@ -567,6 +674,16 @@ export default function AdminDashboardAPI() {
           </div>
         )}
       </main>
+
+      <CategoryEditModal
+        isOpen={showCategoryModal}
+        category={editingCategory}
+        onClose={() => {
+          setShowCategoryModal(false);
+          setEditingCategory(null);
+        }}
+        onSave={handleSaveCategory}
+      />
     </div>
   );
 }
