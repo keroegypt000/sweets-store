@@ -32,30 +32,16 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
   // Configure body parser with larger size limit for file uploads
+  // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  
+
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
-  // Public API routes for admin dashboard
+  // Public API routes for admin dashboard and uploads
+  app.use("/api", apiRouter);
   app.use("/api/admin", apiRouter);
-  
-  // Image upload endpoint
-  app.post("/api/upload-image", async (req, res) => {
-    try {
-      const { file, folder } = req.body;
-      
-      if (!file || !folder) {
-        return res.status(400).json({ error: "Missing file or folder" });
-      }
-      
-      // For now, just return the base64 data as the URL
-      // In production, you would save to S3 or disk
-      res.json({ url: file });
-    } catch (error) {
-      console.error("Upload error:", error);
-      res.status(500).json({ error: "Upload failed" });
-    }
-  });
   
   // tRPC API
   app.use(

@@ -2,8 +2,49 @@ import { Router, Request, Response } from 'express';
 import { getDb } from './db';
 import { products, categories, banners, orders } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 const router = Router();
+
+// Configure multer for image uploads
+const uploadDir = path.join(process.cwd(), 'webdev-static-assets', 'images');
+
+// Ensure upload directory exists
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const folder = (req.body as any).folder || 'general';
+    const folderPath = path.join(uploadDir, folder);
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+    cb(null, folderPath);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    const name = path.basename(file.originalname, ext);
+    cb(null, `${name}-${uniqueSuffix}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'));
+    }
+  }
+});
 
 // ============ PRODUCTS ============
 
@@ -241,6 +282,29 @@ router.delete('/banners/:id', async (req: Request, res: Response) => {
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete banner' });
+  }
+});
+
+// ============ IMAGE UPLOAD ============
+
+router.post('/upload-image', upload.single('file'), async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file provided' });
+    }
+
+    const folder = (req.body as any).folder || 'general';
+    const relativePath = `/webdev-static-assets/images/${folder}/${req.file.filename}`;
+    
+    res.json({
+      success: true,
+      url: relativePath,
+      path: relativePath,
+      filename: req.file.filename
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ error: 'فشل رفع الصورة' });
   }
 });
 

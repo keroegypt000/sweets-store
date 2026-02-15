@@ -69,7 +69,7 @@ export function CategoryEditModal({ isOpen, category, onClose, onSave }: Categor
     }
   };
 
-  if (!isOpen || !formData) return null;
+  if (!isOpen) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -78,6 +78,7 @@ export function CategoryEditModal({ isOpen, category, onClose, onSave }: Categor
           <DialogTitle>تعديل الفئة</DialogTitle>
         </DialogHeader>
 
+        {formData && (
         <div className="space-y-4">
           {/* Image Upload */}
           <ImageUploader
@@ -177,6 +178,7 @@ export function CategoryEditModal({ isOpen, category, onClose, onSave }: Categor
             </Button>
           </div>
         </div>
+        )}
       </DialogContent>
     </Dialog>
   );
