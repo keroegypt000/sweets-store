@@ -569,3 +569,19 @@
 - [x] Display 2 products side by side on mobile
 - [x] Reduce product card size to fit 2 columns
 - [x] Maintain proper spacing and padding
+
+
+## v2.6 - Mobile UX Enhancements
+
+### Issue 1: Scroll position should start at product image top
+- [x] Fix scroll to start at top of product image (not middle)
+- [x] Ensure first product image is fully visible when category is selected
+- [x] Adjust scroll position to show full product card from top
+
+### Issue 2: Add category navigation buttons
+- [x] Add "Previous Category" button on right side of products header
+- [x] Add "Next Category" button on left side of products header
+- [x] Buttons should navigate to previous/next category in the list
+- [x] Show category name on button hover
+- [x] Disable button if at first/last category
+- [x] Smooth transition when switching categories

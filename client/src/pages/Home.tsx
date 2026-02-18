@@ -6,7 +6,7 @@ import { trpc } from '@/lib/trpc';
 import ProductCard from '@/components/ProductCard';
 import PageLayout from '@/components/PageLayout';
 import BannerSlider from '@/components/BannerSlider';
-import { ShoppingCart, ArrowLeft, Search } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Debounce hook
@@ -163,7 +163,7 @@ export default function Home() {
                         if (mobileProductsGridRef.current) {
                           mobileProductsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }
-                      }, 50);
+                      }, 100);
                     }}
                     className="relative cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 overflow-hidden group h-24 sm:h-28"
                   >
@@ -194,17 +194,64 @@ export default function Home() {
         ) : (
           // Products View
           <div className="flex-1 overflow-y-auto bg-gray-50">
-            <div className="p-4 sm:p-6 border-b-2 border-gray-200 bg-white sticky top-0 z-20 shadow-sm flex items-center gap-3">
-              <button
-                onClick={() => setSelectedCategoryId(null)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-medium transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                {language === 'ar' ? 'رجوع' : 'Back'}
-              </button>
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800">
-                {language === 'ar' ? selectedCategory?.nameAr : selectedCategory?.nameEn}
-              </h2>
+            <div className="p-4 sm:p-6 border-b-2 border-gray-200 bg-white sticky top-0 z-20 shadow-sm flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 flex-1">
+                <button
+                  onClick={() => setSelectedCategoryId(null)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-medium transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  {language === 'ar' ? 'رجوع' : 'Back'}
+                </button>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate">
+                  {language === 'ar' ? selectedCategory?.nameAr : selectedCategory?.nameEn}
+                </h2>
+              </div>
+              
+              {/* Category Navigation Buttons */}
+              <div className="flex gap-2">
+                {/* Next Category Button (Left side - RTL) */}
+                <button
+                  onClick={() => {
+                    const currentIndex = filteredCategories.findIndex(c => c.id === selectedCategoryId);
+                    if (currentIndex < filteredCategories.length - 1) {
+                      const nextCategory = filteredCategories[currentIndex + 1];
+                      setSelectedCategoryId(nextCategory.id);
+                      setTimeout(() => {
+                        if (mobileProductsGridRef.current) {
+                          mobileProductsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 50);
+                    }
+                  }}
+                  disabled={filteredCategories.findIndex(c => c.id === selectedCategoryId) >= filteredCategories.length - 1}
+                  className="flex items-center justify-center p-2 rounded-lg bg-yellow-300 hover:bg-yellow-400 disabled:bg-gray-300 disabled:cursor-not-allowed text-gray-800 transition-colors"
+                  title={language === 'ar' ? 'الفئة التالية' : 'Next Category'}
+                >
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+                
+                {/* Previous Category Button (Right side - RTL) */}
+                <button
+                  onClick={() => {
+                    const currentIndex = filteredCategories.findIndex(c => c.id === selectedCategoryId);
+                    if (currentIndex > 0) {
+                      const prevCategory = filteredCategories[currentIndex - 1];
+                      setSelectedCategoryId(prevCategory.id);
+                      setTimeout(() => {
+                        if (mobileProductsGridRef.current) {
+                          mobileProductsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 50);
+                    }
+                  }}
+                  disabled={filteredCategories.findIndex(c => c.id === selectedCategoryId) <= 0}
+                  className="flex items-center justify-center p-2 rounded-lg bg-yellow-300 hover:bg-yellow-400 disabled:bg-gray-300 disabled:cursor-not-allowed text-gray-800 transition-colors"
+                  title={language === 'ar' ? 'الفئة السابقة' : 'Previous Category'}
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             <div ref={mobileProductsGridRef} className="grid grid-cols-2 gap-2 p-2 sm:gap-4 sm:p-4">
