@@ -479,9 +479,13 @@
 - [ ] Verify all components work with centralized images
 
 
-## Admin Dashboard Restoration
-- [x] Restore AdminDashboardAPI to previous version with all tabs
+## Admin Dashboard Full Restoration
+- [x] Restore AdminDashboardAPI to complete version with all 6 tabs
 - [x] Restore معرض الصور (Image Gallery) tab
 - [x] Restore إدارة الطلبات (Orders Management) tab
+- [x] Restore البانرات (Banners Management) tab
+- [x] Restore BannerManagement component
+- [x] Restore ImageManagement component
+- [x] Restore OrdersManagement component
 - [x] Verify all functionality is working
 - [x] Restart dev server to apply changes
