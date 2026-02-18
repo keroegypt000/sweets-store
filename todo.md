@@ -477,3 +477,11 @@
 - [ ] Migrate all existing banner images to centralized folder
 - [ ] Test all image uploads and displays
 - [ ] Verify all components work with centralized images
+
+
+## Admin Dashboard Restoration
+- [x] Restore AdminDashboardAPI to previous version with all tabs
+- [x] Restore معرض الصور (Image Gallery) tab
+- [x] Restore إدارة الطلبات (Orders Management) tab
+- [x] Verify all functionality is working
+- [x] Restart dev server to apply changes
