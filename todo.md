@@ -518,7 +518,8 @@
 ### Issue 1: Auto-scroll to Products
 - [x] Add auto-scroll functionality when category is selected on home page
 - [x] Scroll to products section smoothly when user clicks category in bottom of page
-- [x] Ensure products are visible immediately after selection
+- [x] Ensure products are visible without manual scrolling
+- [x] Fixed: Scroll now happens immediately before state update for instant effectction
 
 ### Issue 2: Consolidate Orders Management
 - [x] Merge "Orders" and "Orders Management" tabs into single unified tab
