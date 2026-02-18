@@ -555,3 +555,17 @@
 - [x] Test on mobile and desktop views
 - [x] Added useRef to products container
 - [x] Scroll to top when category is selected
+
+
+## v2.5 - Mobile View Improvements
+
+### Issue 1: Mobile scroll should skip banner
+- [x] When category is selected on mobile, scroll to products section (not banner)
+- [x] Skip the banner and search bar in mobile view scroll
+- [x] Show first product immediately to user
+
+### Issue 2: Mobile product grid layout
+- [x] Change mobile product grid from 1 column to 2 columns
+- [x] Display 2 products side by side on mobile
+- [x] Reduce product card size to fit 2 columns
+- [x] Maintain proper spacing and padding

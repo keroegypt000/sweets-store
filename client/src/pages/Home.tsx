@@ -29,6 +29,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const productsContainerRef = useRef<HTMLDivElement>(null);
   const productsHeaderRef = useRef<HTMLDivElement>(null);
+  const mobileProductsGridRef = useRef<HTMLDivElement>(null);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // Fetch categories
@@ -156,10 +157,13 @@ export default function Home() {
                   <div
                     key={category.id}
                     onClick={() => {
-                      // Auto-scroll to top FIRST
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                      // Then set category
                       setSelectedCategoryId(category.id);
+                      // On mobile, scroll to products grid (skip banner and search bar)
+                      setTimeout(() => {
+                        if (mobileProductsGridRef.current) {
+                          mobileProductsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 50);
                     }}
                     className="relative cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 overflow-hidden group h-24 sm:h-28"
                   >
@@ -203,7 +207,7 @@ export default function Home() {
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:p-6">
+            <div ref={mobileProductsGridRef} className="grid grid-cols-2 gap-2 p-2 sm:gap-4 sm:p-4">
               {filteredProducts && filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <ProductCard
@@ -213,7 +217,7 @@ export default function Home() {
                   />
                 ))
               ) : (
-                <div className="col-span-full text-center py-12">
+                <div className="col-span-2 text-center py-12">
                   <p className="text-gray-500 text-lg">
                     {language === 'ar' ? 'لا توجد منتجات' : 'No products found'}
                   </p>
