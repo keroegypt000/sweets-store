@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import ProductCard from '@/components/ProductCard';
@@ -27,6 +27,7 @@ export default function Home() {
   const { language } = useLanguage();
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const productsContainerRef = useRef<HTMLDivElement>(null);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // Fetch categories
@@ -276,7 +277,13 @@ export default function Home() {
                 return (
                   <div
                     key={category.id}
-                    onClick={() => setSelectedCategoryId(category.id)}
+                    onClick={() => {
+                      setSelectedCategoryId(category.id);
+                      // Scroll products container to top
+                      if (productsContainerRef.current) {
+                        productsContainerRef.current.scrollTop = 0;
+                      }
+                    }}
                     className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 overflow-hidden group h-24 rounded-lg shadow-md hover:shadow-lg w-full ${
                       selectedCategoryId === category.id
                         ? 'ring-2 ring-yellow-500 shadow-xl'
@@ -307,7 +314,7 @@ export default function Home() {
         </div>
 
         {/* Right Column - Products */}
-        <div className="w-1/2 bg-gray-50 overflow-y-auto flex flex-col">
+        <div ref={productsContainerRef} className="w-1/2 bg-gray-50 overflow-y-auto flex flex-col">
           
           {/* Products Header */}
           <div className="p-6 border-b-2 border-gray-200 bg-white sticky top-0 z-20 shadow-sm flex-shrink-0">

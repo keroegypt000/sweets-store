@@ -541,3 +541,17 @@
 - [x] Allow selecting images from gallery when creating/editing categories
 - [x] Allow selecting images from gallery when creating/editing banners
 - [x] Show image previews in management lists
+
+
+## v2.2 - Split Scroll Layout Fix
+
+### Issue: Auto-scroll not working properly
+- [x] Implement split-scroll layout on home page
+- [x] Left side (Categories) has independent scroll
+- [x] Right side (Products) has independent scroll
+- [x] Clicking category on left doesn't affect right side scroll
+- [x] Products always visible at top of right panel when selected
+- [x] Use CSS Grid or Flexbox with overflow-y-auto for each section
+- [x] Test on mobile and desktop views
+- [x] Added useRef to products container
+- [x] Scroll to top when category is selected
