@@ -283,9 +283,14 @@ export default function Home() {
                       // Scroll products container to top with a small delay to ensure state update
                       setTimeout(() => {
                         if (productsContainerRef.current) {
+                          console.log('Scrolling to top, ref:', productsContainerRef.current);
                           productsContainerRef.current.scrollTop = 0;
+                          // Also try scrollIntoView as fallback
+                          if (productsHeaderRef.current) {
+                            productsHeaderRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }
                         }
-                      }, 0);
+                      }, 50);
                     }}
                     className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 overflow-hidden group h-24 rounded-lg shadow-md hover:shadow-lg w-full ${
                       selectedCategoryId === category.id
