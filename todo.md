@@ -489,3 +489,54 @@
 - [x] Restore OrdersManagement component
 - [x] Verify all functionality is working
 - [x] Restart dev server to apply changes
+
+
+## Version Control & Releases
+
+### v1 - Admin Dashboard Complete Restoration
+- [x] Restored all 6 admin dashboard tabs
+- [x] Restored Products management with image upload
+- [x] Restored Categories management with image upload
+- [x] Restored Orders management (basic and advanced)
+- [x] Restored Banners management with image upload
+- [x] Restored Image Gallery with upload and cleanup
+- [x] Created git tag v1 on GitHub
+- [x] All features fully functional and tested
+
+### v2 - Coming Next
+- [ ] Fix modal sizing and scrolling
+- [ ] Add image thumbnails in management lists
+- [ ] Implement bulk operations for orders
+- [ ] Performance optimizations
+
+### Release Notes
+- **v1**: Complete admin dashboard with all features restored. Full CRUD operations for products, categories, and banners. Advanced order management with search and filtering. Complete image gallery with upload and cleanup functionality.
+
+
+## v2 - Bug Fixes & Improvements
+
+### Issue 1: Auto-scroll to Products
+- [x] Add auto-scroll functionality when category is selected on home page
+- [x] Scroll to products section smoothly when user clicks category in bottom of page
+- [x] Ensure products are visible immediately after selection
+
+### Issue 2: Consolidate Orders Management
+- [x] Merge "Orders" and "Orders Management" tabs into single unified tab
+- [x] Keep all advanced features from Orders Management (search, filter, print)
+- [x] Add filtering by status (pending, confirmed, shipped, delivered, cancelled)
+- [x] Add filtering by customer name
+- [x] Add filtering by date range
+- [x] Add filtering by time
+- [x] Add delete functionality with confirmation
+- [x] Add edit functionality for order details
+- [x] Maintain search functionality across all filters
+
+### Issue 3: Link Image Gallery to Products/Categories/Banners
+- [x] Connect image gallery to products management
+- [x] Connect image gallery to categories management
+- [x] Connect image gallery to banners management (ImageManagement already handles this)
+- [x] Display uploaded images in respective management sections
+- [x] Allow selecting images from gallery when creating/editing products
+- [x] Allow selecting images from gallery when creating/editing categories
+- [x] Allow selecting images from gallery when creating/editing banners
+- [x] Show image previews in management lists

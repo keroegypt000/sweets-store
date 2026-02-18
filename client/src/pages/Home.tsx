@@ -153,7 +153,13 @@ export default function Home() {
                 return (
                   <div
                     key={category.id}
-                    onClick={() => setSelectedCategoryId(category.id)}
+                    onClick={() => {
+                      setSelectedCategoryId(category.id);
+                      // Auto-scroll to top to see products
+                      setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }, 100);
+                    }}
                     className="relative cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 overflow-hidden group h-24 sm:h-28"
                   >
                     {category.image && (

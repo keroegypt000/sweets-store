@@ -12,7 +12,7 @@ import OrdersManagement from './OrdersManagement';
 import BannerManagement from './BannerManagement';
 import ImageManagement from './ImageManagement';
 
-type Tab = 'products' | 'categories' | 'orders' | 'ordersManagement' | 'banners' | 'images';
+type Tab = 'products' | 'categories' | 'orders' | 'banners' | 'images';
 
 interface Product {
   id: number;
@@ -555,7 +555,7 @@ export default function AdminDashboardPro() {
       {/* Tabs */}
       <div className="bg-white border-b sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 flex gap-4">
-          {(['products', 'categories', 'orders', 'ordersManagement', 'banners', 'images'] as Tab[]).map(tab => (
+          {(['products', 'categories', 'orders', 'banners', 'images'] as Tab[]).map(tab => (
             <button
               key={tab}
               onClick={() => {
@@ -682,17 +682,27 @@ export default function AdminDashboardPro() {
                       ))}
                     </select>
 
-                    <div className="border-2 border-dashed rounded px-3 py-2">
-                      <label className="cursor-pointer flex items-center gap-2">
-                        <Upload size={18} />
-                        <span>{t.selectImage}</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleImageUpload(e, false)}
-                          className="hidden"
-                        />
-                      </label>
+                    <div className="flex gap-2">
+                      <div className="border-2 border-dashed rounded px-3 py-2 flex-1">
+                        <label className="cursor-pointer flex items-center gap-2">
+                          <Upload size={18} />
+                          <span>{t.selectImage}</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, false)}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setActiveTab('images')}
+                        className="whitespace-nowrap"
+                      >
+                        {language === 'ar' ? 'من المعرض' : 'From Gallery'}
+                      </Button>
                     </div>
                   </div>
 
@@ -837,17 +847,27 @@ export default function AdminDashboardPro() {
                     />
                   </div>
 
-                  <div className="border-2 border-dashed rounded px-3 py-2">
-                    <label className="cursor-pointer flex items-center gap-2">
-                      <Upload size={18} />
-                      <span>{t.selectImage}</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(e, true)}
-                        className="hidden"
-                      />
-                    </label>
+                  <div className="flex gap-2">
+                    <div className="border-2 border-dashed rounded px-3 py-2 flex-1">
+                      <label className="cursor-pointer flex items-center gap-2">
+                        <Upload size={18} />
+                        <span>{t.selectImage}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(e, true)}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setActiveTab('images')}
+                      className="whitespace-nowrap"
+                    >
+                      {language === 'ar' ? 'من المعرض' : 'From Gallery'}
+                    </Button>
                   </div>
 
                   {imagePreview && (
@@ -924,85 +944,9 @@ export default function AdminDashboardPro() {
           </div>
         )}
 
-        {/* ORDERS MANAGEMENT TAB */}
-        {activeTab === 'ordersManagement' && (
-          <OrdersManagement />
-        )}
-
-        {/* ORDERS TAB */}
+        {/* ORDERS TAB - UNIFIED WITH ADVANCED FEATURES */}
         {activeTab === 'orders' && (
-          <div>
-            <h2 className="text-xl font-bold mb-6">{t.orders}</h2>
-
-            <div className="space-y-3">
-              {filteredOrders.length === 0 ? (
-                <p className="text-gray-500">{t.noData}</p>
-              ) : (
-                filteredOrders.map(order => (
-                  <div key={order.id} className="bg-white p-4 rounded-lg shadow">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="font-bold text-lg">Order #{order.id}</h3>
-                        <p className="text-sm text-gray-600">{new Date(order.createdAt).toLocaleString()}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setSelectedOrderId(selectedOrderId === order.id ? null : order.id)}
-                        >
-                          <Eye size={16} className={language === 'ar' ? 'ml-2' : 'mr-2'} />
-                          {t.preview}
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handlePrintReceipt(order)}
-                        >
-                          <Printer size={16} className={language === 'ar' ? 'ml-2' : 'mr-2'} />
-                          {t.print}
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
-                      <div>
-                        <p className="text-sm text-gray-600">{t.total}</p>
-                        <p className="font-bold">{order.totalAmount} KWD</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">{t.status}</p>
-                        <select
-                          value={order.status}
-                          onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
-                          className="border rounded px-2 py-1 text-sm"
-                        >
-                          <option value="pending">{t.pending}</option>
-                          <option value="confirmed">{t.confirmed}</option>
-                          <option value="shipped">{t.shipped}</option>
-                          <option value="delivered">{t.delivered}</option>
-                          <option value="cancelled">{t.cancelled}</option>
-                        </select>
-                      </div>
-                      <div className="md:col-span-2">
-                        <p className="text-sm text-gray-600">{t.address}</p>
-                        <p className="text-sm">{order.shippingAddress}</p>
-                      </div>
-                    </div>
-
-                    {selectedOrderId === order.id && (
-                      <div className="bg-gray-50 p-3 rounded mt-3 border-t">
-                        <p className="font-bold mb-2">{t.orderDetails}</p>
-                        <p className="text-sm text-gray-600">Order ID: {order.id}</p>
-                        <p className="text-sm text-gray-600">Date: {new Date(order.createdAt).toLocaleString()}</p>
-                        <p className="text-sm text-gray-600">Address: {order.shippingAddress}</p>
-                        <p className="text-sm text-gray-600 mt-2">Total: {order.totalAmount} KWD</p>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+          <OrdersManagement />
         )}
 
         {/* BANNERS TAB */}
