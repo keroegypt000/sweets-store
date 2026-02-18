@@ -28,6 +28,7 @@ export default function Home() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const productsContainerRef = useRef<HTMLDivElement>(null);
+  const productsHeaderRef = useRef<HTMLDivElement>(null);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // Fetch categories
@@ -279,10 +280,12 @@ export default function Home() {
                     key={category.id}
                     onClick={() => {
                       setSelectedCategoryId(category.id);
-                      // Scroll products container to top
-                      if (productsContainerRef.current) {
-                        productsContainerRef.current.scrollTop = 0;
-                      }
+                      // Scroll products container to top with a small delay to ensure state update
+                      setTimeout(() => {
+                        if (productsContainerRef.current) {
+                          productsContainerRef.current.scrollTop = 0;
+                        }
+                      }, 0);
                     }}
                     className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 overflow-hidden group h-24 rounded-lg shadow-md hover:shadow-lg w-full ${
                       selectedCategoryId === category.id
@@ -317,7 +320,7 @@ export default function Home() {
         <div ref={productsContainerRef} className="w-1/2 bg-gray-50 overflow-y-auto flex flex-col">
           
           {/* Products Header */}
-          <div className="p-6 border-b-2 border-gray-200 bg-white sticky top-0 z-20 shadow-sm flex-shrink-0">
+          <div ref={productsHeaderRef} className="p-6 border-b-2 border-gray-200 bg-white sticky top-0 z-20 shadow-sm flex-shrink-0">
             <h2 className="text-2xl font-bold text-gray-800">
               {selectedCategoryId
                 ? language === 'ar' ? selectedCategory?.nameAr : selectedCategory?.nameEn
