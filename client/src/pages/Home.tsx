@@ -280,6 +280,32 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Products Display Section - TOP */}
+          {selectedCategoryId && (
+            <div className="border-b-2 border-yellow-300 bg-yellow-50 flex flex-col flex-shrink-0 max-h-1/3">
+              <div className="p-3 bg-yellow-100 border-b border-yellow-300 flex-shrink-0">
+                <h3 className="text-sm font-bold text-gray-800">
+                  {language === 'ar' ? 'المنتجات المتاحة' : 'Available Products'}
+                </h3>
+              </div>
+              <div className="flex-1 overflow-y-auto p-2 space-y-2">
+                {filteredProducts && filteredProducts.length > 0 ? (
+                  filteredProducts.map((product) => (
+                    <CompactProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                    />
+                  ))
+                ) : (
+                  <div className="p-2 text-center text-gray-600 text-xs">
+                    {language === 'ar' ? 'لا توجد منتجات' : 'No products'}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Categories Header */}
           <div className="p-4 border-b-2 border-yellow-300 bg-gradient-to-r from-yellow-100 to-yellow-50 sticky top-0 z-20 shadow-sm flex-shrink-0">
             <h2 className="text-xl font-bold text-gray-800">
@@ -338,32 +364,6 @@ export default function Home() {
               </div>
             )}
           </div>
-
-          {/* Products Display Section */}
-          {selectedCategoryId && (
-            <div className="border-t-2 border-yellow-300 bg-yellow-50 flex flex-col flex-shrink-0 max-h-1/3">
-              <div className="p-3 bg-yellow-100 border-b border-yellow-300 flex-shrink-0">
-                <h3 className="text-sm font-bold text-gray-800">
-                  {language === 'ar' ? 'المنتجات المتاحة' : 'Available Products'}
-                </h3>
-              </div>
-              <div className="flex-1 overflow-y-auto p-2 space-y-2">
-                {filteredProducts && filteredProducts.length > 0 ? (
-                  filteredProducts.map((product) => (
-                    <CompactProductCard
-                      key={product.id}
-                      product={product}
-                      onAddToCart={handleAddToCart}
-                    />
-                  ))
-                ) : (
-                  <div className="p-2 text-center text-gray-600 text-xs">
-                    {language === 'ar' ? 'لا توجد منتجات' : 'No products'}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Right Column - Products */}
