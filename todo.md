@@ -620,3 +620,18 @@
 - [x] Optimize product card width for desktop view
 - [x] Ensure products are properly sized and visible
 - [x] Test on different desktop screen sizes
+
+
+## v3.0 - Desktop Layout Redesign
+
+### Issue: Left column products display is too tall and poorly formatted
+- [x] Create compact product display for left column (desktop view)
+- [x] Change product layout from vertical cards to horizontal/grid layout
+- [x] Display product image as small square (w-20 h-20)
+- [x] Show product name, price, and quantity selector in compact format
+- [x] Position add button at the bottom of product row
+- [x] Reduce overall height of product items
+- [x] Ensure all products fit properly in left column with scrolling
+- [x] Test layout on different screen sizes
+- [x] Created CompactProductCard component
+- [x] Integrated into left column below categories
