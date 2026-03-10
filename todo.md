@@ -609,3 +609,14 @@
 - [x] Reduce height of add to cart section (py-2 to py-1.5)
 - [x] Test on mobile and desktop to ensure proper fit
 - [x] Maintain readability while reducing height
+
+
+## v2.9 - Desktop Product Grid Sizing
+
+### Issue: Product cards too large on desktop
+- [x] Change desktop grid from 2 columns to 4 columns (md:grid-cols-3 lg:grid-cols-4)
+- [x] Reduce gap between product cards on desktop (gap-4 to gap-3)
+- [x] Reduce padding on desktop (p-6 to p-4)
+- [x] Optimize product card width for desktop view
+- [x] Ensure products are properly sized and visible
+- [x] Test on different desktop screen sizes

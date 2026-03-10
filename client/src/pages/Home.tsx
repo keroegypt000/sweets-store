@@ -358,7 +358,7 @@ export default function Home() {
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6 flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4 flex-1">
             {filteredProducts && filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <ProductCard
