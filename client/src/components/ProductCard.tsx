@@ -53,31 +53,31 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       </div>
 
       {/* Product Info */}
-      <div className="flex-1 p-3 sm:p-4 flex flex-col">
-        <h3 onClick={() => window.location.href = `/product/${product.slug}`} className="font-bold text-gray-800 hover:text-yellow-600 transition-colors cursor-pointer line-clamp-2 text-sm sm:text-base">
+      <div className="flex-1 p-2 sm:p-3 flex flex-col">
+        <h3 onClick={() => window.location.href = `/product/${product.slug}`} className="font-bold text-gray-800 hover:text-yellow-600 transition-colors cursor-pointer line-clamp-1 text-xs sm:text-sm">
           {name}
         </h3>
         
         {description && (
-          <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">
+          <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">
             {description}
           </p>
         )}
 
         {/* Price */}
-        <div className="flex items-center gap-2 mt-3 mb-2">
-          <span className="font-bold text-yellow-600 text-base sm:text-lg">
+        <div className="flex items-center gap-1 mt-2 mb-1">
+          <span className="font-bold text-yellow-600 text-sm sm:text-base">
             KWD {price.toFixed(2)}
           </span>
           {originalPrice && (
-            <span className="text-xs sm:text-sm text-gray-400 line-through">
+            <span className="text-xs text-gray-400 line-through">
               KWD {originalPrice.toFixed(2)}
             </span>
           )}
         </div>
 
         {/* Stock Status */}
-        <p className="text-xs mb-3">
+        <p className="text-xs mb-1">
           {(product.stock ?? 0) > 0 ? (
             <span className="text-green-600 font-bold">
               {language === 'ar' ? '✓ متوفر' : '✓ In Stock'}
@@ -91,11 +91,11 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       </div>
 
       {/* Add to Cart */}
-      <div className="p-3 sm:p-4 border-t border-gray-100 flex gap-2">
+      <div className="p-2 sm:p-3 border-t border-gray-100 flex gap-1.5">
         <div className="flex items-center border-2 border-yellow-300 rounded-lg overflow-hidden bg-gray-50">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="px-2 py-1 hover:bg-yellow-100 transition-colors text-gray-600 font-bold text-sm"
+            className="px-1.5 py-0.5 hover:bg-yellow-100 transition-colors text-gray-600 font-bold text-xs"
           >
             −
           </button>
@@ -106,11 +106,11 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             value={quantity}
             onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
             disabled={(product.stock ?? 0) === 0}
-            className="w-8 px-1 py-1 border-0 text-center text-xs font-bold bg-transparent focus:outline-none"
+            className="w-6 px-0.5 py-0.5 border-0 text-center text-xs font-bold bg-transparent focus:outline-none"
           />
           <button
             onClick={() => setQuantity(quantity + 1)}
-            className="px-2 py-1 hover:bg-yellow-100 transition-colors text-gray-600 font-bold text-sm"
+            className="px-1.5 py-0.5 hover:bg-yellow-100 transition-colors text-gray-600 font-bold text-xs"
           >
             +
           </button>
@@ -121,9 +121,9 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             setQuantity(1);
           }}
           disabled={(product.stock ?? 0) === 0}
-          className="flex-1 bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-300 text-white font-bold py-2 px-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-1 shadow-md hover:shadow-lg text-xs sm:text-sm"
+          className="flex-1 bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-300 text-white font-bold py-1.5 px-2 rounded-lg transition-all duration-300 flex items-center justify-center gap-1 shadow-md hover:shadow-lg text-xs"
         >
-          <ShoppingCart className="w-4 h-4" />
+          <ShoppingCart className="w-3 h-3" />
           {language === 'ar' ? 'أضف' : 'Add'}
         </button>
       </div>

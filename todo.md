@@ -597,3 +597,15 @@
 - [x] Style buttons to stand out at bottom of page
 - [x] Maintain disabled state styling for first/last categories
 - [x] Add spacing and padding around footer buttons
+
+
+## v2.8 - Product Card Sizing Optimization
+
+### Issue: Product card container too tall
+- [x] Reduce padding in product info section (p-3 to p-2)
+- [x] Reduce line-clamp for title and description (2 to 1)
+- [x] Reduce gap and spacing between elements (gap-2 to gap-1.5)
+- [x] Optimize font sizes for mobile view (text-sm to text-xs)
+- [x] Reduce height of add to cart section (py-2 to py-1.5)
+- [x] Test on mobile and desktop to ensure proper fit
+- [x] Maintain readability while reducing height
