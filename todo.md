@@ -585,3 +585,15 @@
 - [x] Show category name on button hover
 - [x] Disable button if at first/last category
 - [x] Smooth transition when switching categories
+
+
+## v2.7 - Navigation Buttons Redesign
+
+### Move and Enhance Category Navigation Buttons
+- [x] Move navigation buttons from header to footer (bottom of products list)
+- [x] Add clear text labels next to arrows (Previous Category / Next Category)
+- [x] Increase button size and icon size for better visibility
+- [x] Add clear Arabic/English text labels
+- [x] Style buttons to stand out at bottom of page
+- [x] Maintain disabled state styling for first/last categories
+- [x] Add spacing and padding around footer buttons

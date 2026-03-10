@@ -1,6 +1,4 @@
-'use client';
-
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 import ProductCard from '@/components/ProductCard';
@@ -11,15 +9,16 @@ import { toast } from 'sonner';
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
+
     return () => clearTimeout(handler);
   }, [value, delay]);
-  
+
   return debouncedValue;
 }
 
@@ -34,82 +33,50 @@ export default function Home() {
 
   // Fetch categories
   const { data: categories = [] } = trpc.categories.list.useQuery(undefined, {
-    retry: false,
+    staleTime: 1000 * 60 * 5,
   });
 
-  // Always fetch all products
-  const { data: allProducts = [] } = trpc.products.list.useQuery(undefined, {
-    retry: false,
+  // Fetch products
+  const { data: products = [] } = trpc.products.list.useQuery(undefined, {
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // Fetch banners
+  const { data: banners = [] } = trpc.banners.list.useQuery(undefined, {
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const handleAddToCart = (productId: number, quantity: number) => {
+    toast.success(language === 'ar' ? 'تم إضافة المنتج إلى السلة' : 'Product added to cart');
+  };
+
+  // Filter categories based on search
+  const filteredCategories = categories.filter((category) => {
+    const searchLower = debouncedSearchQuery.toLowerCase();
+    const nameMatch =
+      (language === 'ar'
+        ? category.nameAr?.toLowerCase()
+        : category.nameEn?.toLowerCase()
+      )?.includes(searchLower) || false;
+    return nameMatch;
   });
 
   // Filter products based on selected category
-  const products = useMemo(() => {
-    return selectedCategoryId
-      ? allProducts.filter(p => p.categoryId === selectedCategoryId)
-      : allProducts;
-  }, [selectedCategoryId, allProducts]);
+  const filteredProducts = selectedCategoryId
+    ? products.filter((product) => product.categoryId === selectedCategoryId)
+    : products;
 
-  // Filter categories by search query (memoized)
-  const filteredCategories = useMemo(() => {
-    return categories.filter(cat => {
-      const name = language === 'ar' ? cat.nameAr : cat.nameEn;
-      return name.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
-    });
-  }, [categories, debouncedSearchQuery, language]);
+  const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
+  const allProducts = products;
 
-  // Filter products by search query (both Arabic and English names) (memoized)
-  const filteredProducts = useMemo(() => {
-    if (debouncedSearchQuery.trim() === '') {
-      return products;
-    }
-    return products.filter(product => {
-      const productName = language === 'ar' ? product.nameAr : product.nameEn;
-      const productDesc = language === 'ar' ? (product.descriptionAr || '') : (product.descriptionEn || '');
-      const query = debouncedSearchQuery.toLowerCase();
-      return productName.toLowerCase().includes(query) || productDesc.toLowerCase().includes(query);
-    });
-  }, [products, debouncedSearchQuery, language]);
-
-  // Add to cart mutation with optimistic updates
-  const utils = trpc.useUtils();
-  const addToCartMutation = trpc.cart.add.useMutation({
-    onSuccess: () => {
-      toast.success(language === 'ar' ? 'تمت إضافة المنتج إلى السلة' : 'Product added to cart');
-      // Invalidate cart list to refresh count
-      utils.cart.list.invalidate();
-    },
-    onError: (error: any) => {
-      toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'Error'));
-    },
-  });
-
-  const handleAddToCart = useCallback((productId: number, quantity: number) => {
-    addToCartMutation.mutate({ productId, quantity });
-  }, [addToCartMutation]);
-
-  // Get selected category info (memoized)
-  const selectedCategory = useMemo(() => {
-    return categories.find(c => c.id === selectedCategoryId);
-  }, [categories, selectedCategoryId]);
-
-  // Fetch banners from database
-  const { data: banners = [] } = trpc.banners.list.useQuery(undefined, {
-    retry: false,
-  });
-
-  // Transform banners for display
-  const sampleBanners = banners.filter(b => b.isActive).sort((a, b) => (a.order || 0) - (b.order || 0)).map(banner => ({
+  // Sample banners data
+  const sampleBanners = banners.map((banner) => ({
     id: banner.id,
+    image: banner.image,
     titleAr: banner.titleAr,
     titleEn: banner.titleEn,
-    descriptionAr: banner.descriptionAr || '',
-    descriptionEn: banner.descriptionEn || '',
-    image: banner.image,
-    backgroundColor: '#FCD34D',
-    backgroundGradient: 'from-yellow-400 via-yellow-300 to-orange-300',
-    link: banner.link || '#',
     order: banner.order || 0,
-    isActive: banner.isActive || false,
+    isActive: banner.isActive !== false,
   }));
 
   return (
@@ -194,64 +161,17 @@ export default function Home() {
         ) : (
           // Products View
           <div className="flex-1 overflow-y-auto bg-gray-50">
-            <div className="p-4 sm:p-6 border-b-2 border-gray-200 bg-white sticky top-0 z-20 shadow-sm flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 flex-1">
-                <button
-                  onClick={() => setSelectedCategoryId(null)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-medium transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                  {language === 'ar' ? 'رجوع' : 'Back'}
-                </button>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate">
-                  {language === 'ar' ? selectedCategory?.nameAr : selectedCategory?.nameEn}
-                </h2>
-              </div>
-              
-              {/* Category Navigation Buttons */}
-              <div className="flex gap-2">
-                {/* Next Category Button (Left side - RTL) */}
-                <button
-                  onClick={() => {
-                    const currentIndex = filteredCategories.findIndex(c => c.id === selectedCategoryId);
-                    if (currentIndex < filteredCategories.length - 1) {
-                      const nextCategory = filteredCategories[currentIndex + 1];
-                      setSelectedCategoryId(nextCategory.id);
-                      setTimeout(() => {
-                        if (mobileProductsGridRef.current) {
-                          mobileProductsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                      }, 50);
-                    }
-                  }}
-                  disabled={filteredCategories.findIndex(c => c.id === selectedCategoryId) >= filteredCategories.length - 1}
-                  className="flex items-center justify-center p-2 rounded-lg bg-yellow-300 hover:bg-yellow-400 disabled:bg-gray-300 disabled:cursor-not-allowed text-gray-800 transition-colors"
-                  title={language === 'ar' ? 'الفئة التالية' : 'Next Category'}
-                >
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-                
-                {/* Previous Category Button (Right side - RTL) */}
-                <button
-                  onClick={() => {
-                    const currentIndex = filteredCategories.findIndex(c => c.id === selectedCategoryId);
-                    if (currentIndex > 0) {
-                      const prevCategory = filteredCategories[currentIndex - 1];
-                      setSelectedCategoryId(prevCategory.id);
-                      setTimeout(() => {
-                        if (mobileProductsGridRef.current) {
-                          mobileProductsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                      }, 50);
-                    }
-                  }}
-                  disabled={filteredCategories.findIndex(c => c.id === selectedCategoryId) <= 0}
-                  className="flex items-center justify-center p-2 rounded-lg bg-yellow-300 hover:bg-yellow-400 disabled:bg-gray-300 disabled:cursor-not-allowed text-gray-800 transition-colors"
-                  title={language === 'ar' ? 'الفئة السابقة' : 'Previous Category'}
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
-              </div>
+            <div className="p-4 sm:p-6 border-b-2 border-gray-200 bg-white sticky top-0 z-20 shadow-sm flex items-center gap-3">
+              <button
+                onClick={() => setSelectedCategoryId(null)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-medium transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                {language === 'ar' ? 'رجوع' : 'Back'}
+              </button>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate">
+                {language === 'ar' ? selectedCategory?.nameAr : selectedCategory?.nameEn}
+              </h2>
             </div>
 
             <div ref={mobileProductsGridRef} className="grid grid-cols-2 gap-2 p-2 sm:gap-4 sm:p-4">
@@ -271,16 +191,65 @@ export default function Home() {
                 </div>
               )}
             </div>
+
+            {/* Category Navigation Footer */}
+            {filteredProducts && filteredProducts.length > 0 && (
+              <div className="bg-white border-t-2 border-gray-200 p-6 sm:p-8 flex items-center justify-center gap-4 sm:gap-6 shadow-lg">
+                {/* Previous Category Button */}
+                <button
+                  onClick={() => {
+                    const currentIndex = filteredCategories.findIndex(c => c.id === selectedCategoryId);
+                    if (currentIndex > 0) {
+                      const prevCategory = filteredCategories[currentIndex - 1];
+                      setSelectedCategoryId(prevCategory.id);
+                      setTimeout(() => {
+                        if (mobileProductsGridRef.current) {
+                          mobileProductsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 50);
+                    }
+                  }}
+                  disabled={filteredCategories.findIndex(c => c.id === selectedCategoryId) <= 0}
+                  className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed text-gray-800 font-bold transition-all transform hover:scale-105 disabled:hover:scale-100"
+                >
+                  <ArrowLeft className="w-8 h-8" />
+                  <span className="text-sm sm:text-base">
+                    {language === 'ar' ? 'السابقة' : 'Previous'}
+                  </span>
+                </button>
+
+                {/* Next Category Button */}
+                <button
+                  onClick={() => {
+                    const currentIndex = filteredCategories.findIndex(c => c.id === selectedCategoryId);
+                    if (currentIndex < filteredCategories.length - 1) {
+                      const nextCategory = filteredCategories[currentIndex + 1];
+                      setSelectedCategoryId(nextCategory.id);
+                      setTimeout(() => {
+                        if (mobileProductsGridRef.current) {
+                          mobileProductsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 50);
+                    }
+                  }}
+                  disabled={filteredCategories.findIndex(c => c.id === selectedCategoryId) >= filteredCategories.length - 1}
+                  className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed text-gray-800 font-bold transition-all transform hover:scale-105 disabled:hover:scale-100"
+                >
+                  <ArrowRight className="w-8 h-8" />
+                  <span className="text-sm sm:text-base">
+                    {language === 'ar' ? 'التالية' : 'Next'}
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
 
       {/* DESKTOP VIEW - Horizontal Layout */}
       <div className="hidden md:flex gap-0 max-w-full mx-auto min-h-screen">
-        
         {/* Left Column - Categories */}
         <div className="w-1/2 bg-gradient-to-br from-yellow-300 via-yellow-100 to-yellow-50 overflow-y-auto flex flex-col">
-          
           {/* Banner */}
           <div className="w-full h-32 bg-gradient-to-r from-yellow-400 via-yellow-300 to-orange-300 flex items-center justify-center overflow-hidden shadow-lg relative flex-shrink-0">
             <div className="absolute inset-0 bg-black/10"></div>
@@ -320,33 +289,25 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Categories Grid - One per row */}
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="flex flex-col gap-3">
-              {filteredCategories && filteredCategories.length > 0 && filteredCategories.map((category) => {
+          {/* Categories List */}
+          <div className="flex-1 overflow-y-auto">
+            {filteredCategories && filteredCategories.length > 0 ? (
+              filteredCategories.map((category) => {
                 const categoryProductCount = allProducts.filter(p => p.categoryId === category.id).length;
-                
+                const isSelected = selectedCategoryId === category.id;
+
                 return (
                   <div
                     key={category.id}
                     onClick={() => {
                       setSelectedCategoryId(category.id);
-                      // Scroll products container to top with a small delay to ensure state update
-                      setTimeout(() => {
-                        if (productsContainerRef.current) {
-                          console.log('Scrolling to top, ref:', productsContainerRef.current);
-                          productsContainerRef.current.scrollTop = 0;
-                          // Also try scrollIntoView as fallback
-                          if (productsHeaderRef.current) {
-                            productsHeaderRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                          }
-                        }
-                      }, 50);
+                      // Desktop: scroll products container to top
+                      if (productsContainerRef.current) {
+                        productsContainerRef.current.scrollTop = 0;
+                      }
                     }}
-                    className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 overflow-hidden group h-24 rounded-lg shadow-md hover:shadow-lg w-full ${
-                      selectedCategoryId === category.id
-                        ? 'ring-2 ring-yellow-500 shadow-xl'
-                        : ''
+                    className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 overflow-hidden group h-24 ${
+                      isSelected ? 'ring-4 ring-yellow-500' : ''
                     }`}
                   >
                     {category.image && (
@@ -356,56 +317,62 @@ export default function Home() {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     )}
-                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300"></div>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
-                      <h3 className="text-xs sm:text-sm font-bold text-white drop-shadow-lg text-center line-clamp-2">
-                        {language === 'ar' ? category.nameAr : category.nameEn}
-                      </h3>
-                      <p className="text-xs text-gray-100 drop-shadow-lg mt-1">
-                        {categoryProductCount}
-                      </p>
+                    <div className={`absolute inset-0 ${isSelected ? 'bg-black/20' : 'bg-black/40'} group-hover:bg-black/50 transition-colors duration-300`}></div>
+                    <div className="absolute inset-0 flex items-center justify-between px-4">
+                      <div className="flex-1">
+                        <h3 className="text-base font-bold text-white drop-shadow-lg">
+                          {language === 'ar' ? category.nameAr : category.nameEn}
+                        </h3>
+                        <p className="text-xs text-gray-100 drop-shadow-lg">
+                          {categoryProductCount} {language === 'ar' ? 'منتج' : 'products'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 );
-              })}
-            </div>
+              })
+            ) : (
+              <div className="p-4 text-center text-gray-600">
+                {language === 'ar' ? 'لا توجد فئات' : 'No categories found'}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Right Column - Products */}
         <div ref={productsContainerRef} className="w-1/2 bg-gray-50 overflow-y-auto flex flex-col">
-          
           {/* Products Header */}
           <div ref={productsHeaderRef} className="p-6 border-b-2 border-gray-200 bg-white sticky top-0 z-20 shadow-sm flex-shrink-0">
             <h2 className="text-2xl font-bold text-gray-800">
               {selectedCategoryId
-                ? language === 'ar' ? selectedCategory?.nameAr : selectedCategory?.nameEn
-                : language === 'ar' ? 'جميع المنتجات' : 'All Products'}
+                ? language === 'ar'
+                  ? selectedCategory?.nameAr
+                  : selectedCategory?.nameEn
+                : language === 'ar'
+                ? 'جميع المنتجات'
+                : 'All Products'}
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              {products.length} {language === 'ar' ? 'منتج' : 'products'}
+            <p className="text-sm text-gray-600 mt-2">
+              {filteredProducts.length} {language === 'ar' ? 'منتج' : 'products'}
             </p>
           </div>
 
           {/* Products Grid */}
-          <div className="flex-1 overflow-y-auto p-6">
-            {products && products.length > 0 ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                {products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={handleAddToCart}
-                  />
-                ))}
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6 flex-1">
+            {filteredProducts && filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                />
+              ))
             ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <p className="text-gray-500 text-lg mb-2">
-                    {language === 'ar' ? 'اختر فئة لعرض المنتجات' : 'Select a category to view products'}
-                  </p>
-                </div>
+              <div className="col-span-full text-center py-12">
+                <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 text-lg">
+                  {language === 'ar' ? 'لا توجد منتجات' : 'No products found'}
+                </p>
               </div>
             )}
           </div>
