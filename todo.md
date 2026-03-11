@@ -709,3 +709,14 @@
 - [x] Documentation updates
 - [x] Final testing and verification
 - [ ] Save checkpoint v4.0
+
+
+## v4.1 - Fix /api/images Endpoint
+
+### Issue: MediaManager fails to fetch images
+- [x] Fixed MediaManager to use tRPC instead of REST API
+- [x] Changed from fetch('/api/images') to trpc.images.list.useQuery()
+- [x] Integrated upload and delete mutations with proper callbacks
+- [x] Added image refetch on modal open
+- [x] Verified MediaManager can fetch images via tRPC
+- [x] Tested endpoint returns valid data
