@@ -720,3 +720,15 @@
 - [x] Added image refetch on modal open
 - [x] Verified MediaManager can fetch images via tRPC
 - [x] Tested endpoint returns valid data
+
+
+## v4.2 - Fix Image Preview Rendering Issues
+
+### Issues: Black/broken image previews in admin dashboard
+- [x] Analyzed image preview implementation in AdminDashboardAPI
+- [x] Fixed CSS styling for preview containers (object-contain instead of object-cover)
+- [x] Verified image URLs are correct after upload
+- [x] Fixed image loading states with onError handlers
+- [x] Added proper placeholder for failed image loads
+- [x] Tested preview rendering for products, categories, and banners
+- [x] Verified no existing dashboard tabs are affected

@@ -713,15 +713,23 @@ export default function AdminDashboardPro() {
                   </div>
 
                   {imagePreview && (
-                    <div className="relative w-32 h-32">
-                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded" />
+                    <div className="relative w-40 h-40 border border-gray-200 rounded-lg overflow-hidden bg-gray-100">
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        className="w-full h-full object-contain" 
+                        onError={(e) => {
+                          e.currentTarget.src = '';
+                          e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400">Image Failed to Load</div>`;
+                        }}
+                      />
                       <button
                         type="button"
                         onClick={() => {
                           setImagePreview('');
                           setProductForm({ ...productForm, image: '' });
                         }}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition"
                       >
                         <X size={16} />
                       </button>
@@ -763,8 +771,20 @@ export default function AdminDashboardPro() {
               ) : (
                 filteredProducts.map(product => (
                   <div key={product.id} className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition">
-                    {product.image && (
-                      <img src={product.image} alt={product.nameAr} className="w-full h-40 object-cover rounded mb-3" />
+                    {product.image ? (
+                      <div className="w-full h-40 bg-gray-100 rounded mb-3 overflow-hidden flex items-center justify-center">
+                        <img 
+                          src={product.image} 
+                          alt={product.nameAr} 
+                          className="w-full h-full object-contain" 
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400 text-sm">No Image</div>`;
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full h-40 bg-gray-100 rounded mb-3 flex items-center justify-center text-gray-400 text-sm">No Image</div>
                     )}
                     <h3 className="font-bold text-lg">{language === 'ar' ? product.nameAr : product.nameEn}</h3>
                     <p className="text-sm text-gray-600 mb-2">{product.price} KWD</p>
@@ -880,15 +900,23 @@ export default function AdminDashboardPro() {
                   </div>
 
                   {imagePreview && (
-                    <div className="relative w-32 h-32">
-                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded" />
+                    <div className="relative w-40 h-40 border border-gray-200 rounded-lg overflow-hidden bg-gray-100">
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        className="w-full h-full object-contain" 
+                        onError={(e) => {
+                          e.currentTarget.src = '';
+                          e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400">Image Failed to Load</div>`;
+                        }}
+                      />
                       <button
                         type="button"
                         onClick={() => {
                           setImagePreview('');
                           setCategoryForm({ ...categoryForm, image: '' });
                         }}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition"
                       >
                         <X size={16} />
                       </button>
@@ -925,8 +953,20 @@ export default function AdminDashboardPro() {
               ) : (
                 filteredCategories.map(category => (
                   <div key={category.id} className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition">
-                    {category.image && (
-                      <img src={category.image} alt={category.nameAr} className="w-full h-40 object-cover rounded mb-3" />
+                    {category.image ? (
+                      <div className="w-full h-40 bg-gray-100 rounded mb-3 overflow-hidden flex items-center justify-center">
+                        <img 
+                          src={category.image} 
+                          alt={category.nameAr} 
+                          className="w-full h-full object-contain" 
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400 text-sm">No Image</div>`;
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full h-40 bg-gray-100 rounded mb-3 flex items-center justify-center text-gray-400 text-sm">No Image</div>
                     )}
                     <h3 className="font-bold text-lg">{language === 'ar' ? category.nameAr : category.nameEn}</h3>
                     <p className="text-sm text-gray-600 mb-3">{language === 'ar' ? category.descriptionAr : category.descriptionEn}</p>
