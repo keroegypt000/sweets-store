@@ -11,6 +11,7 @@ import { trpc } from '@/lib/trpc';
 import OrdersManagement from './OrdersManagement';
 import BannerManagement from './BannerManagement';
 import ImageManagement from './ImageManagement';
+import MediaManager from '@/components/MediaManager';
 
 type Tab = 'products' | 'categories' | 'orders' | 'banners' | 'images';
 
@@ -192,6 +193,8 @@ export default function AdminDashboardPro() {
   });
 
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [showMediaManager, setShowMediaManager] = useState(false);
+  const [mediaManagerFor, setMediaManagerFor] = useState<'product' | 'category' | null>(null);
 
   const t = translations[language as keyof typeof translations];
 
@@ -698,7 +701,10 @@ export default function AdminDashboardPro() {
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => setActiveTab('images')}
+                        onClick={() => {
+                          setMediaManagerFor('product');
+                          setShowMediaManager(true);
+                        }}
                         className="whitespace-nowrap"
                       >
                         {language === 'ar' ? 'من المعرض' : 'From Gallery'}
@@ -863,7 +869,10 @@ export default function AdminDashboardPro() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => setActiveTab('images')}
+                      onClick={() => {
+                        setMediaManagerFor('category');
+                        setShowMediaManager(true);
+                      }}
                       className="whitespace-nowrap"
                     >
                       {language === 'ar' ? 'من المعرض' : 'From Gallery'}
@@ -958,6 +967,21 @@ export default function AdminDashboardPro() {
           <ImageManagement />
         )}
       </main>
+
+      {/* MediaManager Modal */}
+      <MediaManager
+        isOpen={showMediaManager}
+        onClose={() => setShowMediaManager(false)}
+        onSelectImage={(image) => {
+          setImagePreview(image.url);
+          if (mediaManagerFor === 'product') {
+            setProductForm({ ...productForm, image: image.url });
+          } else if (mediaManagerFor === 'category') {
+            setCategoryForm({ ...categoryForm, image: image.url });
+          }
+        }}
+        title={language === 'ar' ? 'اختر صورة' : 'Select Image'}
+      />
     </div>
   );
 }

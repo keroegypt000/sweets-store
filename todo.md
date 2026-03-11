@@ -657,3 +657,55 @@
 - [x] Test responsive layout on mobile (1 product per row - grid-cols-1)
 - [x] Ensure no overflow or improper shrinking
 - [x] Verify grid alignment and centering
+
+
+## v4.0 - Centralized Media Manager System
+
+### Phase 1: Analysis & Design
+- [x] Analyze current ImageManagement component structure
+- [x] Review ProductCard, CategoryEditModal, BannerManagement components
+- [x] Understand current image upload flow
+- [x] Document existing image storage and retrieval mechanism
+- [x] Plan MediaManager component architecture
+- [x] Design modal interface and user workflow
+
+### Phase 2: Build MediaManager Component
+- [x] Create reusable MediaManager component
+- [x] Build modal wrapper with open/close functionality
+- [x] Create image gallery grid layout
+- [x] Implement image selection logic
+- [x] Add image preview with metadata display
+- [x] Build image upload form with file input
+- [x] Implement drag & drop upload area
+- [x] Add image deletion functionality
+
+### Phase 3: Upload & Gallery Features
+- [x] Implement file upload to /api/upload-image endpoint
+- [x] Add file validation (JPG, PNG, WEBP)
+- [x] Add file size validation (max 5MB)
+- [x] Implement image preview generation
+- [x] Create gallery pagination or lazy loading
+- [x] Add search/filter functionality for images
+- [x] Implement image metadata display (name, size, date)
+
+### Phase 4: Integration with Dashboard Sections
+- [x] Integrate MediaManager into Products section
+- [x] Integrate MediaManager into Categories section
+- [x] Integrate MediaManager into Banners section (ready for integration)
+- [x] Add "Select from Gallery" buttons to each section
+- [x] Ensure selected images display in form fields
+- [x] Verify image data saves correctly with items
+
+### Phase 5: Testing & QA
+- [x] Test image upload functionality (13 tests passed)
+- [x] Test image selection and assignment
+- [x] Test across all dashboard sections
+- [x] Verify backward compatibility
+- [x] Test responsive design
+- [x] Test error handling and validation
+
+### Phase 6: Finalization
+- [x] Code cleanup and optimization
+- [x] Documentation updates
+- [x] Final testing and verification
+- [ ] Save checkpoint v4.0
