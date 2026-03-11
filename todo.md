@@ -732,3 +732,8 @@
 - [x] Added proper placeholder for failed image loads
 - [x] Tested preview rendering for products, categories, and banners
 - [x] Verified no existing dashboard tabs are affected
+
+### Bug Fix: onError handler null reference error
+- [x] Fixed null reference error in onError handlers
+- [x] Added proper null checking for parentElement
+- [x] Verified error no longer appears in console

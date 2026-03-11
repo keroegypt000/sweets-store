@@ -719,8 +719,11 @@ export default function AdminDashboardPro() {
                         alt="Preview" 
                         className="w-full h-full object-contain" 
                         onError={(e) => {
-                          e.currentTarget.src = '';
-                          e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400">Image Failed to Load</div>`;
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400">Image Failed to Load</div>`;
+                          }
                         }}
                       />
                       <button
@@ -779,7 +782,10 @@ export default function AdminDashboardPro() {
                           className="w-full h-full object-contain" 
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
-                            e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400 text-sm">No Image</div>`;
+                            const parent = e.currentTarget.parentElement;
+                            if (parent) {
+                              parent.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400 text-sm">No Image</div>`;
+                            }
                           }}
                         />
                       </div>
@@ -906,8 +912,11 @@ export default function AdminDashboardPro() {
                         alt="Preview" 
                         className="w-full h-full object-contain" 
                         onError={(e) => {
-                          e.currentTarget.src = '';
-                          e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400">Image Failed to Load</div>`;
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400">Image Failed to Load</div>`;
+                          }
                         }}
                       />
                       <button
@@ -961,7 +970,10 @@ export default function AdminDashboardPro() {
                           className="w-full h-full object-contain" 
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
-                            e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400 text-sm">No Image</div>`;
+                            const parent = e.currentTarget.parentElement;
+                            if (parent) {
+                              parent.innerHTML = `<div class="flex items-center justify-center w-full h-full text-gray-400 text-sm">No Image</div>`;
+                            }
                           }}
                         />
                       </div>
