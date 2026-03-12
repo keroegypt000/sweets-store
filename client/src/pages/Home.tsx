@@ -70,10 +70,16 @@ export default function Home() {
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
   const allProducts = products;
 
-  // Get recommended products (different from currently displayed)
-  const recommendedProducts = selectedCategoryId
-    ? products.filter(p => p.categoryId !== selectedCategoryId).slice(0, 4)
-    : products.slice(0, 4);
+  // Get recommended products (different from currently displayed) - Show 8 random products
+  const recommendedProducts = (() => {
+    let candidates = selectedCategoryId
+      ? products.filter(p => p.categoryId !== selectedCategoryId)
+      : products;
+    
+    // Shuffle and get 8 random products
+    const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 8);
+  })();
 
   // Sample banners data
   const sampleBanners = banners.map((banner) => ({
@@ -352,7 +358,7 @@ export default function Home() {
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 p-6 flex-1 auto-rows-max">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 p-6 auto-rows-max">
             {filteredProducts && filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <ProductCard
