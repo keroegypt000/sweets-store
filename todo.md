@@ -814,3 +814,22 @@
 - [x] Arrows appear above footer
 - [x] Smooth horizontal scrolling works correctly
 - [x] Arrows only appear when products exist
+
+
+## v4.7 - Fix Homepage Layout and Available Products
+
+### Issue 1: Available Products Section Positioning
+- [x] Moved Available Products section to right column after products
+- [x] Ensured correct order: Products → Navigation Arrows → Available Products
+- [x] Removed Available Products from left column categories area
+
+### Issue 2: Product Navigation Arrows Position
+- [x] Verified arrows appear directly below product cards
+- [x] Confirmed arrows are above Available Products section
+- [x] Tested positioning on desktop view
+
+### Issue 3: Available Products Content
+- [x] Implemented product recommendation logic
+- [x] Shows different products than currently displayed
+- [x] Added logic to show products from different categories
+- [x] Recommendations show when category selected

@@ -70,6 +70,11 @@ export default function Home() {
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
   const allProducts = products;
 
+  // Get recommended products (different from currently displayed)
+  const recommendedProducts = selectedCategoryId
+    ? products.filter(p => p.categoryId !== selectedCategoryId).slice(0, 4)
+    : products.slice(0, 4);
+
   // Sample banners data
   const sampleBanners = banners.map((banner) => ({
     id: banner.id,
@@ -201,45 +206,31 @@ export default function Home() {
                   onClick={() => {
                     const currentIndex = filteredCategories.findIndex(c => c.id === selectedCategoryId);
                     if (currentIndex > 0) {
-                      const prevCategory = filteredCategories[currentIndex - 1];
-                      setSelectedCategoryId(prevCategory.id);
-                      setTimeout(() => {
-                        if (mobileProductsGridRef.current) {
-                          mobileProductsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                      }, 50);
+                      setSelectedCategoryId(filteredCategories[currentIndex - 1].id);
                     }
                   }}
-                  disabled={filteredCategories.findIndex(c => c.id === selectedCategoryId) <= 0}
-                  className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed text-gray-800 font-bold transition-all transform hover:scale-105 disabled:hover:scale-100"
+                  disabled={filteredCategories.findIndex(c => c.id === selectedCategoryId) === 0}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-300 text-gray-800 transition-colors shadow-md"
                 >
-                  <ArrowLeft className="w-8 h-8" />
-                  <span className="text-sm sm:text-base">
-                    {language === 'ar' ? 'السابقة' : 'Previous'}
-                  </span>
+                  <ArrowLeft className="w-5 h-5" />
                 </button>
+
+                <span className="text-sm font-medium text-gray-600">
+                  {language === 'ar' ? 'التنقل بين الفئات' : 'Browse Categories'}
+                </span>
 
                 {/* Next Category Button */}
                 <button
                   onClick={() => {
                     const currentIndex = filteredCategories.findIndex(c => c.id === selectedCategoryId);
                     if (currentIndex < filteredCategories.length - 1) {
-                      const nextCategory = filteredCategories[currentIndex + 1];
-                      setSelectedCategoryId(nextCategory.id);
-                      setTimeout(() => {
-                        if (mobileProductsGridRef.current) {
-                          mobileProductsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                      }, 50);
+                      setSelectedCategoryId(filteredCategories[currentIndex + 1].id);
                     }
                   }}
-                  disabled={filteredCategories.findIndex(c => c.id === selectedCategoryId) >= filteredCategories.length - 1}
-                  className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed text-gray-800 font-bold transition-all transform hover:scale-105 disabled:hover:scale-100"
+                  disabled={filteredCategories.findIndex(c => c.id === selectedCategoryId) === filteredCategories.length - 1}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-300 text-gray-800 transition-colors shadow-md"
                 >
-                  <ArrowRight className="w-8 h-8" />
-                  <span className="text-sm sm:text-base">
-                    {language === 'ar' ? 'التالية' : 'Next'}
-                  </span>
+                  <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
             )}
@@ -247,7 +238,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* DESKTOP VIEW - Horizontal Layout */}
+      {/* DESKTOP VIEW - Split Layout */}
       <div className="hidden md:flex gap-0 max-w-full mx-auto min-h-screen">
         {/* Left Column - Categories */}
         <div className="w-1/2 bg-gradient-to-br from-yellow-300 via-yellow-100 to-yellow-50 overflow-y-auto flex flex-col">
@@ -279,32 +270,6 @@ export default function Home() {
               />
             </div>
           </div>
-
-          {/* Products Display Section - TOP */}
-          {selectedCategoryId && (
-            <div className="border-b-2 border-yellow-300 bg-yellow-50 flex flex-col flex-shrink-0 max-h-1/3">
-              <div className="p-3 bg-yellow-100 border-b border-yellow-300 flex-shrink-0">
-                <h3 className="text-sm font-bold text-gray-800">
-                  {language === 'ar' ? 'المنتجات المتاحة' : 'Available Products'}
-                </h3>
-              </div>
-              <div className="flex-1 overflow-y-auto p-2 space-y-2">
-                {filteredProducts && filteredProducts.length > 0 ? (
-                  filteredProducts.map((product) => (
-                    <CompactProductCard
-                      key={product.id}
-                      product={product}
-                      onAddToCart={handleAddToCart}
-                    />
-                  ))
-                ) : (
-                  <div className="p-2 text-center text-gray-600 text-xs">
-                    {language === 'ar' ? 'لا توجد منتجات' : 'No products'}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
 
           {/* Categories Header */}
           <div className="p-4 border-b-2 border-yellow-300 bg-gradient-to-r from-yellow-100 to-yellow-50 sticky top-0 z-20 shadow-sm flex-shrink-0">
@@ -436,6 +401,33 @@ export default function Home() {
               </button>
             </div>
           )}
+
+          {/* Available Products Section - Recommendations */}
+          <div className="border-t-2 border-gray-200 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 flex-shrink-0">
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-gray-800">
+                {language === 'ar' ? 'منتجات موصى بها' : 'Recommended Products'}
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                {language === 'ar' ? 'اكتشف منتجات أخرى قد تعجبك' : 'Discover other products you may like'}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {recommendedProducts && recommendedProducts.length > 0 ? (
+                recommendedProducts.map((product) => (
+                  <CompactProductCard
+                    key={product.id}
+                    product={product}
+                    onAddToCart={handleAddToCart}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-4 text-gray-600 text-sm">
+                  {language === 'ar' ? 'لا توجد منتجات موصى بها' : 'No recommendations available'}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </PageLayout>
