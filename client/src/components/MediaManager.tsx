@@ -249,22 +249,25 @@ export default function MediaManager({
                   }`}
                   onClick={() => handleSelectImage(image)}
                 >
-                  <img
-                    src={image.url}
-                    alt={image.fileName}
-                    className="w-full h-32 object-contain bg-gray-50"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'w-full h-32 bg-gray-100 flex items-center justify-center text-gray-400 text-sm';
-                        errorDiv.textContent = 'Failed to load';
-                        parent.appendChild(errorDiv);
-                      }
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition flex items-center justify-center pointer-events-none">
+                  <div className="w-full h-32 bg-gray-50 flex items-center justify-center relative">
+                    <img
+                      src={image.url}
+                      alt={image.fileName}
+                      className="max-w-full max-h-full object-contain"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          const errorDiv = document.createElement('div');
+                          errorDiv.className = 'text-gray-400 text-xs text-center';
+                          errorDiv.textContent = 'Failed to load';
+                          parent.appendChild(errorDiv);
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition flex items-center justify-center pointer-events-none">
                     {selectedImage?.id === image.id && (
                       <div className="text-white text-2xl drop-shadow-lg">✓</div>
                     )}

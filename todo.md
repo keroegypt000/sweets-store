@@ -750,3 +750,17 @@
 - [x] Fixed overlay visibility with pointer-events-none
 - [x] Tested gallery display with various images
 - [x] Verified upload system remains unchanged
+
+
+## v4.4 - Fix Gallery Black Preview in Products/Categories
+
+### Issue: Images appear black in gallery preview when opened from Products/Categories
+- [x] Located where gallery is opened from Products/Categories sections
+- [x] Identified overlay issue causing black appearance
+- [x] Wrapped images in proper container with light background
+- [x] Changed image sizing to max-w-full max-h-full object-contain
+- [x] Improved overlay handling with opacity-0 to opacity-20
+- [x] Added lazy loading to images
+- [x] Tested gallery display from Products section
+- [x] Tested gallery display from Categories section
+- [x] Verified image selection still works correctly
