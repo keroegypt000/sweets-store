@@ -252,11 +252,21 @@ export default function MediaManager({
                   <img
                     src={image.url}
                     alt={image.fileName}
-                    className="w-full h-32 object-cover"
+                    className="w-full h-32 object-contain bg-gray-50"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'w-full h-32 bg-gray-100 flex items-center justify-center text-gray-400 text-sm';
+                        errorDiv.textContent = 'Failed to load';
+                        parent.appendChild(errorDiv);
+                      }
+                    }}
                   />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition flex items-center justify-center pointer-events-none">
                     {selectedImage?.id === image.id && (
-                      <div className="text-white text-2xl">✓</div>
+                      <div className="text-white text-2xl drop-shadow-lg">✓</div>
                     )}
                   </div>
                   <button
@@ -264,7 +274,7 @@ export default function MediaManager({
                       e.stopPropagation();
                       handleDeleteImage(image.id);
                     }}
-                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition"
+                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition z-10"
                   >
                     <Trash2 size={16} />
                   </button>
