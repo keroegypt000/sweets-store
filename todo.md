@@ -764,3 +764,34 @@
 - [x] Tested gallery display from Products section
 - [x] Tested gallery display from Categories section
 - [x] Verified image selection still works correctly
+
+
+## v4.5 - Fix Multiple Usability and Functionality Issues
+
+### Issue 1: Direct Image Upload Not Saving
+- [x] Investigated direct upload logic in Products/Categories/Banners
+- [x] Removed problematic direct upload that stored base64 data
+- [x] Kept only Gallery selection method which properly uploads to S3
+- [x] Verified image save works correctly across all sections
+
+### Issue 2: Dashboard Edit Button Scroll Issue
+- [x] Added auto-scroll to top when opening edit pages
+- [x] Tested scroll behavior for products
+- [x] Tested scroll behavior for categories
+- [x] Smooth scroll animation implemented
+
+### Issue 3: Frontend Category Navigation Scroll Issue
+- [x] Enhanced scroll logic with setTimeout for proper state update
+- [x] Tested smooth scroll behavior
+- [x] Verified works on desktop
+
+### Issue 4: Available Products Section Positioning
+- [x] Verified section positioning is correct at top of left column
+- [x] Confirmed correct placement when no products remain
+- [x] Tested layout consistency
+
+### Issue 5: Product Navigation Arrows
+- [x] Added left/right navigation arrows for product browsing
+- [x] Positioned arrows below product cards above footer
+- [x] Arrows appear only when products exist
+- [x] Smooth horizontal scrolling implemented

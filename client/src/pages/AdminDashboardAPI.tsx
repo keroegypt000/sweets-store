@@ -223,29 +223,11 @@ export default function AdminDashboardPro() {
     fetchAllData();
   }, []);
 
-  // Image upload handler
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, isCategory = false) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      // Convert file to base64
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64 = event.target?.result as string;
-        setImagePreview(base64);
-        if (isCategory) {
-          setCategoryForm({ ...categoryForm, image: base64 });
-        } else {
-          setProductForm({ ...productForm, image: base64 });
-        }
-        toast.success(language === 'ar' ? 'تم تحميل الصورة' : 'Image loaded');
-      };
-      reader.readAsDataURL(file);
-    } catch (error) {
-      toast.error(language === 'ar' ? 'خطأ في تحميل الصورة' : 'Error loading image');
-      console.error('Image upload error:', error);
-    }
+  // Scroll to top when opening edit form
+  const openEditForm = (type: 'product' | 'category') => {
+    setEditingType(type);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Product handlers
@@ -429,6 +411,7 @@ export default function AdminDashboardPro() {
     setProductForm(product);
     setImagePreview(product.image || '');
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleEditCategory = (category: Category) => {
@@ -437,6 +420,7 @@ export default function AdminDashboardPro() {
     setCategoryForm(category);
     setImagePreview(category.image || '');
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -685,31 +669,18 @@ export default function AdminDashboardPro() {
                       ))}
                     </select>
 
-                    <div className="flex gap-2">
-                      <div className="border-2 border-dashed rounded px-3 py-2 flex-1">
-                        <label className="cursor-pointer flex items-center gap-2">
-                          <Upload size={18} />
-                          <span>{t.selectImage}</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleImageUpload(e, false)}
-                            className="hidden"
-                          />
-                        </label>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => {
-                          setMediaManagerFor('product');
-                          setShowMediaManager(true);
-                        }}
-                        className="whitespace-nowrap"
-                      >
-                        {language === 'ar' ? 'من المعرض' : 'From Gallery'}
-                      </Button>
-                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setMediaManagerFor('product');
+                        setShowMediaManager(true);
+                      }}
+                      className="w-full"
+                    >
+                      <Upload size={18} className="mr-2" />
+                      {language === 'ar' ? 'اختر صورة من المعرض' : 'Select Image from Gallery'}
+                    </Button>
                   </div>
 
                   {imagePreview && (
@@ -879,19 +850,6 @@ export default function AdminDashboardPro() {
                     />
                   </div>
 
-                  <div className="flex gap-2">
-                    <div className="border-2 border-dashed rounded px-3 py-2 flex-1">
-                      <label className="cursor-pointer flex items-center gap-2">
-                        <Upload size={18} />
-                        <span>{t.selectImage}</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleImageUpload(e, true)}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
                     <Button
                       type="button"
                       variant="outline"
@@ -899,11 +857,11 @@ export default function AdminDashboardPro() {
                         setMediaManagerFor('category');
                         setShowMediaManager(true);
                       }}
-                      className="whitespace-nowrap"
+                      className="w-full"
                     >
-                      {language === 'ar' ? 'من المعرض' : 'From Gallery'}
+                      <Upload size={18} className="mr-2" />
+                      {language === 'ar' ? 'اختر صورة من المعرض' : 'Select Image from Gallery'}
                     </Button>
-                  </div>
 
                   {imagePreview && (
                     <div className="relative w-40 h-40 border border-gray-200 rounded-lg overflow-hidden bg-gray-100">

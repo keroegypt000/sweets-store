@@ -328,9 +328,13 @@ export default function Home() {
                     key={category.id}
                     onClick={() => {
                       setSelectedCategoryId(category.id);
-                      // Desktop: scroll products container to top
+                      // Desktop: scroll products container to top with smooth behavior
                       if (productsContainerRef.current) {
-                        productsContainerRef.current.scrollTop = 0;
+                        setTimeout(() => {
+                          if (productsContainerRef.current) {
+                            productsContainerRef.current.scrollTop = 0;
+                          }
+                        }, 0);
                       }
                     }}
                     className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 overflow-hidden group h-24 ${
@@ -403,6 +407,37 @@ export default function Home() {
               </div>
             )}
           </div>
+
+          {/* Product Navigation Arrows */}
+          {filteredProducts && filteredProducts.length > 0 && (
+            <div className="border-t-2 border-gray-200 bg-white p-4 flex items-center justify-center gap-4 shadow-lg flex-shrink-0">
+              <button
+                onClick={() => {
+                  if (productsContainerRef.current) {
+                    productsContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+                  }
+                }}
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 transition-colors shadow-md"
+                title={language === 'ar' ? 'السابق' : 'Previous'}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <span className="text-sm font-medium text-gray-600">
+                {language === 'ar' ? 'التمرير بين المنتجات' : 'Browse Products'}
+              </span>
+              <button
+                onClick={() => {
+                  if (productsContainerRef.current) {
+                    productsContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+                  }
+                }}
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 transition-colors shadow-md"
+                title={language === 'ar' ? 'التالي' : 'Next'}
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </PageLayout>
