@@ -795,3 +795,22 @@
 - [x] Positioned arrows below product cards above footer
 - [x] Arrows appear only when products exist
 - [x] Smooth horizontal scrolling implemented
+
+
+## v4.6 - Frontend Homepage Improvements
+
+### Issue 1: Category Navigation Scroll
+- [x] Fixed scroll to use scrollIntoView() on products header
+- [x] Page now smoothly scrolls to show products when category selected
+- [x] Verified smooth scroll behavior on desktop
+
+### Issue 2: Available Products Section Positioning
+- [x] Verified section is correctly positioned at top of left column
+- [x] Confirmed section only shows when category is selected
+- [x] Layout order is correct: Categories → Products → Navigation Arrows
+
+### Issue 3: Product Navigation Arrows
+- [x] Verified arrows are implemented below product grid
+- [x] Arrows appear above footer
+- [x] Smooth horizontal scrolling works correctly
+- [x] Arrows only appear when products exist

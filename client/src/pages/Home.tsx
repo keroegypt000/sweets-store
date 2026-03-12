@@ -328,14 +328,12 @@ export default function Home() {
                     key={category.id}
                     onClick={() => {
                       setSelectedCategoryId(category.id);
-                      // Desktop: scroll products container to top with smooth behavior
-                      if (productsContainerRef.current) {
-                        setTimeout(() => {
-                          if (productsContainerRef.current) {
-                            productsContainerRef.current.scrollTop = 0;
-                          }
-                        }, 0);
-                      }
+                      // Desktop: scroll entire page to products header
+                      setTimeout(() => {
+                        if (productsHeaderRef.current) {
+                          productsHeaderRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 0);
                     }}
                     className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 border-b border-yellow-200 last:border-b-0 overflow-hidden group h-24 ${
                       isSelected ? 'ring-4 ring-yellow-500' : ''
