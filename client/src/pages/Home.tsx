@@ -51,7 +51,44 @@ export default function Home() {
     toast.success(language === 'ar' ? 'تم إضافة المنتج إلى السلة' : 'Product added to cart');
   };
 
-  // Filter categories based on search
+  // Category navigation functions
+  const handlePreviousCategory = () => {
+    if (!selectedCategoryId) {
+      // If no category selected, select the last one
+      if (filteredCategories.length > 0) {
+        setSelectedCategoryId(filteredCategories[filteredCategories.length - 1].id);
+      }
+    } else {
+      // Find current category index and go to previous
+      const currentIndex = filteredCategories.findIndex(c => c.id === selectedCategoryId);
+      if (currentIndex > 0) {
+        setSelectedCategoryId(filteredCategories[currentIndex - 1].id);
+      } else if (currentIndex === 0 && filteredCategories.length > 1) {
+        // Wrap to last category
+        setSelectedCategoryId(filteredCategories[filteredCategories.length - 1].id);
+      }
+    }
+  };
+
+  const handleNextCategory = () => {
+    if (!selectedCategoryId) {
+      // If no category selected, select the first one
+      if (filteredCategories.length > 0) {
+        setSelectedCategoryId(filteredCategories[0].id);
+      }
+    } else {
+      // Find current category index and go to next
+      const currentIndex = filteredCategories.findIndex(c => c.id === selectedCategoryId);
+      if (currentIndex < filteredCategories.length - 1) {
+        setSelectedCategoryId(filteredCategories[currentIndex + 1].id);
+      } else if (currentIndex === filteredCategories.length - 1) {
+        // Wrap to first category
+        setSelectedCategoryId(filteredCategories[0].id);
+      }
+    }
+  };
+
+  // Filter categories based on search (must be before navigation functions)
   const filteredCategories = categories.filter((category) => {
     const searchLower = debouncedSearchQuery.toLowerCase();
     const nameMatch =
@@ -377,36 +414,26 @@ export default function Home() {
             )}
           </div>
 
-          {/* Product Navigation Arrows */}
-          {filteredProducts && filteredProducts.length > 0 && (
-            <div className="border-t-2 border-gray-200 bg-white p-4 flex items-center justify-center gap-4 shadow-lg flex-shrink-0">
-              <button
-                onClick={() => {
-                  if (productsContainerRef.current) {
-                    productsContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
-                  }
-                }}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 transition-colors shadow-md"
-                title={language === 'ar' ? 'السابق' : 'Previous'}
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <span className="text-sm font-medium text-gray-600">
-                {language === 'ar' ? 'التمرير بين المنتجات' : 'Browse Products'}
-              </span>
-              <button
-                onClick={() => {
-                  if (productsContainerRef.current) {
-                    productsContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
-                  }
-                }}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 transition-colors shadow-md"
-                title={language === 'ar' ? 'التالي' : 'Next'}
-              >
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </div>
-          )}
+          {/* Category Navigation Arrows - Always Visible */}
+          <div className="border-t-2 border-gray-200 bg-white p-4 flex items-center justify-center gap-4 shadow-lg flex-shrink-0">
+            <button
+              onClick={handlePreviousCategory}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 transition-colors shadow-md"
+              title={language === 'ar' ? 'الفئة السابقة' : 'Previous Category'}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <span className="text-sm font-medium text-gray-600">
+              {language === 'ar' ? 'التمرير بين الفئات' : 'Browse Categories'}
+            </span>
+            <button
+              onClick={handleNextCategory}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 transition-colors shadow-md"
+              title={language === 'ar' ? 'الفئة التالية' : 'Next Category'}
+            >
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
 
           {/* Available Products Section - Recommendations */}
           <div className="border-t-2 border-gray-200 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 flex-shrink-0">
