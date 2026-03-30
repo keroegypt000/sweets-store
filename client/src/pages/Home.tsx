@@ -6,7 +6,7 @@ import ProductCard from '@/components/ProductCard';
 import CompactProductCard from '@/components/CompactProductCard';
 import PageLayout from '@/components/PageLayout';
 import BannerSlider from '@/components/BannerSlider';
-import LocationSelector from '@/components/LocationSelector';
+import LocationSelectorWithMap from '@/components/LocationSelectorWithMap';
 import { ShoppingCart, ArrowLeft, ArrowRight, Search, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -159,24 +159,22 @@ export default function Home() {
   return (
     <PageLayout>
       {/* Location Selector Modal */}
-      {showLocationModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-            <LocationSelector
-              isOpen={showLocationModal}
-              onConfirm={() => setShowLocationModal(false)}
-              onClose={() => setShowLocationModal(false)}
-            />
-          </div>
-        </div>
-      )}
+      <LocationSelectorWithMap
+        isOpen={showLocationModal}
+        onConfirm={(location) => {
+          // Location is already saved in context
+          setShowLocationModal(false);
+        }}
+        onClose={() => setShowLocationModal(false)}
+        language={language as 'ar' | 'en'}
+      />
 
       {/* Location Display Bar */}
       {location && !showLocationModal && (
         <div className="bg-primary-yellow text-dark-text px-4 py-2 flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4" />
-            <span>{location.address}</span>
+            <span>{location.area && location.block ? `${location.area} - ${location.block}` : location.address}</span>
           </div>
           <button
             onClick={() => setShowLocationModal(true)}
