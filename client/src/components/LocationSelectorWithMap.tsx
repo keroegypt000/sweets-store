@@ -14,7 +14,7 @@ import { Button } from './ui/button';
 import { X, MapPin, Loader2 } from 'lucide-react';
 import AddressForm from './AddressForm';
 
-interface LocationSelectorProps {
+interface LocationSelectorWithMapProps {
   isOpen: boolean;
   onConfirm: (location: Location) => void;
   onClose: () => void;
@@ -26,9 +26,9 @@ export default function LocationSelectorWithMap({
   onConfirm,
   onClose,
   language,
-}: LocationSelectorProps) {
-  const [step, setStep] = useState<'options' | 'map' | 'address'>('options');
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+}: LocationSelectorWithMapProps) {
+  const [step, setStep] = useState<'initial' | 'map' | 'address'>('initial');
+  const [selectedLocation, setSelectedLocation] = useState<Partial<Location> | null>(null);
   const [isLoadingGeolocation, setIsLoadingGeolocation] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -39,15 +39,14 @@ export default function LocationSelectorWithMap({
   useEffect(() => {
     if (!isOpen || step !== 'map' || !mapContainer.current) return;
 
-    // Prevent multiple map instances
-    if (map.current) return;
-
-    // Default location (Kuwait)
-    const defaultLat = 29.3759;
-    const defaultLng = 47.9774;
-
     try {
-      // Initialize map
+      const defaultLat = selectedLocation?.latitude || 29.3759;
+      const defaultLng = selectedLocation?.longitude || 47.9774;
+
+      if (map.current) {
+        map.current.remove();
+      }
+
       map.current = L.map(mapContainer.current).setView([defaultLat, defaultLng], 13);
 
       // Add tile layer
@@ -80,7 +79,7 @@ export default function LocationSelectorWithMap({
       // Initial location
       reverseGeocode(defaultLat, defaultLng);
     } catch (err) {
-      console.error('Map initialization error:', err);
+      console.error('[Map] Error loading map:', err);
       setError(language === 'ar' ? 'خطأ في تحميل الخريطة' : 'Error loading map');
     }
 
@@ -96,22 +95,85 @@ export default function LocationSelectorWithMap({
 
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-      );
-      const data = await response.json() as any;
+      // Try Google Geocoding API first if key exists
+      const googleApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+      let geocodeData: any = null;
 
-      const address = data.address || {};
+      if (googleApiKey) {
+        try {
+          const googleResponse = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApiKey}`
+          );
+          const googleData = await googleResponse.json() as any;
+          if (googleData.results && googleData.results.length > 0) {
+            geocodeData = googleData.results[0];
+            console.log('[Geocoding] Google API response:', geocodeData);
+          }
+        } catch (err) {
+          console.warn('[Geocoding] Google API failed, falling back to Nominatim:', err);
+        }
+      }
+
+      // Fallback to OpenStreetMap Nominatim
+      if (!geocodeData) {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
+        );
+        geocodeData = await response.json() as any;
+        console.log('[Geocoding] Nominatim response:', geocodeData);
+      }
+
+      // Extract address components
+      let area = '';
+      let block = '';
+      let street = '';
+      let avenue = '';
+      let houseNumber = '';
+      let displayName = '';
+
+      if (geocodeData.address_components) {
+        // Google Geocoding API format
+        geocodeData.address_components.forEach((component: any) => {
+          const types = component.types || [];
+          const longName = component.long_name || '';
+
+          if (types.includes('administrative_area_level_1')) area = longName;
+          if (types.includes('administrative_area_level_2')) area = area || longName;
+          if (types.includes('administrative_area_level_3')) block = block || longName;
+          if (types.includes('locality')) area = area || longName;
+          if (types.includes('sublocality')) avenue = avenue || longName;
+          if (types.includes('sublocality_level_1')) avenue = avenue || longName;
+          if (types.includes('route')) street = longName;
+          if (types.includes('street_number')) houseNumber = longName;
+        });
+        displayName = geocodeData.formatted_address || '';
+      } else if (geocodeData.address) {
+        // OpenStreetMap Nominatim format
+        const addr = geocodeData.address;
+        area = addr.state || addr.province || addr.county || addr.district || addr.suburb || '';
+        block = addr.postcode || addr.hamlet || '';
+        street = addr.road || addr.street || '';
+        avenue = addr.neighbourhood || addr.suburb || addr.village || '';
+        houseNumber = addr.house_number || '';
+        displayName = geocodeData.display_name || '';
+      }
+
+      console.log('[Geocoding] Extracted fields:', { area, block, street, avenue, houseNumber });
+
       setSelectedLocation({
         latitude: lat,
         longitude: lng,
-        address: data.display_name || `${lat}, ${lng}`,
-        area: address.suburb || address.district || '',
-        city: address.city || address.town || '',
-        country: address.country || '',
+        address: displayName || `${lat}, ${lng}`,
+        area: area.trim(),
+        block: block.trim(),
+        street: street.trim(),
+        avenue: avenue.trim(),
+        houseNumber: houseNumber.trim(),
+        city: area.trim(),
+        country: geocodeData.address?.country || '',
       });
     } catch (err) {
-      console.error('Reverse geocoding error:', err);
+      console.error('[Geocoding] Error:', err);
       setSelectedLocation({
         latitude: lat,
         longitude: lng,
@@ -133,6 +195,7 @@ export default function LocationSelectorWithMap({
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
+        console.log('[Geolocation] Got position:', { latitude, longitude });
         setStep('map');
         setIsLoadingGeolocation(false);
 
@@ -146,12 +209,12 @@ export default function LocationSelectorWithMap({
         }, 100);
       },
       (err) => {
-        console.error('Geolocation error:', err);
+        console.error('[Geolocation] Error:', err);
         if (err.code === err.PERMISSION_DENIED) {
           setError(
             language === 'ar'
               ? 'يرجى تفعيل خدمات الموقع من إعدادات المتصفح'
-              : 'Please enable location services in browser settings'
+              : 'Please enable location services in your browser settings'
           );
         } else {
           setError(language === 'ar' ? 'خطأ في الحصول على الموقع' : 'Error getting location');
@@ -162,19 +225,20 @@ export default function LocationSelectorWithMap({
   };
 
   const handleSelectOnMap = () => {
+    console.log('[Location] Select on map clicked');
     setStep('map');
-    setError(null);
+    setSelectedLocation({
+      latitude: 29.3759,
+      longitude: 47.9774,
+    });
+    reverseGeocode(29.3759, 47.9774);
   };
 
   const handleConfirmLocation = () => {
-    if (selectedLocation) {
-      setStep('address');
+    if (selectedLocation && selectedLocation.latitude && selectedLocation.longitude) {
+      console.log('[Location] Confirming location:', selectedLocation);
+      onConfirm(selectedLocation as Location);
     }
-  };
-
-  const handleSaveAddress = (location: Location) => {
-    onConfirm(location);
-    setStep('options');
   };
 
   if (!isOpen) return null;
@@ -184,14 +248,12 @@ export default function LocationSelectorWithMap({
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h2 className={`text-xl font-semibold ${language === 'ar' ? 'text-right' : ''}`}>
-            {step === 'options' && (language === 'ar' ? 'اختر موقعك' : 'Choose Your Location')}
-            {step === 'map' && (language === 'ar' ? 'حدد موقعك على الخريطة' : 'Select Location on Map')}
-            {step === 'address' && (language === 'ar' ? 'أدخل تفاصيل العنوان' : 'Enter Address Details')}
+          <h2 className={`text-lg font-bold ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+            {language === 'ar' ? 'اختر موقعك' : 'Choose your location'}
           </h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-full"
+            className="p-1 hover:bg-gray-100 rounded"
           >
             <X className="w-5 h-5" />
           </button>
@@ -199,94 +261,74 @@ export default function LocationSelectorWithMap({
 
         {/* Content */}
         <div className="p-6">
-          {/* Options Step */}
-          {step === 'options' && (
+          {step === 'initial' && (
             <div className="space-y-4">
-              <p className={`text-gray-600 ${language === 'ar' ? 'text-right' : ''}`}>
-                {language === 'ar'
-                  ? 'اختر طريقة لتحديد موقعك'
-                  : 'Choose how to select your location'}
+              <p className={`text-sm text-gray-600 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                {language === 'ar' ? 'اختر طريقة تحديد موقعك' : 'Choose how to set your location'}
               </p>
 
-              <div className="space-y-3">
-                <Button
-                  onClick={handleUseCurrentLocation}
-                  disabled={isLoadingGeolocation}
-                  className="w-full bg-primary-yellow text-dark-text hover:bg-yellow-500 flex items-center justify-center gap-2"
-                >
-                  {isLoadingGeolocation ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      {language === 'ar' ? 'جاري الحصول على الموقع...' : 'Getting location...'}
-                    </>
-                  ) : (
-                    <>
-                      <MapPin className="w-4 h-4" />
-                      {language === 'ar'
-                        ? 'استخدم موقعي الحالي'
-                        : 'Use My Current Location'}
-                    </>
-                  )}
-                </Button>
+              <button
+                onClick={handleUseCurrentLocation}
+                disabled={isLoadingGeolocation}
+                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2"
+              >
+                {isLoadingGeolocation && <Loader2 className="w-4 h-4 animate-spin" />}
+                <MapPin className="w-4 h-4" />
+                {language === 'ar' ? 'استخدم موقعي الحالي' : 'Use my current location'}
+              </button>
 
-                <Button
-                  onClick={handleSelectOnMap}
-                  className="w-full bg-gray-600 text-white hover:bg-gray-700 flex items-center justify-center gap-2"
-                >
-                  <MapPin className="w-4 h-4" />
-                  {language === 'ar' ? 'اختر من الخريطة' : 'Select on Map'}
-                </Button>
-              </div>
+              <button
+                onClick={handleSelectOnMap}
+                className="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2"
+              >
+                <MapPin className="w-4 h-4" />
+                {language === 'ar' ? 'اختر من الخريطة' : 'Select on map'}
+              </button>
 
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
+                <div className="bg-red-100 text-red-700 p-3 rounded">
                   {error}
                 </div>
               )}
             </div>
           )}
 
-          {/* Map Step */}
           {step === 'map' && (
             <div className="space-y-4">
               <div
                 ref={mapContainer}
-                className="w-full h-96 rounded-lg border border-gray-300"
+                className="w-full h-80 rounded-lg border border-gray-300"
               />
 
               {selectedLocation && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                  <p className={`text-sm text-blue-900 ${language === 'ar' ? 'text-right' : ''}`}>
-                    {selectedLocation.address}
-                  </p>
+                <div className="space-y-4">
+                  <AddressForm
+                    location={selectedLocation as Location}
+                    onSave={(location) => {
+                      setSelectedLocation(location);
+                      handleConfirmLocation();
+                    }}
+                    language={language}
+                  />
+
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setStep('initial')}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      {language === 'ar' ? 'رجوع' : 'Back'}
+                    </Button>
+                    <Button
+                      onClick={handleConfirmLocation}
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                    >
+                      {language === 'ar' ? 'تأكيد' : 'Confirm'}
+                    </Button>
+                  </div>
                 </div>
               )}
-
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => setStep('options')}
-                  className="flex-1 bg-gray-300 text-dark-text hover:bg-gray-400"
-                >
-                  {language === 'ar' ? 'رجوع' : 'Back'}
-                </Button>
-                <Button
-                  onClick={handleConfirmLocation}
-                  disabled={!selectedLocation}
-                  className="flex-1 bg-primary-yellow text-dark-text hover:bg-yellow-500 disabled:bg-gray-300"
-                >
-                  {language === 'ar' ? 'التالي' : 'Next'}
-                </Button>
-              </div>
             </div>
-          )}
-
-          {/* Address Step */}
-          {step === 'address' && selectedLocation && (
-            <AddressForm
-              location={selectedLocation}
-              onSave={handleSaveAddress}
-              language={language}
-            />
           )}
         </div>
       </div>
