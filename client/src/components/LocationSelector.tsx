@@ -13,7 +13,7 @@ interface LocationSelectorProps {
 }
 
 export default function LocationSelector({ onConfirm, isOpen = true, onClose }: LocationSelectorProps) {
-  const { location, setLocation, isDetecting, error } = useLocationContext();
+  const { location, setLocation, error } = useLocationContext();
   const { language } = useLanguage();
   const [selectedLocation, setSelectedLocation] = useState(location);
   const [isLoadingMap, setIsLoadingMap] = useState(false);
@@ -155,16 +155,7 @@ export default function LocationSelector({ onConfirm, isOpen = true, onClose }: 
 
   if (!isOpen) return null;
 
-  if (isDetecting) {
-    return (
-      <Card className="w-full max-w-md mx-auto">
-        <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin mr-2" />
-          <span>{language === 'ar' ? 'جاري الكشف عن الموقع...' : 'Detecting location...'}</span>
-        </CardContent>
-      </Card>
-    );
-  }
+
 
   if (error) {
     return (

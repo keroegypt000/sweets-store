@@ -27,8 +27,7 @@ function useDebounce<T>(value: T, delay: number): T {
 
 export default function Home() {
   const { language } = useLanguage();
-  const { location, isDetecting } = useLocationContext();
-  const [showLocationSelector, setShowLocationSelector] = useState(!location && !isDetecting);
+  const { location, showLocationModal, setShowLocationModal } = useLocationContext();
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const productsContainerRef = useRef<HTMLDivElement>(null);
@@ -36,15 +35,7 @@ export default function Home() {
   const mobileProductsGridRef = useRef<HTMLDivElement>(null);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  // Auto-hide location selector after 3 seconds if location is detected
-  useEffect(() => {
-    if (location && !isDetecting) {
-      const timer = setTimeout(() => {
-        setShowLocationSelector(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [location, isDetecting]);
+
 
   // Fetch categories
   const { data: categories = [] } = trpc.categories.list.useQuery(undefined, {
@@ -61,9 +52,32 @@ export default function Home() {
     staleTime: 1000 * 60 * 5,
   });
 
+  // Fetch cart items to show count
+  const { data: cartItems = [] } = trpc.cart.list.useQuery(undefined, {
+    staleTime: 1000 * 60,
+  });
+
+  // Cart mutations
+  const addToCartMutation = trpc.cart.add.useMutation({
+    onSuccess: () => {
+      toast.success(language === 'ar' ? 'تم إضافة المنتج إلى السلة' : 'Product added to cart');
+      // Refetch cart items
+      utils.cart.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(language === 'ar' ? 'فشل إضافة المنتج' : 'Failed to add product');
+      console.error('Add to cart error:', error);
+    },
+  });
+
+  const utils = trpc.useUtils();
+
   const handleAddToCart = (productId: number, quantity: number) => {
-    toast.success(language === 'ar' ? 'تم إضافة المنتج إلى السلة' : 'Product added to cart');
+    addToCartMutation.mutate({ productId, quantity });
   };
+
+  // Get total cart count
+  const cartCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
 
   // Category navigation functions
   const handlePreviousCategory = () => {
@@ -145,27 +159,27 @@ export default function Home() {
   return (
     <PageLayout>
       {/* Location Selector Modal */}
-      {showLocationSelector && (
+      {showLocationModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
             <LocationSelector
-              isOpen={showLocationSelector}
-              onConfirm={() => setShowLocationSelector(false)}
-              onClose={() => setShowLocationSelector(false)}
+              isOpen={showLocationModal}
+              onConfirm={() => setShowLocationModal(false)}
+              onClose={() => setShowLocationModal(false)}
             />
           </div>
         </div>
       )}
 
       {/* Location Display Bar */}
-      {location && !showLocationSelector && (
+      {location && !showLocationModal && (
         <div className="bg-primary-yellow text-dark-text px-4 py-2 flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4" />
             <span>{location.address}</span>
           </div>
           <button
-            onClick={() => setShowLocationSelector(true)}
+            onClick={() => setShowLocationModal(true)}
             className="text-xs font-medium hover:underline"
           >
             {language === 'ar' ? 'تغيير' : 'Change'}

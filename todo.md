@@ -898,3 +898,36 @@
 - [x] Verified no console errors
 - [x] Verified no blocking steps
 - [x] Tested location persistence
+
+
+## v5.1 - Fix Location Selection & Add-to-Cart
+
+### Issue 1: Location Selection (CRITICAL)
+- [x] Changed from auto-detect to manual selection popup
+- [x] Show modal on first visit asking user to select location
+- [x] Add "Detect my location" button option
+- [x] Add "Choose from map" option
+- [x] Save location after selection
+- [x] Display location in header with icon and text
+- [x] Make location clickable to change anytime
+
+### Issue 2: Add-to-Cart Bug (CRITICAL)
+- [x] Debugged add-to-cart button functionality
+- [x] Implemented frontend API calls using trpc.cart.add
+- [x] Verified backend cart routes working
+- [x] Confirmed cart session/database storage
+- [x] Fixed product not appearing in cart
+- [x] Ensured cart count updates instantly
+- [x] Tested AJAX without page reload
+- [x] Verified no browser console errors
+- [x] Verified network requests working
+- [x] Verified backend logs clean
+
+### Issue 3: Testing & QA
+- [x] Tested location popup on first visit
+- [x] Tested location display in header
+- [x] Tested add-to-cart functionality
+- [x] Tested cart count updates
+- [x] Tested full checkout flow
+- [x] Fixed all UI issues
+- [x] Verified no console errors
