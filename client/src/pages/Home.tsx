@@ -7,7 +7,8 @@ import CompactProductCard from '@/components/CompactProductCard';
 import PageLayout from '@/components/PageLayout';
 import BannerSlider from '@/components/BannerSlider';
 import LocationSelectorWithMap from '@/components/LocationSelectorWithMap';
-import { ShoppingCart, ArrowLeft, ArrowRight, Search, MapPin } from 'lucide-react';
+import LocationBar from '@/components/LocationBar';
+import { ShoppingCart, ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Debounce hook
@@ -170,18 +171,13 @@ export default function Home() {
       />
 
       {/* Location Display Bar */}
-      {location && !showLocationModal && (
-        <div className="bg-primary-yellow text-dark-text px-4 py-2 flex items-center justify-between text-sm">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4" />
-            <span>{location.area && location.block ? `${location.area} - ${location.block}` : location.address}</span>
-          </div>
-          <button
-            onClick={() => setShowLocationModal(true)}
-            className="text-xs font-medium hover:underline"
-          >
-            {language === 'ar' ? 'تغيير' : 'Change'}
-          </button>
+      {!showLocationModal && (
+        <div className="px-4 py-3 bg-gradient-to-r from-yellow-50 to-white border-b border-yellow-100">
+          <LocationBar
+            location={location}
+            onChangeClick={() => setShowLocationModal(true)}
+            language={language as 'ar' | 'en'}
+          />
         </div>
       )}
 
