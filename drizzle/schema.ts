@@ -96,6 +96,13 @@ export const orders = mysqlTable("orders", {
   status: mysqlEnum("status", ["pending", "confirmed", "shipped", "delivered", "cancelled"]).default("pending"),
   paymentStatus: mysqlEnum("paymentStatus", ["pending", "completed", "failed"]).default("pending"),
   shippingAddress: text("shippingAddress"),
+  // Address fields for detailed location information
+  area: varchar("area", { length: 255 }), // منطقة
+  block: varchar("block", { length: 255 }), // قطعة
+  street: varchar("street", { length: 255 }), // شارع
+  avenue: varchar("avenue", { length: 255 }), // جادة
+  houseNumber: varchar("houseNumber", { length: 255 }), // رقم البيت
+  additionalDetails: text("additionalDetails"), // تفاصيل إضافية
   customerName: varchar("customerName", { length: 255 }),
   customerEmail: varchar("customerEmail", { length: 255 }),
   customerPhone: varchar("customerPhone", { length: 20 }),

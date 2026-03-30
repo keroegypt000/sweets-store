@@ -68,7 +68,7 @@ export default function LocationBar({
               )}
             </>
           ) : (
-            <div className="text-sm font-medium text-gray-600">
+            <div className="text-sm font-medium text-primary-yellow hover:text-accent-yellow transition-colors">
               {language === 'ar' ? 'اختر موقعك' : 'Choose your location'}
             </div>
           )}

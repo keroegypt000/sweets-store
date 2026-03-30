@@ -1,17 +1,19 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Trash2, ArrowLeft, Printer } from 'lucide-react';
+import { Loader2, Trash2, ArrowLeft, Printer, MapPin } from 'lucide-react';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { useLocation } from 'wouter';
+import { useLocation as useWouterLocation } from 'wouter';
 import { toast } from 'sonner';
 import PageLayout from '@/components/PageLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFormValidation, type FormField } from '@/hooks/useFormValidation';
+import { useLocation } from '@/contexts/LocationContext';
 import { trpc } from '@/lib/trpc';
 
 export default function Cart() {
   const { language, t } = useLanguage();
-  const [, setLocation] = useLocation();
+  const [, setWouterLocation] = useWouterLocation();
+  const { location, setShowLocationModal } = useLocation();
   const utils = trpc.useUtils();
   const [shippingAddress, setShippingAddress] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -85,7 +87,7 @@ export default function Cart() {
     onSuccess: () => {
       toast.success(language === 'ar' ? 'تم إنشاء الطلب بنجاح' : 'Order created successfully');
       // Redirect to receipt page
-      setLocation('/receipt');
+      setWouterLocation('/receipt');
     },
     onError: (error) => {
       toast.error(error.message || (language === 'ar' ? 'حدث خطأ' : 'An error occurred'));
@@ -140,6 +142,13 @@ export default function Cart() {
   }, [registerField]);
 
   const handleCheckout = useCallback(() => {
+    // Check if location is selected
+    if (!location) {
+      toast.error(language === 'ar' ? 'يرجى اختيار موقعك أولاً' : 'Please select your location first');
+      setShowLocationModal(true);
+      return;
+    }
+
     const fields: FormField[] = [
       { id: 'customerName', name: language === 'ar' ? 'الاسم' : 'Name', value: customerName, required: true, type: 'text', minLength: 2 },
       { id: 'customerPhone', name: language === 'ar' ? 'الهاتف' : 'Phone', value: customerPhone, required: true, type: 'tel' },
@@ -164,6 +173,13 @@ export default function Cart() {
       customerName,
       customerEmail,
       customerPhone,
+      // Include all address fields from location
+      area: location.area,
+      block: location.block,
+      street: location.street,
+      avenue: location.avenue,
+      houseNumber: location.houseNumber,
+      additionalDetails: location.additionalDetails || shippingAddress,
       items: cartItems.map(item => ({
         id: item.id,
         productId: item.productId,
@@ -175,8 +191,8 @@ export default function Cart() {
     localStorage.setItem('pendingOrder', JSON.stringify(orderData));
 
     // Navigate to confirmation page
-    setLocation('/order-confirmation');
-  }, [shippingAddress, customerName, customerEmail, customerPhone, total, createOrderMutation, language, validate]);
+    setWouterLocation('/order-confirmation');
+  }, [shippingAddress, customerName, customerEmail, customerPhone, total, createOrderMutation, language, validate, location, setShowLocationModal]);
 
   if (isLoading) {
     return (
@@ -194,7 +210,7 @@ export default function Cart() {
       <div className="container py-8">
         {/* Back Button */}
         <button
-          onClick={() => setLocation('/')}
+          onClick={() => setWouterLocation('/')}
           className="flex items-center gap-2 text-primary-yellow hover:text-accent-yellow mb-8 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -210,7 +226,7 @@ export default function Cart() {
             <p className="text-lg text-muted-foreground mb-4">
               {language === 'ar' ? 'سلة التسوق فارغة' : 'Your cart is empty'}
             </p>
-            <Button onClick={() => setLocation('/')} className="bg-primary-yellow text-dark-text">
+            <Button onClick={() => setWouterLocation('/')} className="bg-primary-yellow text-dark-text">
               {language === 'ar' ? 'ابدأ التسوق' : 'Start Shopping'}
             </Button>
           </Card>
@@ -299,6 +315,53 @@ export default function Cart() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Location Display */}
+                  {location && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                      <div className="flex items-start gap-2">
+                        <MapPin className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <div className="flex-1 text-sm">
+                          <p className="font-semibold text-dark-text mb-1">
+                            {language === 'ar' ? 'عنوان التسليم' : 'Delivery Address'}
+                          </p>
+                          <div className="text-xs text-muted-foreground space-y-1">
+                            {location.area && (
+                              <div>
+                                <span className="font-medium">{language === 'ar' ? 'المنطقة:' : 'Area:'}</span> {location.area}
+                              </div>
+                            )}
+                            {location.block && (
+                              <div>
+                                <span className="font-medium">{language === 'ar' ? 'القطعة:' : 'Block:'}</span> {location.block}
+                              </div>
+                            )}
+                            {location.street && (
+                              <div>
+                                <span className="font-medium">{language === 'ar' ? 'الشارع:' : 'Street:'}</span> {location.street}
+                              </div>
+                            )}
+                            {location.avenue && (
+                              <div>
+                                <span className="font-medium">{language === 'ar' ? 'الجادة:' : 'Avenue:'}</span> {location.avenue}
+                              </div>
+                            )}
+                            {location.houseNumber && (
+                              <div>
+                                <span className="font-medium">{language === 'ar' ? 'رقم البيت:' : 'House #:'}</span> {location.houseNumber}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => setShowLocationModal(true)}
+                            className="text-xs text-blue-600 hover:text-blue-700 font-medium mt-2"
+                          >
+                            {language === 'ar' ? 'تغيير الموقع' : 'Change Location'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Subtotal */}
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">

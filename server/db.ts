@@ -184,7 +184,7 @@ export async function getOrderById(orderId: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function createOrder(userId: number, totalAmount: string, shippingAddress: string, customerName?: string, customerEmail?: string, customerPhone?: string, cartItems?: Array<{productId: number, quantity: number, price: string}>) {
+export async function createOrder(userId: number, totalAmount: string, shippingAddress: string, customerName?: string, customerEmail?: string, customerPhone?: string, cartItems?: Array<{productId: number, quantity: number, price: string}>, area?: string, block?: string, street?: string, avenue?: string, houseNumber?: string, additionalDetails?: string) {
   const db = await getDb();
   if (!db) return null;
   
@@ -209,6 +209,12 @@ export async function createOrder(userId: number, totalAmount: string, shippingA
     customerName: customerName || null,
     customerEmail: customerEmail || null,
     customerPhone: customerPhone || null,
+    area: area || null,
+    block: block || null,
+    street: street || null,
+    avenue: avenue || null,
+    houseNumber: houseNumber || null,
+    additionalDetails: additionalDetails || null,
   });
   
   // Fetch the created order

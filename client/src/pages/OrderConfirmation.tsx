@@ -25,6 +25,12 @@ interface OrderData {
   customerName: string;
   customerEmail?: string;
   customerPhone: string;
+  area?: string;
+  block?: string;
+  street?: string;
+  avenue?: string;
+  houseNumber?: string;
+  additionalDetails?: string;
   items: OrderItem[];
 }
 
@@ -122,6 +128,13 @@ export default function OrderConfirmation() {
       customerName: orderData.customerName,
       customerEmail: orderData.customerEmail || '',
       customerPhone: orderData.customerPhone,
+      // Include address fields from location
+      area: orderData.area,
+      block: orderData.block,
+      street: orderData.street,
+      avenue: orderData.avenue,
+      houseNumber: orderData.houseNumber,
+      additionalDetails: orderData.additionalDetails,
       items: orderData.items.map(item => ({
         productId: item.productId,
         quantity: item.quantity,
@@ -192,12 +205,48 @@ export default function OrderConfirmation() {
                   <p className="text-gray-700">{orderData.customerEmail}</p>
                 </div>
               )}
+              {/* Delivery Address */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-semibold text-dark-text mb-2">
-                  {language === 'ar' ? 'عنوان الشحن' : 'Shipping Address'}
+                  {language === 'ar' ? 'عنوان التسليم' : 'Delivery Address'}
                 </label>
-                <p className="text-gray-700">{orderData.shippingAddress}</p>
+                <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-gray-700 space-y-1">
+                  {orderData.area && (
+                    <div>
+                      <span className="font-semibold">{language === 'ar' ? 'المنطقة:' : 'Area:'}</span> {orderData.area}
+                    </div>
+                  )}
+                  {orderData.block && (
+                    <div>
+                      <span className="font-semibold">{language === 'ar' ? 'القطعة:' : 'Block:'}</span> {orderData.block}
+                    </div>
+                  )}
+                  {orderData.street && (
+                    <div>
+                      <span className="font-semibold">{language === 'ar' ? 'الشارع:' : 'Street:'}</span> {orderData.street}
+                    </div>
+                  )}
+                  {orderData.avenue && (
+                    <div>
+                      <span className="font-semibold">{language === 'ar' ? 'الجادة:' : 'Avenue:'}</span> {orderData.avenue}
+                    </div>
+                  )}
+                  {orderData.houseNumber && (
+                    <div>
+                      <span className="font-semibold">{language === 'ar' ? 'رقم البيت:' : 'House #:'}</span> {orderData.houseNumber}
+                    </div>
+                  )}
+                </div>
               </div>
+              {/* Additional Details */}
+              {orderData.additionalDetails && (
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-dark-text mb-2">
+                    {language === 'ar' ? 'تفاصيل إضافية' : 'Additional Details'}
+                  </label>
+                  <p className="text-gray-700">{orderData.additionalDetails}</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
