@@ -873,3 +873,28 @@
 - [x] Verified arrows appear in correct position without products
 - [x] Available Products appear after arrows consistently
 - [x] No empty space between sections
+
+
+## v5.0 - Location Selection & Checkout Improvements
+
+### Feature 1: Location Selection
+- [x] Created location detection component (GPS/IP)
+- [x] Implemented Google Maps integration for location picker
+- [x] Added location confirmation UI with map
+- [x] Created LocationContext for state management
+- [x] Integrated location selection into homepage
+- [x] Store location in localStorage for session persistence
+
+### Feature 2: Checkout Page Updates
+- [x] Renamed "Address" field to "Details"
+- [x] Made address/details field OPTIONAL
+- [x] Updated validation to not require address
+- [x] Updated form submission logic
+
+### Feature 3: UX & Testing
+- [x] Tested homepage flow with location detection
+- [x] Tested cart functionality
+- [x] Tested checkout without address field
+- [x] Verified no console errors
+- [x] Verified no blocking steps
+- [x] Tested location persistence

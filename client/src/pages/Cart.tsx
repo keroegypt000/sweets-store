@@ -143,7 +143,7 @@ export default function Cart() {
     const fields: FormField[] = [
       { id: 'customerName', name: language === 'ar' ? 'الاسم' : 'Name', value: customerName, required: true, type: 'text', minLength: 2 },
       { id: 'customerPhone', name: language === 'ar' ? 'الهاتف' : 'Phone', value: customerPhone, required: true, type: 'tel' },
-      { id: 'shippingAddress', name: language === 'ar' ? 'عنوان الشحن' : 'Shipping Address', value: shippingAddress, required: true, type: 'textarea', minLength: 5 },
+      { id: 'shippingAddress', name: language === 'ar' ? 'التفاصيل' : 'Details', value: shippingAddress, required: false, type: 'textarea', minLength: 0 },
     ];
 
     if (!validate(fields)) {
@@ -384,10 +384,10 @@ export default function Cart() {
                     )}
                   </div>
 
-                  {/* Shipping Address */}
+                  {/* Details Field (Optional) */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-dark-text">
-                      {language === 'ar' ? 'عنوان الشحن' : 'Shipping Address'}
+                      {language === 'ar' ? 'التفاصيل (اختياري)' : 'Details (Optional)'}
                     </label>
                     <textarea
                       ref={addressInputRef}

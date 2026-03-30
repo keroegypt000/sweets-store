@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useLocation as useLocationContext } from '@/contexts/LocationContext';
 import { trpc } from '@/lib/trpc';
 import ProductCard from '@/components/ProductCard';
 import CompactProductCard from '@/components/CompactProductCard';
 import PageLayout from '@/components/PageLayout';
 import BannerSlider from '@/components/BannerSlider';
-import { ShoppingCart, ArrowLeft, ArrowRight, Search } from 'lucide-react';
+import LocationSelector from '@/components/LocationSelector';
+import { ShoppingCart, ArrowLeft, ArrowRight, Search, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Debounce hook
@@ -25,12 +27,24 @@ function useDebounce<T>(value: T, delay: number): T {
 
 export default function Home() {
   const { language } = useLanguage();
+  const { location, isDetecting } = useLocationContext();
+  const [showLocationSelector, setShowLocationSelector] = useState(!location && !isDetecting);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const productsContainerRef = useRef<HTMLDivElement>(null);
   const productsHeaderRef = useRef<HTMLDivElement>(null);
   const mobileProductsGridRef = useRef<HTMLDivElement>(null);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+  // Auto-hide location selector after 3 seconds if location is detected
+  useEffect(() => {
+    if (location && !isDetecting) {
+      const timer = setTimeout(() => {
+        setShowLocationSelector(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [location, isDetecting]);
 
   // Fetch categories
   const { data: categories = [] } = trpc.categories.list.useQuery(undefined, {
@@ -130,6 +144,35 @@ export default function Home() {
 
   return (
     <PageLayout>
+      {/* Location Selector Modal */}
+      {showLocationSelector && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <LocationSelector
+              isOpen={showLocationSelector}
+              onConfirm={() => setShowLocationSelector(false)}
+              onClose={() => setShowLocationSelector(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Location Display Bar */}
+      {location && !showLocationSelector && (
+        <div className="bg-primary-yellow text-dark-text px-4 py-2 flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            <span>{location.address}</span>
+          </div>
+          <button
+            onClick={() => setShowLocationSelector(true)}
+            className="text-xs font-medium hover:underline"
+          >
+            {language === 'ar' ? 'تغيير' : 'Change'}
+          </button>
+        </div>
+      )}
+
       {/* MOBILE VIEW - Vertical Layout */}
       <div className="md:hidden flex flex-col min-h-screen">
         {/* Banner Slider */}
