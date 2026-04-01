@@ -1110,3 +1110,30 @@
 - [x] Verify consistency across all pages
 - [x] Test with missing address fields
 - [x] Test bilingual display (Arabic/English)
+
+
+## v5.7 - Bug Fix: Location Display in Cart
+
+### Issue
+- [x] Location not displaying in cart Order Summary
+- [x] Change button not working to open location modal
+- [x] Customer cannot select or change location from cart page
+
+### Root Cause Investigation
+- [x] Checked LocationContext state management (working correctly)
+- [x] Verified location data is being passed correctly to Cart component
+- [x] Found location modal was not imported or rendered in Cart
+- [x] Verified setShowLocationModal function is working
+
+### Fix Implementation
+- [x] Added LocationSelectorWithMap import to Cart.tsx
+- [x] Added showLocationModal to destructured useLocation hook
+- [x] Rendered LocationSelectorWithMap component in Cart page
+- [x] Location modal now opens when Change button is clicked
+- [x] Location selection flow now works from cart page
+
+### Testing
+- [x] Test location selection from home page
+- [x] Test location display in cart
+- [x] Test Change button functionality
+- [x] Test location persistence across pages

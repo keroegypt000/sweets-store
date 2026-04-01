@@ -9,12 +9,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useFormValidation, type FormField } from '@/hooks/useFormValidation';
 import { useLocation } from '@/contexts/LocationContext';
 import { formatLocationSingleLine } from '@/lib/locationFormatter';
+import LocationSelectorWithMap from '@/components/LocationSelectorWithMap';
 import { trpc } from '@/lib/trpc';
 
 export default function Cart() {
   const { language, t } = useLanguage();
   const [, setWouterLocation] = useWouterLocation();
-  const { location, setShowLocationModal } = useLocation();
+  const { location, setShowLocationModal, showLocationModal } = useLocation();
   const utils = trpc.useUtils();
   const [shippingAddress, setShippingAddress] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -207,6 +208,16 @@ export default function Cart() {
 
   return (
     <PageLayout>
+      {/* Location Selector Modal */}
+      <LocationSelectorWithMap
+        isOpen={showLocationModal}
+        onConfirm={(location) => {
+          // Location is already saved in context
+          setShowLocationModal(false);
+        }}
+        onClose={() => setShowLocationModal(false)}
+        language={language as 'ar' | 'en'}
+      />
 
       <div className="container py-8">
         {/* Back Button */}
