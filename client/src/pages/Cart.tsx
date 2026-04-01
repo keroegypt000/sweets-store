@@ -15,7 +15,7 @@ import { trpc } from '@/lib/trpc';
 export default function Cart() {
   const { language, t } = useLanguage();
   const [, setWouterLocation] = useWouterLocation();
-  const { location, setShowLocationModal, showLocationModal } = useLocation();
+  const { location, setShowLocationModal, showLocationModal, setLocation } = useLocation();
   const utils = trpc.useUtils();
   const [shippingAddress, setShippingAddress] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -211,8 +211,9 @@ export default function Cart() {
       {/* Location Selector Modal */}
       <LocationSelectorWithMap
         isOpen={showLocationModal}
-        onConfirm={(location) => {
-          // Location is already saved in context
+        onConfirm={(selectedLocation) => {
+          // Save location to context
+          setLocation(selectedLocation);
           setShowLocationModal(false);
         }}
         onClose={() => setShowLocationModal(false)}

@@ -1137,3 +1137,30 @@
 - [x] Test location display in cart
 - [x] Test Change button functionality
 - [x] Test location persistence across pages
+
+
+## v5.8 - Bug Fix: Location Not Updating After Selection
+
+### Issue
+- [x] Location modal opens correctly when Change button is clicked
+- [x] Customer selects location from modal
+- [x] Order Summary now updates to show selected location
+- [x] Location is properly reflected in the Order Summary display
+
+### Root Cause Investigation
+- [x] Found onConfirm handler was not calling setLocation
+- [x] LocationContext state was not being updated when location selected
+- [x] Cart component was not re-rendering on location changes
+- [x] Verified location data structure matches formatter expectations
+
+### Fix Implementation
+- [x] Added setLocation to useLocation hook destructuring
+- [x] Updated onConfirm handler to call setLocation(selectedLocation)
+- [x] Location state now updates trigger re-render in Cart
+- [x] Location displays immediately after modal closes
+
+### Testing
+- [x] Test location selection flow
+- [x] Verify location displays immediately after selection
+- [x] Test location persistence across page navigation
+- [x] Test with different location data
