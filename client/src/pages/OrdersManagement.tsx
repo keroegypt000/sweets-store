@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import OrderDetailModal from '@/components/admin/OrderDetailModal';
+import { formatLocationMultiLine } from '@/lib/locationFormatter';
 import { trpc } from '@/lib/trpc';
 
 interface OrderItem {
@@ -35,6 +36,12 @@ interface Order {
   createdAt: Date;
   updatedAt: Date;
   items?: OrderItem[];
+  area?: string | null;
+  block?: string | null;
+  street?: string | null;
+  avenue?: string | null;
+  houseNumber?: string | null;
+  additionalDetails?: string | null;
 }
 
 export default function OrdersManagement() {
@@ -390,12 +397,26 @@ export default function OrdersManagement() {
                           {order.customerPhone}
                         </p>
                       )}
-                      <p>
-                        <span className="text-muted-foreground">
-                          {language === 'ar' ? 'العنوان:' : 'Address:'}
-                        </span>{' '}
-                        {order.shippingAddress}
-                      </p>
+                      {/* Delivery Address */}
+                      <div className="border-t pt-3 mt-3">
+                        <p className="font-semibold text-dark-text mb-2">
+                          {language === 'ar' ? 'عنوان التسليم' : 'Delivery Address'}
+                        </p>
+                        <div className="bg-blue-50 p-2 rounded text-xs space-y-1">
+                          {order.area || order.block || order.street || order.avenue || order.houseNumber ? (
+                            <>
+                              {order.area && <div><span className="font-medium">{language === 'ar' ? 'المنطقة:' : 'Area:'}</span> {order.area}</div>}
+                              {order.block && <div><span className="font-medium">{language === 'ar' ? 'القطعة:' : 'Block:'}</span> {order.block}</div>}
+                              {order.street && <div><span className="font-medium">{language === 'ar' ? 'الشارع:' : 'Street:'}</span> {order.street}</div>}
+                              {order.avenue && <div><span className="font-medium">{language === 'ar' ? 'الجادة:' : 'Avenue:'}</span> {order.avenue}</div>}
+                              {order.houseNumber && <div><span className="font-medium">{language === 'ar' ? 'رقم البيت:' : 'House #:'}</span> {order.houseNumber}</div>}
+                              {order.additionalDetails && <div><span className="font-medium">{language === 'ar' ? 'تفاصيل:' : 'Details:'}</span> {order.additionalDetails}</div>}
+                            </>
+                          ) : (
+                            <span>{language === 'ar' ? 'لم يتم تحديده' : 'Not provided'}</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
 

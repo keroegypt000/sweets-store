@@ -4,6 +4,7 @@ import { ArrowLeft, Printer } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PageLayout from '@/components/PageLayout';
 import { useEffect, useState } from 'react';
+import { formatLocationMultiLine, formatLocationFullAddress } from '@/lib/locationFormatter';
 
 interface OrderItem {
   id: number;
@@ -28,6 +29,12 @@ interface OrderData {
   status: string;
   createdAt: Date;
   items?: OrderItem[];
+  area?: string | null;
+  block?: string | null;
+  street?: string | null;
+  avenue?: string | null;
+  houseNumber?: string | null;
+  additionalDetails?: string | null;
 }
 
 export default function Receipt() {
@@ -167,9 +174,23 @@ export default function Receipt() {
                   <span className="font-semibold">الهاتف:</span>
                   <span>{orderData?.customerPhone || 'لم يتم تحديده'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="font-semibold">عنوان الشحن:</span>
-                  <span className="text-right">{orderData?.shippingAddress || 'لم يتم تحديده'}</span>
+                {/* Delivery Address */}
+                <div className="flex flex-col gap-1 border-t pt-2">
+                  <span className="font-semibold">عنوان التسليم:</span>
+                  <div className="bg-blue-50 p-2 rounded text-right text-xs space-y-1">
+                    {orderData?.area || orderData?.block || orderData?.street || orderData?.avenue || orderData?.houseNumber ? (
+                      <>
+                        {orderData?.area && <div><span className="font-medium">المنطقة:</span> {orderData.area}</div>}
+                        {orderData?.block && <div><span className="font-medium">القطعة:</span> {orderData.block}</div>}
+                        {orderData?.street && <div><span className="font-medium">الشارع:</span> {orderData.street}</div>}
+                        {orderData?.avenue && <div><span className="font-medium">الجادة:</span> {orderData.avenue}</div>}
+                        {orderData?.houseNumber && <div><span className="font-medium">رقم البيت:</span> {orderData.houseNumber}</div>}
+                        {orderData?.additionalDetails && <div><span className="font-medium">تفاصيل إضافية:</span> {orderData.additionalDetails}</div>}
+                      </>
+                    ) : (
+                      <span>لم يتم تحديده</span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="font-semibold">التاريخ:</span>
@@ -194,9 +215,23 @@ export default function Receipt() {
                   <span className="font-semibold">Phone:</span>
                   <span>{orderData?.customerPhone || 'Not provided'}</span>
                 </div>
-                <div className="flex justify-between">
+                {/* Delivery Address */}
+                <div className="flex flex-col gap-1 border-t pt-2">
                   <span className="font-semibold">Shipping Address:</span>
-                  <span>{orderData?.shippingAddress || 'Not provided'}</span>
+                  <div className="bg-blue-50 p-2 rounded text-xs space-y-1">
+                    {orderData?.area || orderData?.block || orderData?.street || orderData?.avenue || orderData?.houseNumber ? (
+                      <>
+                        {orderData?.area && <div><span className="font-medium">Area:</span> {orderData.area}</div>}
+                        {orderData?.block && <div><span className="font-medium">Block:</span> {orderData.block}</div>}
+                        {orderData?.street && <div><span className="font-medium">Street:</span> {orderData.street}</div>}
+                        {orderData?.avenue && <div><span className="font-medium">Avenue:</span> {orderData.avenue}</div>}
+                        {orderData?.houseNumber && <div><span className="font-medium">House Number:</span> {orderData.houseNumber}</div>}
+                        {orderData?.additionalDetails && <div><span className="font-medium">Additional Details:</span> {orderData.additionalDetails}</div>}
+                      </>
+                    ) : (
+                      <span>Not provided</span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="font-semibold">Date:</span>

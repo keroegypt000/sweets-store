@@ -8,6 +8,7 @@ import PageLayout from '@/components/PageLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFormValidation, type FormField } from '@/hooks/useFormValidation';
 import { useLocation } from '@/contexts/LocationContext';
+import { formatLocationSingleLine } from '@/lib/locationFormatter';
 import { trpc } from '@/lib/trpc';
 
 export default function Cart() {
@@ -315,49 +316,21 @@ export default function Cart() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Location Display */}
+                  {/* Location Display - Single Line Summary */}
                   {location && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                        <div className="flex-1 text-sm">
-                          <p className="font-semibold text-dark-text mb-1">
-                            {language === 'ar' ? 'عنوان التسليم' : 'Delivery Address'}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-dark-text">
+                            {formatLocationSingleLine(location, language)}
                           </p>
-                          <div className="text-xs text-muted-foreground space-y-1">
-                            {location.area && (
-                              <div>
-                                <span className="font-medium">{language === 'ar' ? 'المنطقة:' : 'Area:'}</span> {location.area}
-                              </div>
-                            )}
-                            {location.block && (
-                              <div>
-                                <span className="font-medium">{language === 'ar' ? 'القطعة:' : 'Block:'}</span> {location.block}
-                              </div>
-                            )}
-                            {location.street && (
-                              <div>
-                                <span className="font-medium">{language === 'ar' ? 'الشارع:' : 'Street:'}</span> {location.street}
-                              </div>
-                            )}
-                            {location.avenue && (
-                              <div>
-                                <span className="font-medium">{language === 'ar' ? 'الجادة:' : 'Avenue:'}</span> {location.avenue}
-                              </div>
-                            )}
-                            {location.houseNumber && (
-                              <div>
-                                <span className="font-medium">{language === 'ar' ? 'رقم البيت:' : 'House #:'}</span> {location.houseNumber}
-                              </div>
-                            )}
-                          </div>
-                          <button
-                            onClick={() => setShowLocationModal(true)}
-                            className="text-xs text-blue-600 hover:text-blue-700 font-medium mt-2"
-                          >
-                            {language === 'ar' ? 'تغيير الموقع' : 'Change Location'}
-                          </button>
                         </div>
+                        <button
+                          onClick={() => setShowLocationModal(true)}
+                          className="text-xs text-blue-600 hover:text-blue-700 font-medium whitespace-nowrap ml-2"
+                        >
+                          {language === 'ar' ? 'تغيير' : 'Change'}
+                        </button>
                       </div>
                     </div>
                   )}
