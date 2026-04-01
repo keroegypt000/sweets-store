@@ -399,26 +399,82 @@ export default function OrdersManagement() {
                       )}
                       {/* Delivery Address */}
                       <div className="border-t pt-3 mt-3">
-                        <p className="font-semibold text-dark-text mb-2">
+                        <p className="font-semibold text-dark-text mb-3">
                           {language === 'ar' ? 'عنوان التسليم' : 'Delivery Address'}
                         </p>
-                        <div className="bg-blue-50 p-2 rounded text-xs space-y-1">
+                        <div className="bg-blue-50 p-4 rounded border-l-4 border-blue-500">
                           {order.area || order.block || order.street || order.avenue || order.houseNumber ? (
-                            <>
-                              {order.area && <div><span className="font-medium">{language === 'ar' ? 'المنطقة:' : 'Area:'}</span> {order.area}</div>}
-                              {order.block && <div><span className="font-medium">{language === 'ar' ? 'القطعة:' : 'Block:'}</span> {order.block}</div>}
-                              {order.street && <div><span className="font-medium">{language === 'ar' ? 'الشارع:' : 'Street:'}</span> {order.street}</div>}
-                              {order.avenue && <div><span className="font-medium">{language === 'ar' ? 'الجادة:' : 'Avenue:'}</span> {order.avenue}</div>}
-                              {order.houseNumber && <div><span className="font-medium">{language === 'ar' ? 'رقم البيت:' : 'House #:'}</span> {order.houseNumber}</div>}
-                              {order.additionalDetails && <div><span className="font-medium">{language === 'ar' ? 'تفاصيل:' : 'Details:'}</span> {order.additionalDetails}</div>}
-                            </>
+                            <div className="space-y-2 text-sm">
+                              {order.area && (
+                                <div className="flex justify-between">
+                                  <span className="font-medium text-muted-foreground">{language === 'ar' ? 'المنطقة:' : 'Area:'}</span>
+                                  <span className="text-dark-text font-semibold">{order.area}</span>
+                                </div>
+                              )}
+                              {order.block && (
+                                <div className="flex justify-between">
+                                  <span className="font-medium text-muted-foreground">{language === 'ar' ? 'القطعة:' : 'Block:'}</span>
+                                  <span className="text-dark-text font-semibold">{order.block}</span>
+                                </div>
+                              )}
+                              {order.street && (
+                                <div className="flex justify-between">
+                                  <span className="font-medium text-muted-foreground">{language === 'ar' ? 'الشارع:' : 'Street:'}</span>
+                                  <span className="text-dark-text font-semibold">{order.street}</span>
+                                </div>
+                              )}
+                              {order.avenue && (
+                                <div className="flex justify-between">
+                                  <span className="font-medium text-muted-foreground">{language === 'ar' ? 'الجادة:' : 'Avenue:'}</span>
+                                  <span className="text-dark-text font-semibold">{order.avenue}</span>
+                                </div>
+                              )}
+                              {order.houseNumber && (
+                                <div className="flex justify-between">
+                                  <span className="font-medium text-muted-foreground">{language === 'ar' ? 'رقم البيت:' : 'House #:'}</span>
+                                  <span className="text-dark-text font-semibold">{order.houseNumber}</span>
+                                </div>
+                              )}
+                              {order.additionalDetails && (
+                                <div className="flex justify-between border-t pt-2 mt-2">
+                                  <span className="font-medium text-muted-foreground">{language === 'ar' ? 'تفاصيل إضافية:' : 'Additional Details:'}</span>
+                                  <span className="text-dark-text font-semibold">{order.additionalDetails}</span>
+                                </div>
+                              )}
+                            </div>
                           ) : (
-                            <span>{language === 'ar' ? 'لم يتم تحديده' : 'Not provided'}</span>
+                            <span className="text-muted-foreground italic">{language === 'ar' ? 'لم يتم تحديد عنوان' : 'No address provided'}</span>
                           )}
                         </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Order Items */}
+                  {order.items && order.items.length > 0 && (
+                    <div className="bg-gray-50 p-4 rounded">
+                      <h4 className="font-bold text-dark-text mb-3">
+                        {language === 'ar' ? 'المنتجات' : 'Products'}
+                      </h4>
+                      <div className="space-y-3">
+                        {order.items.map((item, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-3 bg-white rounded border border-gray-200">
+                            <div className="flex-1">
+                              <p className="font-medium text-dark-text">
+                                {item.productName || `Product #${item.productId}`}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {language === 'ar' ? 'الكمية:' : 'Qty:'} {item.quantity} × {item.price} KWD
+                              </p>
+                            </div>
+                            <p className="font-bold text-primary-yellow">
+                              {(parseFloat(item.price) * item.quantity).toFixed(2)} KWD
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Status Update */}
                   <div>

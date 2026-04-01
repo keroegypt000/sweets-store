@@ -1164,3 +1164,80 @@
 - [x] Verify location displays immediately after selection
 - [x] Test location persistence across page navigation
 - [x] Test with different location data
+
+
+## v5.9 - Saved Delivery Locations Feature
+
+### Database & Backend
+- [ ] Update LocationContext to store multiple saved locations
+- [ ] Add save location functionality with label (Home, Work, etc.)
+- [ ] Add delete saved location functionality
+- [ ] Persist saved locations to localStorage
+
+### Frontend Components
+- [ ] Create SavedLocations component to display saved locations
+- [ ] Add location label input field in location selector
+- [ ] Add save location button in location modal
+- [ ] Show saved locations as quick-select buttons
+- [ ] Add delete button for each saved location
+
+### Integration
+- [ ] Integrate saved locations into Cart page
+- [ ] Add saved locations to Home page location bar
+- [ ] Show saved locations in location selector modal
+- [ ] Allow quick switching between saved locations
+
+### UI/UX
+- [ ] Design saved locations display (cards/buttons)
+- [ ] Add icons for location types (Home, Work, Other)
+- [ ] Show confirmation when saving location
+- [ ] Show confirmation when deleting location
+- [ ] Make saved locations easily accessible
+
+### Testing
+- [ ] Test saving new location with label
+- [ ] Test switching between saved locations
+- [ ] Test deleting saved location
+- [ ] Test persistence across page refresh
+- [ ] Test with multiple saved locations
+
+
+## v5.10 - Bug Fix: Admin Dashboard Order Display
+
+### Issue
+- [ ] Product names not displaying clearly in order items
+- [ ] Address details from customer location not showing
+- [ ] Order details layout needs improvement for readability
+- [ ] Admin cannot see complete order information at a glance
+
+### Product Names Display
+- [ ] Check how products are fetched and displayed
+- [ ] Ensure product names are visible and not truncated
+- [ ] Add product images if available
+- [ ] Show quantity and price per item clearly
+
+### Address Details Display
+- [ ] Ensure all address fields are displayed (Area, Block, Street, Avenue, House Number, Additional Details)
+- [ ] Format address in readable way
+- [ ] Show address in both Arabic and English labels
+- [ ] Display address prominently in order details
+
+### Layout & UX Improvements
+- [ ] Improve order details card layout
+- [ ] Add better spacing and typography
+- [ ] Make order information scannable
+- [ ] Add visual hierarchy for important information
+
+### Testing
+- [ ] Test order display with various product counts
+- [ ] Test with complete address information
+- [ ] Test with partial address information
+- [ ] Verify layout on different screen sizes
+
+## Completed - Admin Dashboard Bug Fixes
+- [x] Added products/items section to order details display
+- [x] Product names now display clearly with quantity and price
+- [x] Improved address display with key-value layout
+- [x] All address fields (Area, Block, Street, Avenue, House Number, Additional Details) visible
+- [x] Professional blue-bordered address box with proper formatting
+- [x] Better visual hierarchy and readability

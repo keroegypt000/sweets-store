@@ -14,9 +14,19 @@ export interface Location {
   country?: string;
 }
 
+export interface SavedLocation extends Location {
+  id: string;
+  label: string; // Home, Work, Other, etc.
+  createdAt: number;
+}
+
 interface LocationContextType {
   location: Location | null;
   setLocation: (location: Location) => void;
+  savedLocations: SavedLocation[];
+  addSavedLocation: (location: Location, label: string) => void;
+  removeSavedLocation: (id: string) => void;
+  selectSavedLocation: (id: string) => void;
   showLocationModal: boolean;
   setShowLocationModal: (show: boolean) => void;
   error: string | null;
@@ -29,6 +39,7 @@ const LocationContext = createContext<LocationContextType | undefined>(undefined
 
 export function LocationProvider({ children }: { children: ReactNode }) {
   const [location, setLocationState] = useState<Location | null>(null);
+  const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
@@ -36,7 +47,17 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   // Check if location is already saved on mount
   useEffect(() => {
     const savedLocation = localStorage.getItem('userLocation');
+    const savedLocationsList = localStorage.getItem('savedLocations');
     const hasVisited = localStorage.getItem('hasVisited');
+
+    if (savedLocationsList) {
+      try {
+        const parsedList = JSON.parse(savedLocationsList);
+        setSavedLocations(parsedList);
+      } catch (err) {
+        console.error('Failed to parse saved locations:', err);
+      }
+    }
 
     if (savedLocation) {
       try {
@@ -68,11 +89,41 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     setIsFirstVisit(false);
   };
 
+  const addSavedLocation = (newLocation: Location, label: string) => {
+    const savedLocation: SavedLocation = {
+      ...newLocation,
+      id: Date.now().toString(),
+      label,
+      createdAt: Date.now(),
+    };
+    const updated = [...savedLocations, savedLocation];
+    setSavedLocations(updated);
+    localStorage.setItem('savedLocations', JSON.stringify(updated));
+  };
+
+  const removeSavedLocation = (id: string) => {
+    const updated = savedLocations.filter(loc => loc.id !== id);
+    setSavedLocations(updated);
+    localStorage.setItem('savedLocations', JSON.stringify(updated));
+  };
+
+  const selectSavedLocation = (id: string) => {
+    const selected = savedLocations.find(loc => loc.id === id);
+    if (selected) {
+      const { id: _, label: __, createdAt: ___, ...locationData } = selected;
+      setLocation(locationData as Location);
+    }
+  };
+
   return (
     <LocationContext.Provider
       value={{
         location,
         setLocation,
+        savedLocations,
+        addSavedLocation,
+        removeSavedLocation,
+        selectSavedLocation,
         showLocationModal,
         setShowLocationModal,
         error,
