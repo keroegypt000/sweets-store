@@ -224,11 +224,21 @@ export async function createOrder(userId: number, totalAmount: string, shippingA
   if (result.length > 0 && cartItems && cartItems.length > 0) {
     const orderId = result[0].id;
     for (const item of cartItems) {
+      // Fetch product details to store with order item
+      const productResult = await db.select().from(products).where(eq(products.id, item.productId)).limit(1);
+      const product = productResult.length > 0 ? productResult[0] : null;
+      
       await db.insert(orderItems).values({
         orderId,
         productId: item.productId,
         quantity: item.quantity,
         price: item.price as any,
+        // Store product details for admin reference
+        productNameAr: product?.nameAr || null,
+        productNameEn: product?.nameEn || null,
+        productImage: product?.image || null,
+        productBarcode: product?.barcode || null,
+        productSku: product?.sku || null,
       });
     }
   }

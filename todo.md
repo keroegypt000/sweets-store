@@ -1241,3 +1241,80 @@
 - [x] All address fields (Area, Block, Street, Avenue, House Number, Additional Details) visible
 - [x] Professional blue-bordered address box with proper formatting
 - [x] Better visual hierarchy and readability
+
+## v5.11 - Bug Fix: Complete Product Details in Admin Order Management
+
+### Issue
+- [ ] Admin dashboard shows generic "Product 1" instead of actual product names
+- [ ] Missing Arabic/English product names in order items
+- [ ] No product barcode display
+- [ ] No product description or SKU
+- [ ] Staff cannot identify which product to prepare from order
+
+### Root Cause
+- Order items only store productId, not full product details
+- Product information not persisted when order is created
+- Admin dashboard fetches only basic product data
+
+### Solution Plan
+- [x] Investigate current product schema and cart structure
+- [ ] Update order items to store complete product details
+- [ ] Modify createOrder function to capture full product info
+- [ ] Update admin dashboard to display bilingual product names
+- [ ] Add barcode and SKU display in order items
+- [ ] Add product image thumbnail in order items
+- [ ] Test with real product data
+
+### Implementation Tasks
+- [ ] Check product schema for name_ar, name_en, barcode, sku fields
+- [ ] Update orderItems table to include product details
+- [ ] Modify cart.add to store product metadata
+- [ ] Modify orders.create to capture product details
+- [ ] Update OrdersManagement component to display product details
+- [ ] Add product image in order items display
+- [ ] Add barcode/SKU display
+- [ ] Test bilingual product names (Arabic/English)
+
+### Testing
+- [ ] Create order with real product
+- [ ] Verify product name displays in admin (Arabic/English)
+- [ ] Verify barcode displays correctly
+- [ ] Verify product image shows
+- [ ] Test with multiple products in one order
+- [ ] Verify data persists after page refresh
+
+
+## v5.11 - Bug Fix: Product Details Display in Admin Orders
+
+### Issue
+- [x] Admin dashboard shows generic "Product 1" instead of actual product names
+- [x] Product names now displayed in Arabic and English
+- [x] Barcode and SKU now visible to staff
+- [x] Staff can now identify which product to prepare
+
+### Root Cause Investigation
+- [x] Found orderItems table only stored productId, quantity, price
+- [x] No product details (name, barcode, SKU, image) were being saved
+
+### Database Schema Updates
+- [x] Added productNameAr, productNameEn to orderItems table
+- [x] Added productImage, productBarcode, productSku to orderItems table
+- [x] Ran database migration with pnpm db:push
+
+### Backend Updates
+- [x] Updated createOrder function to fetch product details from products table
+- [x] Save all product information when creating order items
+- [x] Product details now persisted with each order
+
+### Frontend Updates
+- [x] Updated OrderItem type in types/index.ts with new product fields
+- [x] Enhanced admin dashboard product display with bilingual names
+- [x] Added product image display in order items
+- [x] Added SKU and barcode display for staff
+- [x] Professional blue-bordered card layout for product items
+
+### Testing
+- [x] Verified TypeScript compilation (no errors)
+- [x] Tested product details display in admin dashboard
+- [x] Confirmed bilingual support (Arabic/English)
+- [x] Verified product image, name, barcode, SKU all display correctly

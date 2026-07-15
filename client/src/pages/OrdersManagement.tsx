@@ -14,35 +14,9 @@ import {
 import OrderDetailModal from '@/components/admin/OrderDetailModal';
 import { formatLocationMultiLine } from '@/lib/locationFormatter';
 import { trpc } from '@/lib/trpc';
+import { OrderItem } from '@/types/index';
 
-interface OrderItem {
-  id: number;
-  productId: number;
-  quantity: number;
-  price: string;
-  productName?: string;
-  productImage?: string;
-}
-
-interface Order {
-  id: number;
-  orderNumber: string;
-  totalAmount: string;
-  shippingAddress: string | null;
-  customerName: string | null;
-  customerEmail: string | null;
-  customerPhone: string | null;
-  status: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  items?: OrderItem[];
-  area?: string | null;
-  block?: string | null;
-  street?: string | null;
-  avenue?: string | null;
-  houseNumber?: string | null;
-  additionalDetails?: string | null;
-}
+type Order = any; // Order type from API
 
 export default function OrdersManagement() {
   const { language } = useLanguage();
@@ -457,19 +431,52 @@ export default function OrdersManagement() {
                         {language === 'ar' ? 'المنتجات' : 'Products'}
                       </h4>
                       <div className="space-y-3">
-                        {order.items.map((item, idx) => (
-                          <div key={idx} className="flex items-center justify-between p-3 bg-white rounded border border-gray-200">
-                            <div className="flex-1">
-                              <p className="font-medium text-dark-text">
-                                {item.productName || `Product #${item.productId}`}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {language === 'ar' ? 'الكمية:' : 'Qty:'} {item.quantity} × {item.price} KWD
-                              </p>
+                        {order.items.map((item: any, idx: number) => (
+                          <div key={idx} className="p-4 bg-white rounded border-l-4 border-blue-500">
+                            <div className="flex gap-4">
+                              {item.productImage && (
+                                <img 
+                                  src={item.productImage} 
+                                  alt="product" 
+                                  className="w-16 h-16 rounded object-cover"
+                                />
+                              )}
+                              <div className="flex-1">
+                                <div className="mb-2">
+                                  <p className="font-bold text-dark-text text-lg">
+                                    {language === 'ar' ? item.productNameAr : item.productNameEn} || `Product #${item.productId}`
+                                  </p>
+                                  {item.productNameAr && item.productNameEn && (
+                                    <p className="text-sm text-muted-foreground">
+                                      {language === 'ar' ? item.productNameEn : item.productNameAr}
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="space-y-1 text-sm">
+                                  <p className="text-muted-foreground">
+                                    {language === 'ar' ? 'الكمية:' : 'Quantity:'} <span className="font-semibold text-dark-text">{item.quantity}</span>
+                                  </p>
+                                  <p className="text-muted-foreground">
+                                    {language === 'ar' ? 'السعر:' : 'Price:'} <span className="font-semibold text-dark-text">{item.price} KWD</span>
+                                  </p>
+                                  {item.productSku && (
+                                    <p className="text-muted-foreground">
+                                      {language === 'ar' ? 'رمز المنتج:' : 'SKU:'} <span className="font-mono text-dark-text">{item.productSku}</span>
+                                    </p>
+                                  )}
+                                  {item.productBarcode && (
+                                    <p className="text-muted-foreground">
+                                      {language === 'ar' ? 'الباركود:' : 'Barcode:'} <span className="font-mono text-dark-text">{item.productBarcode}</span>
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-primary-yellow text-lg">
+                                  {(parseFloat(String(item.price)) * (item.quantity || 1)).toFixed(2)} KWD
+                                </p>
+                              </div>
                             </div>
-                            <p className="font-bold text-primary-yellow">
-                              {(parseFloat(item.price) * item.quantity).toFixed(2)} KWD
-                            </p>
                           </div>
                         ))}
                       </div>

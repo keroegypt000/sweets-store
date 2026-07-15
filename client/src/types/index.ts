@@ -64,5 +64,10 @@ export interface OrderItem {
   productId: number;
   quantity: number;
   price: string | number;
+  productNameAr?: string | null;
+  productNameEn?: string | null;
+  productImage?: string | null;
+  productBarcode?: string | null;
+  productSku?: string | null;
   createdAt: Date;
 }

@@ -121,6 +121,12 @@ export const orderItems = mysqlTable("orderItems", {
   productId: int("productId").notNull(),
   quantity: int("quantity").notNull(),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  // Product details captured at order time for admin reference
+  productNameAr: varchar("productNameAr", { length: 255 }),
+  productNameEn: varchar("productNameEn", { length: 255 }),
+  productImage: varchar("productImage", { length: 255 }),
+  productBarcode: varchar("productBarcode", { length: 255 }),
+  productSku: varchar("productSku", { length: 100 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
