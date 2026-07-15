@@ -632,9 +632,19 @@ export async function getOrderWithItems(orderId: number) {
   
   const items = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
   
+  // Transform items to include product data in the expected format
+  const transformedItems = items.map(item => ({
+    ...item,
+    product: {
+      nameAr: item.productNameAr || 'منتج',
+      nameEn: item.productNameEn || 'Product',
+      price: item.price,
+    },
+  }));
+  
   return {
     ...order[0],
-    items: items,
+    items: transformedItems,
   };
 }
 
