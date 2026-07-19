@@ -444,7 +444,7 @@ export default function OrdersManagement() {
                               <div className="flex-1">
                                 <div className="mb-2">
                                   <p className="font-bold text-dark-text text-lg">
-                                    {language === 'ar' ? item.productNameAr : item.productNameEn} || `Product #${item.productId}`
+                                    {(language === 'ar' ? item.productNameAr : item.productNameEn) || `Product #${item.productId}`}
                                   </p>
                                   {item.productNameAr && item.productNameEn && (
                                     <p className="text-sm text-muted-foreground">
